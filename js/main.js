@@ -121,6 +121,17 @@ function buildSection(section) {
           <span class="slider-value">${Math.round(ctrl.value * 100)}%</span>
         `;
         controlsDiv.appendChild(wrapper);
+      } else if (ctrl.type === 'switch') {
+        const wrapper = document.createElement('label');
+        wrapper.className = 'switch-container';
+        wrapper.innerHTML = `
+          <span class="switch-label">${ctrl.label}</span>
+          <input type="checkbox" id="ctrl-${ctrl.id}" class="switch-input">
+          <div class="switch-track">
+            <div class="switch-thumb"></div>
+          </div>
+        `;
+        controlsDiv.appendChild(wrapper);
       }
     }
 

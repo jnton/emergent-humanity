@@ -15,10 +15,7 @@ export const SECTIONS = [
     ],
     insight: 'This project is about constructing my view of the world: exploring how to improve the Emergent Organism.',
     vizHint: 'Click to spark connections. Watch the isolated humans merge into the great Humanity.',
-    controls: [
-      { id: 'connect-humans', type: 'button', label: 'Form the Organism' },
-      { id: 'isolate-humans', type: 'button', label: 'Isolate Humans', variant: 'outline' }
-    ]
+    controls: []
   },
   {
     id: 'emergent-organism',

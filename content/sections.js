@@ -24,7 +24,7 @@ export const SECTIONS = [
     subtitle: 'Failure, loss, and structural resilience.',
     body: [
       'A human is a node, essentially a state that can flip from 1 to 0.',
-      'If a point suddenly disappears—a 1 flipping to a 0—it doesn\'t affect the net that much. Only the nearest points feel the loss for a limited time. Obviously, according to chaos theory, even a small change has a huge impact in the long term, but the immediate structural loss is minimal.',
+      'If a point suddenly disappears—a 1 flipping to a 0—it doesn\'t affect the net that much. Only the nearest points feel the loss for a limited time. Obviously even a small change has a huge impact in the long term, but the immediate structural loss is minimal.',
       'The organism easily routes around the dead node. This is the fundamental resilience of the human network.'
     ],
     insight: 'The loss of a node is a tragedy for the local cluster, but a rounding error for the organism.',

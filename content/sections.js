@@ -26,7 +26,7 @@ export const SECTIONS = [
   {
     id: 'node-removal',
     number: '02',
-    title: 'Cellular Death',
+    title: 'One Node Goes Dark',
     subtitle: 'Failure, pruning, and structural resilience.',
     body: [
       'What happens when a node fails? In a random network, random failures are devastating. But the organism is not random; it follows a power law. Most nodes have very few data channels, while a tiny fraction (hubs) process massive throughput.',

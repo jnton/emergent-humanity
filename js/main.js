@@ -11,8 +11,11 @@ import { initNodeQuantity } from './visualizations/02-node-quantity.js';
 import { initNodeQuality } from './visualizations/03-node-quality.js';
 import { initConnectionQuantity } from './visualizations/04-connection-quantity.js';
 import { initConnectionQuality } from './visualizations/05-connection-quality.js';
-import { initProductivity } from './visualizations/06-productivity.js';
-import { initWhatsNext } from './visualizations/07-whats-next.js';
+import { initCohesion } from './visualizations/07-cohesion.js';
+import { initAlignment } from './visualizations/08-alignment.js';
+import { initCollectiveMemory } from './visualizations/09-collective-memory.js';
+import { initProductivity } from './visualizations/10-productivity.js';
+import { initWhatsNext } from './visualizations/11-whats-next.js';
 
 // Map section IDs to their initialization functions
 const VIZ_INIT = {
@@ -22,6 +25,9 @@ const VIZ_INIT = {
   'node-quality': initNodeQuality,
   'connection-quantity': initConnectionQuantity,
   'connection-quality': initConnectionQuality,
+  'cohesion': initCohesion,
+  'alignment': initAlignment,
+  'collective-memory': initCollectiveMemory,
   'productivity': initProductivity,
   'whats-next': initWhatsNext,
 };

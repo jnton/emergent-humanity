@@ -104,13 +104,64 @@ export const SECTIONS = [
     ]
   },
   {
-    id: 'productivity',
+    id: 'cohesion',
     number: '07',
+    title: 'Cohesion & Polarization',
+    subtitle: 'Echo chambers and the splintering of the organism.',
+    body: [
+      'When connection quality degrades and noise reigns, nodes retreat into local clusters of extreme agreement. The organism undergoes a physical phase transition: Polarization.',
+      'Echo chambers form. These dense sub-networks repel one another. The overarching emergent entity literally fractures into multiple, hostile sub-organisms that refuse to share processing power.',
+      'To heal the organism, we cannot simply add more connections. We need Bridging Nodes: diplomats and translators that can span across the chasm, pulling the network back into a single unified architecture.'
+    ],
+    insight: 'A polarized network is a lobotomized organism.',
+    vizHint: 'Drag the slider to polarize the network into echo chambers. Click to deploy Bridging Nodes to heal it.',
+    controls: [
+      { id: 'polarize-slider', type: 'slider', label: 'Polarization', min: '0', max: '1', step: '0.1', value: '0' },
+      { id: 'deploy-bridges', type: 'button', label: 'Deploy Bridging Nodes' }
+    ]
+  },
+  {
+    id: 'alignment',
+    number: '08',
+    title: 'Alignment & Shared Goals',
+    subtitle: 'Synchronization of vector paths.',
+    body: [
+      'Imagine we have successfully healed the echo chambers. The organism is one mass again. But if the nodes are pulling in opposite directions, the net forward progress of the organism is exactly zero.',
+      'Alignment is the meta-layer of connection quality. If half the network optimizes for X and the other half for Y, they cancel each other out. The network vibrates in chaotic stagnation.',
+      'When the organism adopts a shared narrative—like exploring space, curing disease, or building a utopia—the vectors of individual nodes synchronize. The entire network begins to move fluidly in a single direction.'
+    ],
+    insight: 'Without a shared goal, extreme processing power is just extreme heat.',
+    vizHint: 'The network is chaotic. Click to introduce a unifying vision and watch the vectors synchronize.',
+    controls: [
+      { id: 'align-goals', type: 'button', label: 'Introduce Unifying Vision' },
+      { id: 'scramble-goals', type: 'button', label: 'Return to Chaos', variant: 'outline' }
+    ]
+  },
+  {
+    id: 'collective-memory',
+    number: '09',
+    title: 'Collective Memory',
+    subtitle: 'Information persistence beyond the individual.',
+    body: [
+      'Nodes are mortal. A human eventually flips from 1 to 0. If all knowledge lived purely inside the nodes, the organism would suffer catastrophic amnesia constantly.',
+      'A high-quality organism stores knowledge in its structure, not just its nodes. When nodes learn and interact, they build a physical lattice of structural memory—institutions, open-source code, books, and art.',
+      'When a central, highly educated node dies, this structural lattice remains. A new node spawning in that location immediately inherits the stored wisdom of the organism.'
+    ],
+    insight: 'Institutions and culture are the long-term memory of the emergent organism.',
+    vizHint: 'Watch nodes build structural lattice over time. Click a node to terminate it, and watch the structure persist.',
+    controls: [
+      { id: 'accelerate-learning', type: 'button', label: 'Accelerate Learning' },
+      { id: 'clear-memory', type: 'button', label: 'Erase Structural Memory', variant: 'outline' }
+    ]
+  },
+  {
+    id: 'productivity',
+    number: '10',
     title: 'Productivity & Shared Knowledge',
     subtitle: 'The ultimate output of the organism.',
     body: [
-      'When you optimize Node Quantity, Node Quality, Connection Quantity, and Connection Quality, what is the result? Massive, compounding Productivity and Shared Knowledge.',
-      'The organism begins to compute solutions to problems that no individual node could even comprehend. Science accelerates. Poverty collapses. Art flourishes. The network achieves a state of collective intelligence.',
+      'When you optimize Node Quantity, Node Quality, Connection Quantity, and Connection Quality—and when the organism is cohesive, aligned, and capable of structural memory—what is the result?',
+      'Massive, compounding collective intelligence. The organism computes solutions to problems that no individual node could even comprehend. Science accelerates. Poverty collapses. Art flourishes.',
       'This is not an abstract theory. This is the observable mechanism of human progress over the last ten thousand years, mathematically mapped to a graph.'
     ],
     insight: 'Shared knowledge is the emergent consciousness of the organism.',
@@ -122,7 +173,7 @@ export const SECTIONS = [
   },
   {
     id: 'whats-next',
-    number: '08',
+    number: '11',
     title: 'What\'s Next?',
     subtitle: 'Building the next evolution.',
     body: [

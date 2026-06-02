@@ -72,8 +72,8 @@ function buildHero() {
     <canvas id="hero-canvas"></canvas>
     <h1 class="hero-title">Emergent Humanity</h1>
     <p class="hero-subtitle">
-      An interactive exploration of humanity as a network —
-      through mathematics, information theory, and graph theory.
+      A personal attempt to make sense of humanity as an emergent network. 
+      Exploring, trying to construct a worldview, and figuring out how we can improve.
     </p>
     <div class="scroll-indicator">
       <span class="scroll-indicator-text">Scroll to explore</span>

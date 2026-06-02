@@ -518,10 +518,15 @@ input[type="range"]::-moz-range-thumb {
 
 /* ---------- Responsive: Tablet & Mobile ---------- */
 @media (max-width: 900px) {
+  .scroll-container {
+    scroll-snap-type: none;
+  }
+
   .section {
     grid-template-columns: 1fr;
     grid-template-rows: 50dvh auto;
-    min-height: unset;
+    height: auto;
+    min-height: 100dvh;
     scroll-snap-align: none;
   }
 
@@ -529,6 +534,11 @@ input[type="range"]::-moz-range-thumb {
     border-left: none;
     border-top: 1px solid var(--border);
     padding: var(--space-xl) var(--space-lg);
+    overflow-y: visible;
+  }
+
+  .viz-pane canvas {
+    touch-action: pan-y;
   }
 
   .text-content {

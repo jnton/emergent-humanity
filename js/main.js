@@ -9,11 +9,13 @@ import { initIntro } from './visualizations/00-intro.js';
 import { initEmergentOrganism } from './visualizations/01-emergent-organism.js';
 import { initNodeQuantity } from './visualizations/02-node-quantity.js';
 import { initNodeQuality } from './visualizations/03-node-quality.js';
+import { initNodeCapacity } from './visualizations/04-node-capacity.js';
 import { initConnectionQuantity } from './visualizations/04-connection-quantity.js';
 import { initConnectionQuality } from './visualizations/05-connection-quality.js';
 import { initCohesion } from './visualizations/07-cohesion.js';
 import { initAlignment } from './visualizations/08-alignment.js';
 import { initCollectiveMemory } from './visualizations/09-collective-memory.js';
+import { initEntropy } from './visualizations/10-entropy.js';
 import { initProductivity } from './visualizations/10-productivity.js';
 import { initWhatsNext } from './visualizations/11-whats-next.js';
 
@@ -23,11 +25,13 @@ const VIZ_INIT = {
   'emergent-organism': initEmergentOrganism,
   'node-quantity': initNodeQuantity,
   'node-quality': initNodeQuality,
+  'node-capacity': initNodeCapacity,
   'connection-quantity': initConnectionQuantity,
   'connection-quality': initConnectionQuality,
   'cohesion': initCohesion,
   'alignment': initAlignment,
   'collective-memory': initCollectiveMemory,
+  'entropy': initEntropy,
   'productivity': initProductivity,
   'whats-next': initWhatsNext,
 };

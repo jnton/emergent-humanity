@@ -5,28 +5,24 @@
 // ==========================================================================
 
 import { SECTIONS } from '../content/sections.js';
-import { initNetworkIntro } from './visualizations/network-intro.js';
-import { initNodeRemoval } from './visualizations/node-removal.js';
-import { initWeakTies } from './visualizations/weak-ties.js';
-import { initStructuralHoles } from './visualizations/structural-holes.js';
-import { initTemporal } from './visualizations/temporal.js';
-import { initDunbar } from './visualizations/dunbar.js';
-import { initCooperation } from './visualizations/cooperation.js';
-import { initNodesAndChannels } from './visualizations/nodes-and-channels.js';
-import { initEchoChambers } from './visualizations/echo-chambers.js';
-import { initWhatsNext } from './visualizations/whats-next.js';
+import { initIntro } from './visualizations/00-intro.js';
+import { initEmergentOrganism } from './visualizations/01-emergent-organism.js';
+import { initNodeQuantity } from './visualizations/02-node-quantity.js';
+import { initNodeQuality } from './visualizations/03-node-quality.js';
+import { initConnectionQuantity } from './visualizations/04-connection-quantity.js';
+import { initConnectionQuality } from './visualizations/05-connection-quality.js';
+import { initProductivity } from './visualizations/06-productivity.js';
+import { initWhatsNext } from './visualizations/07-whats-next.js';
 
 // Map section IDs to their initialization functions
 const VIZ_INIT = {
-  'the-network': initNetworkIntro,
-  'node-removal': initNodeRemoval,
-  'weak-ties': initWeakTies,
-  'structural-holes': initStructuralHoles,
-  'temporal': initTemporal,
-  'dunbar': initDunbar,
-  'cooperation': initCooperation,
-  'nodes-channels': initNodesAndChannels,
-  'echo-chambers': initEchoChambers,
+  'intro': initIntro,
+  'emergent-organism': initEmergentOrganism,
+  'node-quantity': initNodeQuantity,
+  'node-quality': initNodeQuality,
+  'connection-quantity': initConnectionQuantity,
+  'connection-quality': initConnectionQuality,
+  'productivity': initProductivity,
   'whats-next': initWhatsNext,
 };
 
@@ -140,10 +136,6 @@ function buildSection(section) {
     textHTML += `<p class="text-body">${para}</p>`;
   }
 
-  if (section.math) {
-    textHTML += `<div class="math-block">${section.math.replace(/\n/g, '<br>')}</div>`;
-  }
-
   if (section.insight) {
     textHTML += `<div class="insight">${section.insight}</div>`;
   }
@@ -170,69 +162,98 @@ function initHeroCanvas() {
   if (!heroCanvas) return;
   heroCtx = heroCanvas.getContext('2d');
 
+  let width, height, dpr;
+
   const resize = () => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const dpr = window.devicePixelRatio || 1;
-    heroCanvas.width = w * dpr;
-    heroCanvas.height = h * dpr;
-    heroCanvas.style.width = w + 'px';
-    heroCanvas.style.height = h + 'px';
+    width = window.innerWidth;
+    height = window.innerHeight;
+    dpr = window.devicePixelRatio || 1;
+    heroCanvas.width = width * dpr;
+    heroCanvas.height = height * dpr;
+    heroCanvas.style.width = width + 'px';
+    heroCanvas.style.height = height + 'px';
     heroCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
   resize();
   window.addEventListener('resize', resize);
 
-  // Generate hero background nodes
-  const count = window.innerWidth < 900 ? 40 : 70;
+  // Generate hero background nodes - forming a spherical "organism"
+  const count = window.innerWidth < 900 ? 150 : 350;
   heroNodes = [];
+  const radius = Math.min(width, height) * 0.35; // Organism size
+
   for (let i = 0; i < count; i++) {
+    // Random point in a sphere/circle using polar coords
+    const r = radius * Math.sqrt(Math.random());
+    const theta = Math.random() * 2 * Math.PI;
+    
     heroNodes.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: 2 + Math.random() * 2,
+      x: Math.cos(theta) * r,
+      y: Math.sin(theta) * r,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      baseR: r, // remember distance from center to constrain it
     });
   }
 
+  let zoomScale = 5.0; // Start heavily zoomed in on the connections
+  let targetScale = 1.0;
+
   function animateHero() {
     heroAnimFrame = requestAnimationFrame(animateHero);
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    heroCtx.clearRect(0, 0, w, h);
+    
+    // Smooth zoom out
+    zoomScale += (targetScale - zoomScale) * 0.01;
 
-    // Update positions
+    heroCtx.clearRect(0, 0, width, height);
+
+    // Apply camera transform to center
+    heroCtx.save();
+    heroCtx.translate(width / 2, height / 2);
+    heroCtx.scale(zoomScale, zoomScale);
+
+    // Update positions and keep them roughly in a circle
     for (const n of heroNodes) {
       n.x += n.vx;
       n.y += n.vy;
-      if (n.x < 0 || n.x > w) n.vx *= -1;
-      if (n.y < 0 || n.y > h) n.vy *= -1;
-    }
-
-    // Draw connections
-    const maxDist = 120;
-    for (let i = 0; i < heroNodes.length; i++) {
-      for (let j = i + 1; j < heroNodes.length; j++) {
-        const dist = Math.hypot(heroNodes[i].x - heroNodes[j].x, heroNodes[i].y - heroNodes[j].y);
-        if (dist < maxDist) {
-          heroCtx.beginPath();
-          heroCtx.moveTo(heroNodes[i].x, heroNodes[i].y);
-          heroCtx.lineTo(heroNodes[j].x, heroNodes[j].y);
-          heroCtx.strokeStyle = `rgba(79, 156, 247, ${0.15 * (1 - dist / maxDist)})`;
-          heroCtx.lineWidth = 0.5;
-          heroCtx.stroke();
-        }
+      const currentR = Math.hypot(n.x, n.y);
+      if (currentR > radius * 1.1) {
+        n.vx -= (n.x / currentR) * 0.05;
+        n.vy -= (n.y / currentR) * 0.05;
       }
     }
 
-    // Draw nodes
-    for (const n of heroNodes) {
-      heroCtx.beginPath();
-      heroCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      heroCtx.fillStyle = 'rgba(79, 156, 247, 0.3)';
-      heroCtx.fill();
+    // Draw connections
+    const maxDist = 50; // Short connection distance creates dense local web
+    heroCtx.beginPath();
+    for (let i = 0; i < heroNodes.length; i++) {
+      for (let j = i + 1; j < heroNodes.length; j++) {
+        const dx = heroNodes[i].x - heroNodes[j].x;
+        const dy = heroNodes[i].y - heroNodes[j].y;
+        const distSq = dx*dx + dy*dy;
+        if (distSq < maxDist * maxDist) {
+          heroCtx.moveTo(heroNodes[i].x, heroNodes[i].y);
+          heroCtx.lineTo(heroNodes[j].x, heroNodes[j].y);
+        }
+      }
     }
+    // Fade out edges slightly as we zoom out so it looks cleaner
+    const edgeAlpha = Math.min(0.2, 0.05 * zoomScale);
+    heroCtx.strokeStyle = `rgba(79, 156, 247, ${edgeAlpha})`;
+    heroCtx.lineWidth = 0.5;
+    heroCtx.stroke();
+
+    // Draw nodes
+    heroCtx.fillStyle = 'rgba(79, 156, 247, 0.6)';
+    heroCtx.beginPath();
+    for (const n of heroNodes) {
+      // Draw nodes smaller as we zoom out so they don't become massive blobs
+      heroCtx.moveTo(n.x, n.y);
+      heroCtx.arc(n.x, n.y, 1.5 / Math.max(1, zoomScale * 0.5), 0, Math.PI * 2);
+    }
+    heroCtx.fill();
+
+    heroCtx.restore();
   }
 
   animateHero();

@@ -192,7 +192,7 @@ export const SECTIONS = [
       "This is the fundamental problem of entropy in communication. A message passed through ten nodes will rarely resemble the original. To combat this, networks require redundancy, error correction, and reliable storage.",
       "Without these mechanisms, the organism's shared knowledge degrades into noise."
     ],
-    insight: 'Redundancy is not inefficiency; it is the only defense against entropy.',
+    insight: 'The universe naturally tends toward chaos.',
     vizHint: 'Send a message across the network. Watch as the packet travels and accumulates distortion over multiple hops.',
     controls: [
       { id: 'send-message', type: 'button', label: 'Send Message' },

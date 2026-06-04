@@ -56,15 +56,14 @@ export function initAlignment(canvas, controls) {
     if (controls['align-goals']) {
       controls['align-goals'].addEventListener('click', () => {
         isAligned = true;
-        // restart alpha to keep it active
-        engine.getSimulation().alphaTarget(0.3).restart();
+        engine.getSimulation().alpha(0.5).restart();
       });
     }
 
     if (controls['scramble-goals']) {
       controls['scramble-goals'].addEventListener('click', () => {
         isAligned = false;
-        engine.getSimulation().alphaTarget(0.3).restart();
+        engine.getSimulation().alpha(0.5).restart();
       });
     }
   };

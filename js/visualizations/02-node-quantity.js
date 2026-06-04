@@ -59,8 +59,9 @@ export function initNodeQuantity(canvas, controls) {
         const sim = engine.getSimulation();
         sim.force('charge').strength(-100 + (value * 50));
         
-        engine.rebuildSimulation();
-        engine.getSimulation().alpha(0.5).restart();
+        sim.nodes(nodes);
+        sim.force('link').links(links);
+        sim.alpha(0.3).restart();
       });
     }
   };

@@ -470,6 +470,17 @@ document.addEventListener('DOMContentLoaded', () => {
         audioBtn.classList.remove('playing');
       }
     });
+
+    // Auto-start audio on first user interaction with the page
+    const startAudioOnInteract = () => {
+      if (!isPlaying) {
+        audioBtn.click();
+      }
+      document.removeEventListener('mousedown', startAudioOnInteract);
+      document.removeEventListener('keydown', startAudioOnInteract);
+    };
+    document.addEventListener('mousedown', startAudioOnInteract);
+    document.addEventListener('keydown', startAudioOnInteract);
   }
 
   // Interactive UI Sounds

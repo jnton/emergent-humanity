@@ -23,9 +23,9 @@ export const SECTIONS = [
     title: 'Node Limits & Bottlenecks',
     subtitle: 'The boundaries of the biological hardware.',
     body: [
-      'While a single node contains a universe of information, its processing power has hard physical and cognitive bottlenecks. The biological brain is incredibly plastic—it can train, adapt, and highly specialize in specific tasks even into adulthood.',
+      'While a single node contains a universe of information, its processing power has hard physical and cognitive bottlenecks. For example, we have limited memory and limited information processing abilities. The biological brain is incredibly plastic—it can train, adapt, and highly specialize in specific tasks even into adulthood.',
       'Historically, we have improved these nodes by optimizing environmental factors: education, mental health, and nutrition allow a node to reach its maximum potential and specialize deeply.',
-      'But even with perfect environmental optimization and extreme specialization, we eventually hit the hard genetic limits of the biological hardware. No single node can hold everything. To process reality at scale, the node must connect.'
+      'Even with perfect environmental optimization and extreme specialization, we eventually hit the hard genetic limits of the biological hardware. No single node can hold or process everything. To process reality at scale, the node must connect.'
     ],
     insight: 'Environmental optimization eventually hits the ceiling of genetic limits.',
     vizHint: 'Click to optimize nodes. Watch them reach their maximum possible capacity before hitting the genetic limit.',

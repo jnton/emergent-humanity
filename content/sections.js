@@ -61,6 +61,7 @@ export const SECTIONS = [
     insight: 'The loss of a node is a tragedy for the local cluster, but a rounding error for the organism.',
     vizHint: 'Click a node to flip its state from 1 to 0. Watch the network absorb the loss.',
     controls: [
+      { id: 'highlight-affected', type: 'switch', label: 'Highlight Affected Nodes', value: false },
       { id: 'remove-node', type: 'button', label: 'Remove Node' },
       { id: 'reset-network', type: 'button', label: 'Reset', variant: 'outline' }
     ]

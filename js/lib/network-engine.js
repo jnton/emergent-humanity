@@ -172,6 +172,8 @@ export function createNetworkEngine(canvas, opts = {}) {
       }).strength(d => (d.type === 'weak' ? 0.2 : 1.0) / Math.max(1, Math.min(d.source.degree || 1, d.target.degree || 1))))
       .force('charge', d3.forceManyBody().strength(config.chargeStrength))
       .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('x', d3.forceX(width / 2).strength(0.015))
+      .force('y', d3.forceY(height / 2).strength(0.015))
       .force('collision', d3.forceCollide().radius(d => d.radius + 2))
       .velocityDecay(0.4);
 

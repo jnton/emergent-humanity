@@ -9,6 +9,16 @@ export function initEmergentOrganism(canvas, controls) {
     linkDistance: 60,
     chargeStrength: -80,
     onTick: () => {
+      const nodes = engine.getNodes();
+      
+      // Decay signal so affected nodes glow briefly then return to normal
+      for (const node of nodes) {
+        if (node.signal > 0) {
+          node.signal -= 0.015;
+          if (node.signal < 0) node.signal = 0;
+        }
+      }
+
       if (rippleCenter) {
         const ctx = canvas.getContext('2d');
         ctx.beginPath();
@@ -27,30 +37,45 @@ export function initEmergentOrganism(canvas, controls) {
   const defaultInit = engine.init.bind(engine);
   engine.init = function() {
     defaultInit();
-
-    if (controls['remove-node']) {
-      controls['remove-node'].addEventListener('click', () => {
-        const nodes = engine.getNodes().filter(n => n.state === 1);
-        if (nodes.length === 0) return;
-        
-        // Pick a random node
-        const index = Math.floor(Math.random() * nodes.length);
-        const node = nodes[index];
-        rippleCenter = { x: node.x, y: node.y };
-        rippleRadius = 0;
-
-        // "Flip to 0" (remove node and its links)
-        engine.removeNode(node);
-        engine.rebuildSimulation();
-      });
-    }
-
-    if (controls['reset-network']) {
-      controls['reset-network'].addEventListener('click', () => {
-        engine.reset(80);
-      });
-    }
   };
+
+  // Bind controls only ONCE when the visualization is created,
+  // not every time it is re-initialized by scrolling.
+  if (controls['remove-node']) {
+    controls['remove-node'].addEventListener('click', () => {
+      const activeNodes = engine.getNodes().filter(n => n.state === 1);
+      if (activeNodes.length === 0) return;
+      
+      // Pick a random node
+      const index = Math.floor(Math.random() * activeNodes.length);
+      const node = activeNodes[index];
+      rippleCenter = { x: node.x, y: node.y };
+      rippleRadius = 0;
+
+      // "Flip to 0" (remove node and its links)
+      const affectedIds = engine.removeNode(node);
+      
+      // Check if highlight toggle is on
+      const highlightToggle = controls['highlight-affected'];
+      if (highlightToggle && highlightToggle.checked) {
+        const allNodes = engine.getNodes();
+        for (const id of affectedIds) {
+           if (allNodes[id]) {
+             allNodes[id].signal = 1;
+             allNodes[id].signalType = 'noise'; // Glow red
+           }
+        }
+      }
+
+      engine.rebuildSimulation();
+    });
+  }
+
+  if (controls['reset-network']) {
+    controls['reset-network'].addEventListener('click', () => {
+      engine.reset(80);
+    });
+  }
 
   engine.init();
   return engine;

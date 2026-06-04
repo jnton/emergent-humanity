@@ -33,11 +33,6 @@ export function initConnectionQuantity(canvas, controls) {
             if (Math.random() > 0.4) {
               links.push({ source: i, target: j, type: 'strong', weight: 1.0, active: true });
             }
-          } else {
-            // Very rare global links
-            if (Math.random() > 0.99) {
-              links.push({ source: i, target: j, type: 'weak', weight: 1.0, active: true });
-            }
           }
         }
       }

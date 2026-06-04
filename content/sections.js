@@ -106,7 +106,7 @@ export const SECTIONS = [
     body: [
       'A network of brilliant, healthy nodes still fails if they cannot talk to each other. The next axis is the Number of Connections.',
       'For most of history, geography strictly limited the edges in our graph. Then came the printing press, the telegraph, and finally, the Internet. We solved the wiring problem. We created a graph where almost any node can connect to any other node instantly.',
-      'But hyper-connectivity introduced a new bottleneck: the biological node was never designed to process 5,000 active edges simultaneously.'
+      'But this extreme connectivity created a new problem: the human mind is simply not built to handle thousands of relationships at once.'
     ],
     insight: 'We successfully wired the entire globe. What could possibly be the next innovation?',
     vizHint: 'Click to simulate the invention of the internet, massively increasing the number of active edges.',

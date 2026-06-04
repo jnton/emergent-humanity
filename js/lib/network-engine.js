@@ -167,6 +167,7 @@ export function createNetworkEngine(canvas, opts = {}) {
       .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
         if (d.type === 'strong') return config.linkDistance * 0.5;
         if (d.type === 'bridge') return config.linkDistance * 2;
+        if (d.type === 'weak') return config.linkDistance * 3;
         return config.linkDistance;
       }).strength(d => (d.type === 'weak' ? 0.2 : 1.0) / Math.max(1, Math.min(d.source.degree || 1, d.target.degree || 1))))
       .force('charge', d3.forceManyBody().strength(config.chargeStrength))

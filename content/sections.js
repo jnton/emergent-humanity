@@ -6,15 +6,15 @@ export const SECTIONS = [
   {
     id: 'node-capacity',
     number: '01',
-    title: 'Singular Node Information',
+    title: 'The Human Node',
     subtitle: 'The depth of a single point.',
     body: [
-      'Before we even draw a single edge, we must look at the node itself. A human is not an empty point. It is a massive, compressed database.',
-      'A single node contains billions of years of historical biological data coded in DNA. It contains decades of subjective experience, thoughts, memories, and complex models of reality.',
-      'The complexity of a single node is staggering. Even in isolation, it is an entire universe of information.'
+      'Before we draw a single connection, we must look at the node itself. A human being is not a static data point. We are dynamic, living systems, carrying massive amounts of information that varies across every physical part of our bodies and changes from one moment to the next.',
+      'Our physical bodies are shaped by deep biological history and continuous physical changes. On top of that, we hold decades of subjective experience, memories, thoughts, and our own unique views of reality. Even in isolation, a single person is an entire universe of information.',
+      'But to understand humanity at a large scale, we have to simplify. For this network model, we take this vast, ever-changing universe of human complexity and reduce it down to a single point: a Node.'
     ],
-    insight: 'The graph is built from nodes that are themselves complex universes.',
-    vizHint: 'Watch the point expand to reveal its massive internal information density.',
+    insight: 'The node is a massive oversimplification of a human, necessary to see the larger structure.',
+    vizHint: 'Watch the human form abstract down into a single mathematical point.',
     controls: []
   },
   {

@@ -46,23 +46,70 @@ export function initConnectionQuantity(canvas, controls) {
 
     buildLocalNetwork();
 
+    let deployInterval;
+
     if (controls['deploy-internet']) {
       controls['deploy-internet'].addEventListener('click', () => {
-        // Add 100 random global connections
-        for (let i = 0; i < 150; i++) {
-          const s = Math.floor(Math.random() * nodes.length);
-          const t = Math.floor(Math.random() * nodes.length);
-          if (s !== t && !links.find(l => (l.source.id === s && l.target.id === t) || (l.target.id === s && l.source.id === t))) {
-            links.push({ source: nodes[s], target: nodes[t], type: 'default', weight: 0.3, active: true });
+        if (deployInterval) clearInterval(deployInterval);
+        
+        let count = 0;
+        const totalConnections = 150;
+        const batchSize = 3;
+        
+        deployInterval = setInterval(() => {
+          if (count >= totalConnections) {
+            clearInterval(deployInterval);
+            return;
           }
-        }
-        engine.rebuildSimulation();
-        engine.getSimulation().alpha(1).restart();
+          
+          let addedInBatch = 0;
+          let attempts = 0;
+          
+          while (addedInBatch < batchSize && count < totalConnections && attempts < 20) {
+            attempts++;
+            const s = Math.floor(Math.random() * nodes.length);
+            const t = Math.floor(Math.random() * nodes.length);
+            
+            // Check if link exists
+            const exists = links.find(l => 
+              (l.source === s && l.target === t) || 
+              (l.target === s && l.source === t) ||
+              (l.source.id === s && l.target.id === t) || 
+              (l.target.id === s && l.source.id === t)
+            );
+            
+            if (s !== t && !exists) {
+              links.push({ source: nodes[s], target: nodes[t], type: 'weak', weight: 0.3, active: true });
+              count++;
+              addedInBatch++;
+              
+              // Highlight newly connected nodes
+              nodes[s].signal = 1.0;
+              nodes[s].signalType = 'signal';
+              nodes[t].signal = 1.0;
+              nodes[t].signalType = 'signal';
+              
+              // Fade out signal
+              setTimeout(() => {
+                if (nodes[s]) nodes[s].signal = Math.max(0, nodes[s].signal - 0.5);
+                if (nodes[t]) nodes[t].signal = Math.max(0, nodes[t].signal - 0.5);
+                if (nodes[s] && nodes[s].signal <= 0) nodes[s].signalType = null;
+                if (nodes[t] && nodes[t].signal <= 0) nodes[t].signalType = null;
+              }, 400);
+            }
+          }
+          
+          engine.rebuildSimulation();
+          engine.getSimulation().alpha(0.3).restart();
+        }, 40);
       });
     }
 
     if (controls['reset-connections']) {
-      controls['reset-connections'].addEventListener('click', buildLocalNetwork);
+      controls['reset-connections'].addEventListener('click', () => {
+        if (deployInterval) clearInterval(deployInterval);
+        buildLocalNetwork();
+      });
     }
   };
 

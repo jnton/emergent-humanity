@@ -290,6 +290,10 @@ body {
   line-height: 1.6;
 }
 
+.viz-stats:empty {
+  display: none;
+}
+
 .viz-stats span {
   color: var(--accent);
 }

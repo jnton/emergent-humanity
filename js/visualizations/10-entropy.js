@@ -1,23 +1,96 @@
 import { createNetworkEngine } from '../lib/network-engine.js';
 
 export function initEntropy(canvas, controls) {
-  let entropyActive = false;
-  let entropyInterval;
-
+  let redundancyActive = false;
+  let packets = []; // { sourceId, targetId, currentId, progress: 0-1, distortion: 0-1, path: [], hopIndex: 0 }
+  
   const engine = createNetworkEngine(canvas, {
-    nodeCount: 100,
-    linkDistance: 40,
-    chargeStrength: -30,
+    nodeCount: 60,
+    linkDistance: 45,
+    chargeStrength: -40,
     onTick: () => {
       const ctx = canvas.getContext('2d');
-      const nodes = engine.getNodes();
-      
-      // Optional: draw some visual indicator of entropy (like static or decay particles)
-      if (entropyActive) {
-        ctx.save();
-        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.05})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+      try {
+        const nodes = engine.getNodes();
+        const links = engine.getLinks();
+
+        // Render packets
+        for (let i = packets.length - 1; i >= 0; i--) {
+          const p = packets[i];
+          const currentNode = nodes.find(n => n.id === p.path[p.hopIndex]);
+          const nextNode = nodes.find(n => n.id === p.path[p.hopIndex + 1]);
+
+          if (!currentNode || !nextNode) {
+             packets.splice(i, 1);
+             continue;
+          }
+
+          // Move packet
+          p.progress += 0.03; // speed
+
+          // If reached next node
+          if (p.progress >= 1) {
+            p.hopIndex++;
+            p.progress = 0;
+            // Increase distortion per hop (redundancy lowers distortion slightly by "error correcting" or just being robust)
+            // But we want to show entropy, so it always distorts.
+            // If redundancy is active, we can say the network auto-corrects slightly, but let's just let it distort and let the user see that at least one arrives less distorted.
+            p.distortion += (0.15 + Math.random() * 0.15); 
+            if (p.distortion > 1) p.distortion = 1;
+            
+            // If reached target
+            if (p.hopIndex >= p.path.length - 1) {
+               const targetNode = nodes.find(n => n.id === p.path[p.path.length - 1]);
+               if (targetNode) {
+                  targetNode.pulse = 1;
+                  targetNode.lastDistortion = p.distortion;
+               }
+               packets.splice(i, 1);
+               continue;
+            }
+          }
+
+          // Calculate interpolated position
+          const x = currentNode.x + (nextNode.x - currentNode.x) * p.progress;
+          const y = currentNode.y + (nextNode.y - currentNode.y) * p.progress;
+
+          // Draw packet
+          ctx.beginPath();
+          
+          // Jitter based on distortion
+          const jitterX = (Math.random() - 0.5) * 8 * p.distortion;
+          const jitterY = (Math.random() - 0.5) * 8 * p.distortion;
+          
+          ctx.arc(x + jitterX, y + jitterY, 4 + p.distortion * 2, 0, Math.PI * 2);
+          
+          // Color based on distortion: pristine = cyan, corrupted = red
+          const r = Math.floor(Math.min(255, p.distortion * 255 * 2));
+          const g = Math.floor(Math.max(0, 255 - p.distortion * 255));
+          const b = Math.floor(Math.max(0, 255 - p.distortion * 255));
+          
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fill();
+        }
+
+        // Draw target node pulses
+        nodes.forEach(n => {
+           if (n.pulse > 0) {
+              n.pulse -= 0.02;
+              ctx.beginPath();
+              ctx.arc(n.x, n.y, n.radius + (1 - n.pulse) * 30, 0, Math.PI * 2);
+              
+              const r = Math.floor(Math.min(255, (n.lastDistortion || 0) * 255 * 2));
+              const g = Math.floor(Math.max(0, 255 - (n.lastDistortion || 0) * 255));
+              const b = Math.floor(Math.max(0, 255 - (n.lastDistortion || 0) * 255));
+              
+              ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${n.pulse})`;
+              ctx.lineWidth = 2;
+              ctx.stroke();
+           }
+        });
+        
+      } catch (err) {
+        console.error(err);
       }
     }
   });
@@ -29,133 +102,105 @@ export function initEntropy(canvas, controls) {
     const nodes = engine.getNodes();
     const links = engine.getLinks();
 
-    function setupPerfectOrganism() {
-      // Create a highly connected, perfect organism
-      nodes.length = 0;
-      links.length = 0;
-
-      for (let i = 0; i < 100; i++) {
-        nodes.push({
-          id: i,
-          state: 1,
-          quality: 1.0, // High quality
-          signal: 0,
-          radius: 4,
-          x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 400,
-          y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 400,
-          community: null,
-          strategy: null
+    function setupNetwork() {
+      try {
+        packets.length = 0;
+        nodes.forEach(n => {
+           n.pulse = 0;
+           n.lastDistortion = 0;
         });
-      }
-
-      // Strong, redundant connections
-      for (let i = 0; i < nodes.length; i++) {
-        const edges = 3 + Math.floor(Math.random() * 3); // 3-5 edges per node
-        for (let e = 0; e < edges; e++) {
-          const target = Math.floor(Math.random() * nodes.length);
-          if (target !== i) {
-            links.push({ source: nodes[i], target: nodes[target], type: 'default', weight: 1.0, active: true });
-          }
-        }
-      }
-
-      engine.rebuildSimulation();
-      engine.getSimulation().alpha(1).restart();
+      } catch (err) {}
     }
 
-    setupPerfectOrganism();
+    setupNetwork();
 
-    // Entropy Loop
-    function applyEntropy() {
-      if (!entropyActive) return;
+    function findPath(startId, endId, randomize) {
+       let queue = [[startId]];
+       let visited = new Set([startId]);
+       
+       while (queue.length > 0) {
+          let path = queue.shift();
+          let currentId = path[path.length - 1];
+          
+          if (currentId === endId) return path;
+          
+          let connected = links
+             .filter(l => {
+                 const sId = typeof l.source === 'object' ? l.source.id : l.source;
+                 const tId = typeof l.target === 'object' ? l.target.id : l.target;
+                 return sId === currentId || tId === currentId;
+             })
+             .map(l => {
+                 const sId = typeof l.source === 'object' ? l.source.id : l.source;
+                 const tId = typeof l.target === 'object' ? l.target.id : l.target;
+                 return sId === currentId ? tId : sId;
+             });
+             
+          if (randomize) connected.sort(() => Math.random() - 0.5);
+             
+          for (let nextId of connected) {
+             if (!visited.has(nextId)) {
+                visited.add(nextId);
+                queue.push([...path, nextId]);
+             }
+          }
+       }
+       return [startId, endId]; 
+    }
 
-      let changed = false;
-
-      // 1. Degrade Nodes (Quality decreases, they dim)
-      nodes.forEach(node => {
-        if (Math.random() < 0.1) { // 10% chance per tick to degrade
-          node.quality = Math.max(0.1, node.quality - 0.1);
-        }
+    if (controls['toggle-redundancy']) {
+      controls['toggle-redundancy'].addEventListener('change', (e) => {
+        redundancyActive = e.target.checked;
       });
+    }
 
-      // 2. Fray Edges (Links randomly break)
-      if (Math.random() < 0.3 && links.length > 0) { // 30% chance per tick to lose a link
-        const linkIndex = Math.floor(Math.random() * links.length);
-        links.splice(linkIndex, 1);
-        changed = true;
-      }
+    let cachedSourceId = null;
+    let cachedTargetId = null;
 
-      // 3. Node Death (Rarely, a node drops to 0 and dies)
-      if (Math.random() < 0.05 && nodes.length > 10) { // 5% chance per tick
-        const nodeIndex = Math.floor(Math.random() * nodes.length);
-        nodes.splice(nodeIndex, 1);
+    if (controls['send-message']) {
+      controls['send-message'].addEventListener('click', () => {
+        if (cachedSourceId === null) {
+            let maxDist = 0;
+            let sourceNode = nodes[0];
+            let targetNode = nodes[nodes.length - 1];
+
+            for (let i = 0; i < nodes.length; i++) {
+              for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[i].x - nodes[j].x;
+                const dy = nodes[i].y - nodes[j].y;
+                const dist = dx*dx + dy*dy;
+                if (dist > maxDist) {
+                  maxDist = dist;
+                  sourceNode = nodes[i];
+                  targetNode = nodes[j];
+                }
+              }
+            }
+            cachedSourceId = sourceNode.id;
+            cachedTargetId = targetNode.id;
+        }
         
-        // Remove associated links
-        for (let i = links.length - 1; i >= 0; i--) {
-          if (links[i].source.id === nodeIndex || links[i].target.id === nodeIndex) {
-            links.splice(i, 1);
-          }
+        const sourceNode = nodes.find(n => n.id === cachedSourceId);
+        const targetNode = nodes.find(n => n.id === cachedTargetId);
+        
+        if (!sourceNode || !targetNode) return;
+        
+        const numPackets = redundancyActive ? 5 : 1;
+        
+        // Light up source node
+        sourceNode.pulse = 1;
+        sourceNode.lastDistortion = 0;
+        
+        for (let i=0; i<numPackets; i++) {
+           setTimeout(() => {
+              packets.push({
+                 path: findPath(sourceNode.id, targetNode.id, true), // randomize slightly to get alternate paths
+                 hopIndex: 0,
+                 progress: 0,
+                 distortion: 0
+              });
+           }, i * 150);
         }
-        changed = true;
-      }
-
-      if (changed) {
-        engine.rebuildSimulation();
-        engine.getSimulation().alpha(0.1).restart();
-      }
-    }
-
-    // Controls
-    if (controls['toggle-entropy']) {
-      controls['toggle-entropy'].addEventListener('change', (e) => {
-        entropyActive = e.target.checked;
-        if (entropyActive) {
-          entropyInterval = setInterval(applyEntropy, 200); // Fast entropy
-        } else {
-          clearInterval(entropyInterval);
-        }
-      });
-    }
-
-    if (controls['inject-energy']) {
-      controls['inject-energy'].addEventListener('click', () => {
-        // Inject Energy: Heal nodes, rebuild lost edges
-        nodes.forEach(node => {
-          node.quality = Math.min(1.0, node.quality + 0.5); // Boost quality
-        });
-
-        // Add back some nodes if we lost them
-        while (nodes.length < 100) {
-          const newId = nodes.length;
-          nodes.push({
-            id: newId,
-            state: 1,
-            quality: 1.0,
-            signal: 0,
-            radius: 4,
-            x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 200,
-            y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 200,
-            community: null,
-            strategy: null
-          });
-        }
-
-        // Rebuild edges randomly to connect the graph
-        for (let i = 0; i < 20; i++) { // Add 20 random edges
-          const s = Math.floor(Math.random() * nodes.length);
-          const t = Math.floor(Math.random() * nodes.length);
-          if (s !== t) {
-            links.push({ source: nodes[s], target: nodes[t], type: 'default', weight: 1.0, active: true });
-          }
-        }
-
-        // Visual flash of energy
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(79, 156, 247, 0.4)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        engine.rebuildSimulation();
-        engine.getSimulation().alpha(0.8).restart();
       });
     }
 

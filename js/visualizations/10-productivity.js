@@ -43,32 +43,55 @@ export function initProductivity(canvas, controls) {
 
     function setBaseline() {
       optimized = false;
-      nodes.forEach(n => {
-        n.quality = 0.4;
-        n.radius = 4;
-        n.state = 1; // 1 = alive/baseline
-      });
-      links.forEach(l => {
-        l.weight = 0.5;
-        l.type = 'default';
-      });
+      nodes.length = 0;
+      links.length = 0;
+      
+      // Start with a small, weak network
+      for (let i = 0; i < 30; i++) {
+        nodes.push({ id: i, state: 1, quality: 0.4, signal: 0, radius: 4, degree: 0 });
+      }
+      for (let i = 0; i < 30; i++) {
+        const target = Math.floor(Math.random() * 30);
+        if (i !== target) {
+          links.push({ source: i, target: target, type: 'default', weight: 0.5 });
+          nodes[i].degree++;
+          nodes[target].degree++;
+        }
+      }
+      
+      engine.updateConfig?.({ chargeStrength: -50, linkDistance: 40 });
       engine.rebuildSimulation();
       engine.getSimulation().alpha(1).restart();
     }
 
     function setOptimized() {
       optimized = true;
-      nodes.forEach(n => {
-        n.quality = 1.0;
-        n.radius = 6;
-        n.state = 1; 
-      });
-      links.forEach(l => {
-        l.weight = 1.0;
-        l.type = 'strong';
-      });
+      // Massive explosion of nodes
+      for (let i = nodes.length; i < 200; i++) {
+        nodes.push({ 
+          id: i, state: 1, quality: 1.0, signal: 1.0, radius: 6, degree: 0,
+          x: canvas.clientWidth/2 + (Math.random()-0.5)*10,
+          y: canvas.clientHeight/2 + (Math.random()-0.5)*10
+        });
+      }
+      // Hyper-dense connections
+      for (let i = 0; i < 200; i++) {
+        for (let j = 0; j < 3; j++) {
+          const target = Math.floor(Math.random() * 200);
+          if (i !== target) {
+            links.push({ source: nodes[i], target: nodes[target], type: 'strong', weight: 1.0 });
+          }
+        }
+        nodes[i].quality = 1.0;
+        nodes[i].radius = 6;
+      }
+      
+      // Tight, boiling core
+      const sim = engine.getSimulation();
+      sim.force('charge').strength(-30);
+      sim.force('link').distance(20);
       engine.rebuildSimulation();
-      engine.getSimulation().alpha(1).restart();
+      sim.alphaTarget(0.3).restart(); // Keep it boiling indefinitely
     }
 
     setBaseline();

@@ -306,7 +306,7 @@ export function createNetworkEngine(canvas, opts = {}) {
         ctx.fillStyle = colors.nodeSuccess;
       } else if (node.strategy === 'defector') {
         ctx.fillStyle = colors.nodeDanger;
-      } else if (node.community !== null) {
+      } else if (node.community != null) {
         // Use community color
         const colorIdx = node.community % colors.communities.length;
         ctx.fillStyle = colors.communities[colorIdx];

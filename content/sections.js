@@ -121,11 +121,11 @@ export const SECTIONS = [
     title: 'Connection Quality',
     subtitle: 'Signal, noise, and information flow.',
     body: [
-      'If we have the nodes and the edges, why does the network still fail? Because of the data flowing through the edges. In graph theory, edges transmit signals. If a channel is flooded with random noise, the signal is completely lost.',
+      'If we have the people and the connections, the next crucial factor is the quality of the data flowing between them. When a channel is flooded with random noise, the actual signal is completely lost.',
       'Applied to humans, this is the modern internet. We built infinite connections, but the algorithms optimize for engagement (noise) rather than truth (signal). Disinformation propagates through the network far faster than actual knowledge.',
       'To fix the organism, we have to filter the noise. We need to prioritize high-value edges and ensure that true, useful signals can travel without being drowned out.'
     ],
-    insight: 'The ultimate bottleneck of modern humanity is no longer physical; it is informational.',
+    insight: 'A network flooded with noise cannot function efficiently, no matter how large it grows.',
     vizHint: 'Adjust the algorithm to favor Signal or Noise. Watch how noise physically degrades the network.',
     controls: [
       { id: 'algorithm-slider', type: 'slider', label: 'Signal vs Noise', min: '0', max: '1', step: '0.1', value: '0.2' }
@@ -185,18 +185,18 @@ export const SECTIONS = [
   {
     id: 'entropy',
     number: '12',
-    title: 'Entropy & Time',
-    subtitle: 'The constant battle against decay.',
+    title: 'Entropy & Information Decay',
+    subtitle: 'The distortion of knowledge over distance.',
     body: [
-      'Graph structures do not exist in a vacuum; they exist in Time. And time introduces the fundamental enemy of all complex networks: Entropy.',
-      'In information theory and physics, entropy is the measure of disorder and uncertainty. The universe naturally tends toward chaos. Without effort, edges fray, nodes degrade, and structural memory dissolves. The organism must constantly expend energy just to maintain its current state.',
-      'This is why the network must continuously adapt. A static organism is a dying organism. To survive, the human graph must generate information and structure faster than time and entropy can destroy it.'
+      "When information travels across a network, it doesn't arrive perfectly. Each hop introduces a chance for distortion, misinterpretation, or loss.",
+      "This is the fundamental problem of entropy in communication. A message passed through ten nodes will rarely resemble the original. To combat this, networks require redundancy, error correction, and reliable storage.",
+      "Without these mechanisms, the organism's shared knowledge degrades into noise."
     ],
-    insight: 'The fundamental purpose of the Emergent Organism is to locally reverse entropy.',
-    vizHint: 'Watch entropy slowly tear the network apart. Click to inject energy and rebuild the structure.',
+    insight: 'Redundancy is not inefficiency; it is the only defense against entropy.',
+    vizHint: 'Send a message across the network. Watch as the packet travels and accumulates distortion over multiple hops.',
     controls: [
-      { id: 'inject-energy', type: 'button', label: 'Inject Energy' },
-      { id: 'toggle-entropy', type: 'switch', label: 'Enable Time' }
+      { id: 'send-message', type: 'button', label: 'Send Message' },
+      { id: 'toggle-redundancy', type: 'switch', label: 'Enable Redundancy' }
     ]
   },
   {
@@ -205,9 +205,9 @@ export const SECTIONS = [
     title: 'Productivity & Shared Knowledge',
     subtitle: 'The ultimate output of the organism.',
     body: [
-      'When you optimize Node Quantity, Node Quality, Connection Quantity, and Connection Quality—and when the organism is cohesive, aligned, and capable of fighting entropy—what is the result?',
+      'When you optimize Node Quantity, Node Quality, Connection Quantity, and Connection Quality—and when the organism is cohesive, aligned, and capable of fighting decay—what is the result?',
       'Massive, compounding collective intelligence. The organism computes solutions to problems that no individual node could even comprehend. Science accelerates. Poverty collapses. Art flourishes.',
-      'This is not an abstract theory. This is the observable mechanism of human progress over the last ten thousand years, mathematically mapped to a graph.'
+      'This is not an abstract concept. This is the observable mechanism of human progress over the last ten thousand years.'
     ],
     insight: 'Shared knowledge is the emergent consciousness of the organism.',
     vizHint: 'Watch the organism achieve high productivity. Clusters of high-quality nodes with strong edges generate intense bursts of shared knowledge.',

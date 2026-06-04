@@ -532,6 +532,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('input', (e) => {
     if (e.target.type === 'range') {
       window.playInteractionSound('slider');
+      
+      // Update label
+      const label = e.target.parentElement?.querySelector('.slider-value');
+      if (label) {
+        const value = parseFloat(e.target.value);
+        label.textContent = `${Math.round(value * 100)}%`;
+      }
     }
   });
 });

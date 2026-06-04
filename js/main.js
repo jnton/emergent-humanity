@@ -121,7 +121,7 @@ function buildSection(section) {
         const wrapper = document.createElement('div');
         wrapper.className = 'slider-container';
         wrapper.innerHTML = `
-          <span class="slider-label">${ctrl.label}</span>
+          <label class="slider-label" for="ctrl-${ctrl.id}">${ctrl.label}</label>
           <input type="range" id="ctrl-${ctrl.id}"
                  min="${ctrl.min}" max="${ctrl.max}"
                  step="${ctrl.step}" value="${ctrl.value}">

@@ -679,3 +679,41 @@ input[type="range"]::-moz-range-thumb {
 .scroll-container::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* ---------- Audio Controls ---------- */
+.audio-controls {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 1000;
+}
+
+.audio-btn {
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.audio-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.audio-btn.playing {
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(79, 156, 247, 0.3);
+}

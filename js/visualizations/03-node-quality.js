@@ -18,8 +18,8 @@ export function initNodeQuality(canvas, controls) {
       n.radius = 4;
     });
 
-    if (controls['educate-nodes']) {
-      controls['educate-nodes'].addEventListener('click', () => {
+    if (controls['optimize-nodes']) {
+      controls['optimize-nodes'].addEventListener('click', () => {
         // Find an uneducated node and educate it, plus some neighbors
         const uneducated = nodes.filter(n => n.quality < 0.9);
         if (uneducated.length > 0) {
@@ -34,8 +34,8 @@ export function initNodeQuality(canvas, controls) {
       });
     }
 
-    if (controls['reset-quality']) {
-      controls['reset-quality'].addEventListener('click', () => {
+    if (controls['reset-limits']) {
+      controls['reset-limits'].addEventListener('click', () => {
         nodes.forEach(n => {
           n.quality = 0.2;
           n.radius = 4;

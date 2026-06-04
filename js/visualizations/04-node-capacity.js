@@ -18,28 +18,34 @@ export function initNodeCapacity(canvas, controls) {
 
       if (isInspecting) {
         // Draw the massive internal universe of the node
-        centralNode.radius += (80 - centralNode.radius) * 0.1; // Expand smoothly
+        centralNode.radius += (120 - centralNode.radius) * 0.01; // Expand VERY smoothly and elegantly
 
         ctx.save();
         
         // Background glow
         ctx.beginPath();
-        ctx.arc(centralNode.x, centralNode.y, centralNode.radius + 20, 0, Math.PI * 2);
+        ctx.arc(centralNode.x, centralNode.y, centralNode.radius + 30, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(
           centralNode.x, centralNode.y, 0,
-          centralNode.x, centralNode.y, centralNode.radius + 20
+          centralNode.x, centralNode.y, centralNode.radius + 30
         );
-        gradient.addColorStop(0, 'rgba(79, 156, 247, 0.2)');
+        gradient.addColorStop(0, 'rgba(79, 156, 247, 0.15)');
         gradient.addColorStop(1, 'rgba(79, 156, 247, 0)');
         ctx.fillStyle = gradient;
         ctx.fill();
+
+        // Calculate opacity based on expansion progress
+        const progress = Math.max(0, (centralNode.radius - 4) / 116);
+        ctx.globalAlpha = progress;
 
         // Draw internal data points (DNA, memories, thoughts)
         internalData.forEach(p => {
           // Orbit mechanics
           p.angle += p.speed;
-          const x = centralNode.x + Math.cos(p.angle) * p.dist;
-          const y = centralNode.y + Math.sin(p.angle) * p.dist;
+          // Scale distance based on expansion progress
+          const currentDist = p.dist * progress;
+          const x = centralNode.x + Math.cos(p.angle) * currentDist;
+          const y = centralNode.y + Math.sin(p.angle) * currentDist;
 
           ctx.beginPath();
           ctx.arc(x, y, p.size, 0, Math.PI * 2);
@@ -47,7 +53,7 @@ export function initNodeCapacity(canvas, controls) {
           ctx.fill();
           
           // Connect some internal points to simulate neural pathways/DNA strands
-          if (Math.random() < 0.05) {
+          if (Math.random() < 0.03) {
             ctx.beginPath();
             ctx.moveTo(x, y);
             ctx.lineTo(centralNode.x, centralNode.y);
@@ -59,7 +65,7 @@ export function initNodeCapacity(canvas, controls) {
         ctx.restore();
       } else {
         // Normal state
-        centralNode.radius += (4 - centralNode.radius) * 0.2; // Shrink smoothly
+        centralNode.radius += (4 - centralNode.radius) * 0.05; // Shrink smoothly
       }
     }
   });
@@ -90,17 +96,10 @@ export function initNodeCapacity(canvas, controls) {
       });
     }
 
-    if (controls['inspect-node']) {
-      controls['inspect-node'].addEventListener('click', () => {
-        isInspecting = true;
-      });
-    }
-
-    if (controls['collapse-node']) {
-      controls['collapse-node'].addEventListener('click', () => {
-        isInspecting = false;
-      });
-    }
+    // Automatically expand the node after 1 second to reveal its complexity
+    setTimeout(() => {
+      isInspecting = true;
+    }, 1000);
 
   };
 

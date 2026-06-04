@@ -4,28 +4,59 @@
 
 export const SECTIONS = [
   {
-    id: 'intro',
+    id: 'node-capacity',
     number: '01',
-    title: 'The Great Organism',
-    subtitle: 'From single humans to an emergent entity.',
+    title: 'Singular Node Information',
+    subtitle: 'The depth of a single point.',
     body: [
-      'I currently visualize humanity as a vast network. The points are humans. A single human is just a single point, isolated in space.',
-      'But when these single points begin to connect, something incredible happens. Information flows, structures form, and the network takes on a life of its own.',
+      'Before we even draw a single edge, we must look at the node itself. A human is not an empty point. It is a massive, compressed database.',
+      'A single node contains billions of years of historical biological data coded in DNA. It contains decades of subjective experience, thoughts, memories, and complex models of reality.',
+      'The complexity of a single node is staggering. Even in isolation, it is an entire universe of information.'
+    ],
+    insight: 'The graph is built from nodes that are themselves complex universes.',
+    vizHint: 'Watch the point expand to reveal its massive internal information density.',
+    controls: []
+  },
+  {
+    id: 'node-limits',
+    number: '02',
+    title: 'Node Limits & Bottlenecks',
+    subtitle: 'The boundaries of the biological hardware.',
+    body: [
+      'While a single node contains a universe of information, its processing power has hard physical and cognitive bottlenecks. The biological brain is incredibly plastic—it can train, adapt, and highly specialize in specific tasks even into adulthood.',
+      'Historically, we have improved these nodes by optimizing environmental factors: education, mental health, and nutrition allow a node to reach its maximum potential and specialize deeply.',
+      'But even with perfect environmental optimization and extreme specialization, we eventually hit the hard genetic limits of the biological hardware. No single node can hold everything. To process reality at scale, the node must connect.'
+    ],
+    insight: 'Environmental optimization eventually hits the ceiling of genetic limits.',
+    vizHint: 'Click to optimize nodes. Watch them reach their maximum possible capacity before hitting the genetic limit.',
+    controls: [
+      { id: 'optimize-nodes', type: 'button', label: 'Optimize Environment' },
+      { id: 'reset-limits', type: 'button', label: 'Reset', variant: 'outline' }
+    ]
+  },
+  {
+    id: 'intro',
+    number: '03',
+    title: 'The Great Organism',
+    subtitle: 'Just one point in many.',
+    body: [
+      'But no matter how complex the individual node is, you are just a single point in space. A mere 1 or a 0 in the grand scheme.',
+      'When these single points begin to connect, something incredible happens. Information flows, structures form, and the network takes on a life of its own.',
       'The true entity is the network itself. Humanity is a larger organism, an emerging one, just like cells compose a human body. We have to understand it to make it grow and get better.'
     ],
     insight: 'This project is about constructing my view of the world: exploring how to improve the Emergent Organism.',
-    vizHint: 'Click to spark connections. Watch the isolated humans merge into the great Humanity.',
+    vizHint: 'Watch the isolated node get swallowed by the immense scale of the organism.',
     controls: []
   },
   {
     id: 'emergent-organism',
-    number: '02',
+    number: '04',
     title: 'One Node Goes Dark',
     subtitle: 'What happens when a piece of the network disappears.',
     body: [
       'A human is a node, essentially a state that can flip from 1 to 0.',
       'If a point suddenly disappears—a 1 flipping to a 0—it doesn\'t affect the net that much. Only the nearest points feel the loss for a limited time. Obviously even a small change has a huge impact in the long term, but the immediate structural loss is minimal.',
-      'The organism easily routes around the dead node. This is the fundamental resilience of the human network.'
+      'The organism easily routes around the dead node. This is the fundamental resilience of a scaled human network.'
     ],
     insight: 'The loss of a node is a tragedy for the local cluster, but a rounding error for the organism.',
     vizHint: 'Click a node to flip its state from 1 to 0. Watch the network absorb the loss.',
@@ -35,13 +66,29 @@ export const SECTIONS = [
     ]
   },
   {
+    id: 'illusion-of-significance',
+    number: '05',
+    title: 'The Illusion of Significance',
+    subtitle: 'The inevitability of cascading consequences.',
+    body: [
+      'It is true that in a highly connected system, a single node disappearing or shifting slightly will eventually alter the entire future state of the network.',
+      'We often use this fact to comfort ourselves, claiming it proves that every individual node is deeply important and holds inherent meaning within the grand design.',
+      'But this is an illusion of significance. Moving a single grain of sand on a dune will also completely change the long-term cascade of events across the desert. It is not inherent meaning; it is simply the mechanical nature of complex systems over time.'
+    ],
+    insight: 'You change the future just by existing, but so does a rock.',
+    vizHint: 'Click to slightly shift a single node. Watch how the passage of time naturally amplifies this tiny change until the two timelines are completely different.',
+    controls: [
+      { id: 'shift-node', type: 'button', label: 'Shift One Node' }
+    ]
+  },
+  {
     id: 'node-quantity',
-    number: '03',
+    number: '06',
     title: 'Node Quantity',
     subtitle: 'Scaling the processing power of the organism.',
     body: [
-      'How do we improve Humanity? The first axis is the sheer number of nodes. More nodes mean more processing units, more potential connections, and a larger overall organism.',
-      'Historically, we have increased the number of active nodes through massive health interventions: sanitation, vaccines, antibiotics, and agriculture. These innovations prevented premature 1-to-0 flips, allowing the organism to scale from millions to billions.',
+      'Since a single node cannot be infinitely upgraded, the first axis to improve the organism is the sheer number of nodes. More nodes mean more processing units.',
+      'Historically, we increased the number of active nodes through massive health interventions, allowing the organism to scale from millions to billions.',
       'But just adding more nodes isn\'t enough. If the network scales up without the right structure, it becomes fragile. A massive network can easily collapse under its own weight.'
     ],
     insight: 'Scaling the node count is the baseline for upgrading the organism.',
@@ -51,46 +98,12 @@ export const SECTIONS = [
     ]
   },
   {
-    id: 'node-quality',
-    number: '04',
-    title: 'Node Quality',
-    subtitle: 'Upgrading the individual processing units.',
-    body: [
-      'Having billions of nodes is useless if the nodes are defective or unstable. The second axis of improvement is the inherent Quality of the single node itself.',
-      'A high-quality node is healthy, stable, rational, and capable of processing complex inputs. This means physical health, mental health, deep education, and critical thinking.',
-      'When we improve the living conditions and education of a single human, we are effectively upgrading the biological hardware and firmware of the organism\'s constituent cells.'
-    ],
-    insight: 'Education and health are the hardware upgrades for the human node.',
-    vizHint: 'Click to upgrade nodes. High-quality nodes glow brighter and stabilize the network.',
-    controls: [
-      { id: 'educate-nodes', type: 'button', label: 'Upgrade Nodes' },
-      { id: 'reset-quality', type: 'button', label: 'Reset', variant: 'outline' }
-    ]
-  },
-  {
-    id: 'node-capacity',
-    number: '05',
-    title: 'Singular Node Information',
-    subtitle: 'The depth of a single point.',
-    body: [
-      'Before we even draw a single edge, we must look at the node itself. A human is not an empty point. It is a massive, compressed database.',
-      'A single node contains billions of years of historical biological data coded in DNA. It contains decades of subjective experience, thoughts, memories, and complex models of reality.',
-      'The complexity of a single node is staggering. Even in isolation, it is an entire universe of information.'
-    ],
-    insight: 'The graph is built from nodes that are themselves complex universes.',
-    vizHint: 'Click to dive into a single node and visualize its internal information density.',
-    controls: [
-      { id: 'inspect-node', type: 'button', label: 'Inspect Node Data' },
-      { id: 'collapse-node', type: 'button', label: 'Collapse', variant: 'outline' }
-    ]
-  },
-  {
     id: 'connection-quantity',
-    number: '06',
+    number: '07',
     title: 'Connection Quantity',
     subtitle: 'Building the wires between the nodes.',
     body: [
-      'A network of brilliant, healthy nodes still fails if they cannot talk to each other. The third axis is the Number of Connections.',
+      'A network of brilliant, healthy nodes still fails if they cannot talk to each other. The next axis is the Number of Connections.',
       'For most of history, geography strictly limited the edges in our graph. Then came the printing press, the telegraph, and finally, the Internet. We solved the wiring problem. We created a graph where almost any node can connect to any other node instantly.',
       'But hyper-connectivity introduced a new bottleneck: the biological node was never designed to process 5,000 active edges simultaneously.'
     ],
@@ -103,7 +116,7 @@ export const SECTIONS = [
   },
   {
     id: 'connection-quality',
-    number: '07',
+    number: '08',
     title: 'Connection Quality',
     subtitle: 'Signal, noise, and information flow.',
     body: [
@@ -119,7 +132,7 @@ export const SECTIONS = [
   },
   {
     id: 'cohesion',
-    number: '08',
+    number: '09',
     title: 'Cohesion & Polarization',
     subtitle: 'Echo chambers and the splintering of the graph.',
     body: [
@@ -136,7 +149,7 @@ export const SECTIONS = [
   },
   {
     id: 'alignment',
-    number: '09',
+    number: '10',
     title: 'Alignment & Shared Goals',
     subtitle: 'Synchronization of vector paths.',
     body: [
@@ -153,7 +166,7 @@ export const SECTIONS = [
   },
   {
     id: 'collective-memory',
-    number: '10',
+    number: '11',
     title: 'Collective Memory',
     subtitle: 'Information persistence beyond the individual.',
     body: [
@@ -170,7 +183,7 @@ export const SECTIONS = [
   },
   {
     id: 'entropy',
-    number: '11',
+    number: '12',
     title: 'Entropy & Time',
     subtitle: 'The constant battle against decay.',
     body: [
@@ -187,7 +200,7 @@ export const SECTIONS = [
   },
   {
     id: 'productivity',
-    number: '12',
+    number: '13',
     title: 'Productivity & Shared Knowledge',
     subtitle: 'The ultimate output of the organism.',
     body: [
@@ -204,7 +217,7 @@ export const SECTIONS = [
   },
   {
     id: 'whats-next',
-    number: '13',
+    number: '14',
     title: 'What\'s Next?',
     subtitle: 'Building the next evolution.',
     body: [

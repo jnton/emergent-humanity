@@ -7,9 +7,11 @@
 import { SECTIONS } from '../content/sections.js';
 import { initIntro } from './visualizations/00-intro.js';
 import { initEmergentOrganism } from './visualizations/01-emergent-organism.js';
+import { initNodeLimits } from './visualizations/02-node-limits.js';
 import { initNodeQuantity } from './visualizations/02-node-quantity.js';
 import { initNodeQuality } from './visualizations/03-node-quality.js';
 import { initNodeCapacity } from './visualizations/04-node-capacity.js';
+import { initIllusionOfSignificance } from './visualizations/04b-illusion.js?v=7';
 import { initConnectionQuantity } from './visualizations/04-connection-quantity.js';
 import { initConnectionQuality } from './visualizations/05-connection-quality.js';
 import { initCohesion } from './visualizations/07-cohesion.js';
@@ -22,10 +24,11 @@ import { initWhatsNext } from './visualizations/11-whats-next.js';
 // Map section IDs to their initialization functions
 const VIZ_INIT = {
   'intro': initIntro,
-  'emergent-organism': initEmergentOrganism,
-  'node-quantity': initNodeQuantity,
-  'node-quality': initNodeQuality,
   'node-capacity': initNodeCapacity,
+  'illusion-of-significance': initIllusionOfSignificance,
+  'node-limits': initNodeLimits,
+  'node-quantity': initNodeQuantity,
+  'emergent-organism': initEmergentOrganism,
   'connection-quantity': initConnectionQuantity,
   'connection-quality': initConnectionQuality,
   'cohesion': initCohesion,
@@ -335,7 +338,10 @@ function initViz(sectionId) {
 }
 
 function activateViz(sectionId) {
-  vizInstances[sectionId]?.activate();
+  if (vizInstances[sectionId]) {
+    vizInstances[sectionId].init(); // Reset animation when scrolled to
+    vizInstances[sectionId].activate();
+  }
 }
 
 function deactivateViz(sectionId) {
@@ -363,4 +369,158 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeroCanvas();
   setupScrollObserver();
   setupResizeHandler();
+
+  // Keyboard Navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const container = document.getElementById('scroll-container');
+      const sections = Array.from(document.querySelectorAll('.hero, .section'));
+      
+      let currentIndex = 0;
+      let minDiff = Infinity;
+      sections.forEach((sec, idx) => {
+        const diff = Math.abs(sec.offsetTop - container.scrollTop);
+        if (diff < minDiff) {
+          minDiff = diff;
+          currentIndex = idx;
+        }
+      });
+
+      let targetIndex = currentIndex;
+      if (e.key === 'ArrowDown' && currentIndex < sections.length - 1) {
+        targetIndex++;
+      } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+        targetIndex--;
+      }
+
+      if (targetIndex !== currentIndex) {
+        container.scrollTo({
+          top: sections[targetIndex].offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    }
+  });
+
+  // Setup Audio (Web Audio API Sci-Fi Drone)
+  let audioCtx;
+  let oscillators = [];
+  const audioBtn = document.getElementById('toggle-audio');
+  
+  const iconOff = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>
+  </svg><span>Audio Off</span>`;
+  
+  const iconOn = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  </svg><span>Audio On</span>`;
+  
+  if (audioBtn) {
+    let isPlaying = false;
+    
+    audioBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      
+      if (isPlaying) {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Create a rich, evolving sci-fi drone using 3 low oscillators
+          const freqs = [55, 110, 164.81]; // A1, A2, E3
+          
+          freqs.forEach(freq => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            osc.type = 'sawtooth';
+            osc.frequency.value = freq;
+            
+            // Subtle evolving detune for an organic sci-fi feel
+            setInterval(() => {
+              osc.detune.linearRampToValueAtTime((Math.random() - 0.5) * 15, audioCtx.currentTime + 2);
+            }, 2000);
+            
+            filter.type = 'lowpass';
+            filter.frequency.value = 400;
+            
+            // Very soft volume
+            gain.gain.value = 0.05;
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            oscillators.push({osc, gain, filter});
+          });
+        }
+        
+        audioCtx.resume();
+        audioBtn.innerHTML = iconOn;
+        audioBtn.classList.add('playing');
+      } else {
+        if (audioCtx) {
+          audioCtx.suspend();
+        }
+        audioBtn.innerHTML = iconOff;
+        audioBtn.classList.remove('playing');
+      }
+    });
+  }
+
+  // Interactive UI Sounds
+  window.playInteractionSound = (type) => {
+    if (!audioCtx || audioCtx.state !== 'running') return;
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    
+    if (type === 'click') {
+      // Minimalist deep electronic thud instead of water drop
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+      
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    } else if (type === 'slider') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(300 + Math.random() * 200, audioCtx.currentTime);
+      
+      filter.type = 'lowpass';
+      filter.frequency.value = 800;
+      
+      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    }
+    
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.15);
+  };
+
+  // Attach sounds to controls
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON' && e.target.id !== 'toggle-audio') {
+      window.playInteractionSound('click');
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    if (e.target.type === 'range') {
+      window.playInteractionSound('slider');
+    }
+  });
 });

@@ -30,6 +30,18 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Audio Controls -->
+  <div id="audio-controls" class="audio-controls">
+    <button id="toggle-audio" class="audio-btn" aria-label="Toggle Background Music">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+      </svg>
+      <span>Audio Off</span>
+    </button>
+  </div>
+
     <div class="scroll-container" id="scroll-container">
         <!-- Content is built dynamically by js/main.js from content/sections.js -->
     </div>

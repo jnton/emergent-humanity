@@ -95,115 +95,112 @@ export function initEntropy(canvas, controls) {
     }
   });
 
+
+
+  function findPath(startId, endId, randomize) {
+     const links = engine.getLinks();
+     let queue = [[startId]];
+     let visited = new Set([startId]);
+     
+     while (queue.length > 0) {
+        let path = queue.shift();
+        let currentId = path[path.length - 1];
+        
+        if (currentId === endId) return path;
+        
+        let connected = links
+           .filter(l => {
+               const sId = typeof l.source === 'object' ? l.source.id : l.source;
+               const tId = typeof l.target === 'object' ? l.target.id : l.target;
+               return sId === currentId || tId === currentId;
+           })
+           .map(l => {
+               const sId = typeof l.source === 'object' ? l.source.id : l.source;
+               const tId = typeof l.target === 'object' ? l.target.id : l.target;
+               return sId === currentId ? tId : sId;
+           });
+           
+        if (randomize) connected.sort(() => Math.random() - 0.5);
+           
+        for (let nextId of connected) {
+           if (!visited.has(nextId)) {
+              visited.add(nextId);
+              queue.push([...path, nextId]);
+           }
+        }
+     }
+     return [startId, endId]; 
+  }
+
+  if (controls['toggle-redundancy']) {
+    controls['toggle-redundancy'].addEventListener('change', (e) => {
+      redundancyActive = e.target.checked;
+    });
+  }
+
+  let cachedSourceId = null;
+  let cachedTargetId = null;
+
+  if (controls['send-message']) {
+    controls['send-message'].addEventListener('click', () => {
+      const nodes = engine.getNodes();
+      
+      if (cachedSourceId === null || !nodes.find(n => n.id === cachedSourceId)) {
+          let maxDist = 0;
+          let sourceNode = nodes[0];
+          let targetNode = nodes[nodes.length - 1];
+
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const dx = nodes[i].x - nodes[j].x;
+              const dy = nodes[i].y - nodes[j].y;
+              const dist = dx*dx + dy*dy;
+              if (dist > maxDist) {
+                maxDist = dist;
+                sourceNode = nodes[i];
+                targetNode = nodes[j];
+              }
+            }
+          }
+          cachedSourceId = sourceNode.id;
+          cachedTargetId = targetNode.id;
+      }
+      
+      const sourceNode = nodes.find(n => n.id === cachedSourceId);
+      const targetNode = nodes.find(n => n.id === cachedTargetId);
+      
+      if (!sourceNode || !targetNode) return;
+      
+      const numPackets = redundancyActive ? 5 : 1;
+      
+      // Light up source node
+      sourceNode.pulse = 1;
+      sourceNode.lastDistortion = 0;
+      
+      for (let i=0; i<numPackets; i++) {
+         setTimeout(() => {
+            packets.push({
+               path: findPath(sourceNode.id, targetNode.id, true), // randomize slightly to get alternate paths
+               hopIndex: 0,
+               progress: 0,
+               distortion: 0
+            });
+         }, i * 150);
+      }
+    });
+  }
+
   const defaultInit = engine.init.bind(engine);
   engine.init = function() {
     defaultInit();
-
+    
+    // reset packets on re-init
+    packets.length = 0;
     const nodes = engine.getNodes();
-    const links = engine.getLinks();
-
-    function setupNetwork() {
-      try {
-        packets.length = 0;
-        nodes.forEach(n => {
-           n.pulse = 0;
-           n.lastDistortion = 0;
-        });
-      } catch (err) {}
-    }
-
-    setupNetwork();
-
-    function findPath(startId, endId, randomize) {
-       let queue = [[startId]];
-       let visited = new Set([startId]);
-       
-       while (queue.length > 0) {
-          let path = queue.shift();
-          let currentId = path[path.length - 1];
-          
-          if (currentId === endId) return path;
-          
-          let connected = links
-             .filter(l => {
-                 const sId = typeof l.source === 'object' ? l.source.id : l.source;
-                 const tId = typeof l.target === 'object' ? l.target.id : l.target;
-                 return sId === currentId || tId === currentId;
-             })
-             .map(l => {
-                 const sId = typeof l.source === 'object' ? l.source.id : l.source;
-                 const tId = typeof l.target === 'object' ? l.target.id : l.target;
-                 return sId === currentId ? tId : sId;
-             });
-             
-          if (randomize) connected.sort(() => Math.random() - 0.5);
-             
-          for (let nextId of connected) {
-             if (!visited.has(nextId)) {
-                visited.add(nextId);
-                queue.push([...path, nextId]);
-             }
-          }
-       }
-       return [startId, endId]; 
-    }
-
-    if (controls['toggle-redundancy']) {
-      controls['toggle-redundancy'].addEventListener('change', (e) => {
-        redundancyActive = e.target.checked;
-      });
-    }
-
-    let cachedSourceId = null;
-    let cachedTargetId = null;
-
-    if (controls['send-message']) {
-      controls['send-message'].addEventListener('click', () => {
-        if (cachedSourceId === null) {
-            let maxDist = 0;
-            let sourceNode = nodes[0];
-            let targetNode = nodes[nodes.length - 1];
-
-            for (let i = 0; i < nodes.length; i++) {
-              for (let j = i + 1; j < nodes.length; j++) {
-                const dx = nodes[i].x - nodes[j].x;
-                const dy = nodes[i].y - nodes[j].y;
-                const dist = dx*dx + dy*dy;
-                if (dist > maxDist) {
-                  maxDist = dist;
-                  sourceNode = nodes[i];
-                  targetNode = nodes[j];
-                }
-              }
-            }
-            cachedSourceId = sourceNode.id;
-            cachedTargetId = targetNode.id;
-        }
-        
-        const sourceNode = nodes.find(n => n.id === cachedSourceId);
-        const targetNode = nodes.find(n => n.id === cachedTargetId);
-        
-        if (!sourceNode || !targetNode) return;
-        
-        const numPackets = redundancyActive ? 5 : 1;
-        
-        // Light up source node
-        sourceNode.pulse = 1;
-        sourceNode.lastDistortion = 0;
-        
-        for (let i=0; i<numPackets; i++) {
-           setTimeout(() => {
-              packets.push({
-                 path: findPath(sourceNode.id, targetNode.id, true), // randomize slightly to get alternate paths
-                 hopIndex: 0,
-                 progress: 0,
-                 distortion: 0
-              });
-           }, i * 150);
-        }
-      });
-    }
-
+    nodes.forEach(n => {
+       n.pulse = 0;
+       n.lastDistortion = 0;
+    });
   };
 
   engine.init();

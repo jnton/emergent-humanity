@@ -171,15 +171,14 @@ export const SECTIONS = [
     title: 'Collective Memory',
     subtitle: 'Information persistence beyond the individual.',
     body: [
-      'Nodes are mortal. A human eventually flips from 1 to 0. If all knowledge lived purely inside the nodes, the organism would suffer catastrophic amnesia constantly.',
-      'A high-quality organism stores knowledge in its structure, not just its nodes. When nodes learn and interact, they build a physical lattice of structural memory—institutions, open-source code, books, and art.',
-      'When a central node dies, this structural lattice remains. A new node spawning in that location immediately inherits the stored data of the entire organism.'
+      "Nodes are mortal. A human eventually flips from 1 to 0. If all knowledge lived purely inside individual nodes, the organism would suffer catastrophic amnesia constantly.",
+      "But ideas, culture, and discoveries are messages that circulate through the network. When a node spawns an idea, it passes it to its connections.",
+      "Even when the original node dies, the message continues to propagate through the surviving structure. This circulating information is the collective memory of the organism."
     ],
-    insight: 'Institutions and culture are the structural hard drive of the emergent organism.',
-    vizHint: 'Watch nodes build structural lattice over time. Click a node to remove it, and watch the structure persist.',
+    insight: 'An idea can outlive its creator if the network is strong enough to carry it.',
+    vizHint: 'Spawn an idea, then click its creator node to kill it. Watch the idea continue to circulate.',
     controls: [
-      { id: 'accelerate-learning', type: 'button', label: 'Build Structure' },
-      { id: 'clear-memory', type: 'button', label: 'Clear Memory', variant: 'outline' }
+      { id: 'spawn-idea', type: 'button', label: 'Spawn Idea' }
     ]
   },
   {

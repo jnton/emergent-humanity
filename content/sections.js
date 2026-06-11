@@ -166,8 +166,24 @@ export const SECTIONS = [
     ]
   },
   {
-    id: 'collective-memory',
+    id: 'environment',
     number: '11',
+    title: 'Environmental Interaction',
+    subtitle: 'Sensing and storing local information.',
+    body: [
+      "Nodes aren't just calculators; they are sensors. They exist within a physical environment, constantly bombarded by phenomena, signals, and raw data.",
+      "When a node encounters a piece of information in the wild, it can extract it, process it, and store it locally.",
+      "This individual learning is the foundation of all intelligence. Before information can be shared across the network, it must first be harvested from reality by an individual."
+    ],
+    insight: 'All network knowledge begins as a local observation.',
+    vizHint: 'Release information into the environment and watch nodes encounter and store it.',
+    controls: [
+      { id: 'release-info', type: 'button', label: 'Release Information' }
+    ]
+  },
+  {
+    id: 'collective-memory',
+    number: '12',
     title: 'Collective Memory',
     subtitle: 'Information persistence beyond the individual.',
     body: [
@@ -182,8 +198,26 @@ export const SECTIONS = [
     ]
   },
   {
+    id: 'external-storage',
+    number: '13',
+    title: 'External Memory & The Cloud',
+    subtitle: 'The evolution of information storage outside the human brain.',
+    body: [
+      "Initially, biological nodes were the only containers of memory. This was fragile: nodes die, and communication heavily distorts information.",
+      "Then, we started storing information externally. Cave paintings and monuments created almost permanent storage. Writing locked information into physical objects, making it effectively permanent.",
+      "The Printing Press became fundamental. By creating massive redundancy through copies, it made information effectively immortal.",
+      "Photography and recording instruments revolutionized things further. We invented instruments to objectively store information independently of humans. Visual and auditory information was captured by a third device, completely bypassing human senses, brain elaboration, and vocal transmission. Experience was locked in time from an object.",
+      "Finally, the Internet and the ubiquitous availability of these instruments (smartphones, cameras) to everyone connected every node to a central 'Cloud', flooding the network with indestructible, instant redundancy."
+    ],
+    insight: 'By offloading memory to the environment, the organism became immortal.',
+    vizHint: 'Click the button to guide the organism through technological innovations.',
+    controls: [
+      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' }
+    ]
+  },
+  {
     id: 'entropy',
-    number: '12',
+    number: '14',
     title: 'Entropy & Information Decay',
     subtitle: 'The distortion of knowledge over distance.',
     body: [
@@ -200,7 +234,7 @@ export const SECTIONS = [
   },
   {
     id: 'productivity',
-    number: '13',
+    number: '15',
     title: 'Productivity & Shared Knowledge',
     subtitle: 'The ultimate output of the organism.',
     body: [
@@ -217,7 +251,7 @@ export const SECTIONS = [
   },
   {
     id: 'whats-next',
-    number: '14',
+    number: '16',
     title: 'What\'s Next?',
     subtitle: 'Building the next evolution.',
     body: [

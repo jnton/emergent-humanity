@@ -16,7 +16,9 @@ import { initConnectionQuantity } from './visualizations/04-connection-quantity.
 import { initConnectionQuality } from './visualizations/05-connection-quality.js';
 import { initCohesion } from './visualizations/07-cohesion.js';
 import { initAlignment } from './visualizations/08-alignment.js';
+import { initEnvironment } from './visualizations/08b-environment.js';
 import { initCollectiveMemory } from './visualizations/09-collective-memory.js';
+import { initExternalStorage } from './visualizations/09b-external-storage.js';
 import { initEntropy } from './visualizations/10-entropy.js';
 import { initProductivity } from './visualizations/10-productivity.js';
 import { initWhatsNext } from './visualizations/11-whats-next.js';
@@ -33,7 +35,9 @@ const VIZ_INIT = {
   'connection-quality': initConnectionQuality,
   'cohesion': initCohesion,
   'alignment': initAlignment,
+  'environment': initEnvironment,
   'collective-memory': initCollectiveMemory,
+  'external-storage': initExternalStorage,
   'entropy': initEntropy,
   'productivity': initProductivity,
   'whats-next': initWhatsNext,

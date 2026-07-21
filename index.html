@@ -38,7 +38,7 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/experience.css">
-  <link rel="stylesheet" href="css/audio.css?v=3">
+  <link rel="stylesheet" href="css/audio.css?v=4">
 </head>
 <body>
   <a class="skip-link" href="#section-node-capacity">Skip to the first chapter</a>
@@ -58,16 +58,16 @@
       </details>
 
       <div class="audio-controls">
-        <button id="toggle-soundscape" class="audio-btn" type="button" aria-label="Toggle futuristic ambient soundscape" aria-pressed="false">
+        <button id="toggle-soundscape" class="audio-btn" type="button" aria-label="Toggle non-invasive sci-fi background soundtrack" aria-pressed="false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
           </svg>
-          <span class="audio-label">Soundscape off</span>
+          <span class="audio-label">Soundtrack off</span>
         </button>
         <label id="ambient-volume-control" class="audio-volume-control" hidden>
-          <span>Volume</span>
-          <input id="ambient-volume" type="range" min="0" max="100" step="5" value="65" aria-label="Ambient soundscape volume">
+          <span>Music volume</span>
+          <input id="ambient-volume" type="range" min="0" max="100" step="5" value="55" aria-label="Background soundtrack volume">
         </label>
       </div>
     </div>
@@ -83,6 +83,6 @@
 
   <script type="module" src="js/app.js"></script>
   <script type="module" src="js/agent-api.js"></script>
-  <script type="module" src="js/audio.js?v=3"></script>
+  <script type="module" src="js/audio.js?v=4"></script>
 </body>
 </html>

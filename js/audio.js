@@ -4,33 +4,45 @@ const volumeControl = document.getElementById('ambient-volume-control');
 
 if (button instanceof HTMLButtonElement) {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const SCORE_VERSION = 'tonal-score-v2';
+  const CHORD_INTERVAL_MS = 15_000;
+  const CHORD_DURATION_SECONDS = 23;
+  const CHORDS = [
+    [146.83, 220, 329.63, 369.99], // Dmaj(add9)
+    [123.47, 185, 220, 293.66],    // Bm7
+    [98, 146.83, 220, 246.94],     // Gmaj(add9)
+    [110, 164.81, 246.94, 293.66], // Asus4(add9)
+  ];
+
   let context = null;
   let master = null;
   let analyser = null;
-  let output = null;
+  let scoreBus = null;
+  let effectsInput = null;
   let playing = false;
-  let shimmerTimer = null;
-  let lastSliderSound = 0;
+  let chordTimer = null;
+  let chordIndex = 0;
+  let lastButtonSound = 0;
+  const activeSources = new Set();
 
   const selectedVolume = () => {
-    const raw = volumeInput instanceof HTMLInputElement ? Number(volumeInput.value) : 65;
+    const raw = volumeInput instanceof HTMLInputElement ? Number(volumeInput.value) : 55;
     return Math.min(1, Math.max(0, raw / 100));
   };
 
-  // The previous ceiling (0.11) was too quiet on small laptop/phone speakers.
-  // This curve keeps the low end controllable while giving the top half useful headroom.
-  const targetGain = () => 0.34 * Math.pow(selectedVolume(), 1.35);
+  // Enough headroom for small speakers, with a gentle low-to-mid range.
+  const targetGain = () => 0.34 * Math.pow(selectedVolume(), 1.45);
 
   const updateButton = () => {
     button.setAttribute('aria-pressed', String(playing));
     button.classList.toggle('playing', playing);
     button.dataset.audioState = playing ? 'running' : 'stopped';
     const label = button.querySelector('.audio-label');
-    if (label) label.textContent = playing ? 'Soundscape on' : 'Soundscape off';
+    if (label) label.textContent = playing ? 'Soundtrack on' : 'Soundtrack off';
     if (volumeControl instanceof HTMLElement) volumeControl.hidden = !playing;
   };
 
-  const connectWithOptionalPan = (source, destination, panValue, panLfoFrequency = 0) => {
+  const connectWithOptionalPan = (source, destination, panValue) => {
     if (typeof context.createStereoPanner !== 'function') {
       source.connect(destination);
       return;
@@ -40,184 +52,184 @@ if (button instanceof HTMLButtonElement) {
     panner.pan.value = panValue;
     source.connect(panner);
     panner.connect(destination);
-
-    if (panLfoFrequency > 0) {
-      const panLfo = context.createOscillator();
-      const panDepth = context.createGain();
-      panLfo.type = 'sine';
-      panLfo.frequency.value = panLfoFrequency;
-      panDepth.gain.value = 0.18;
-      panLfo.connect(panDepth);
-      panDepth.connect(panner.pan);
-      panLfo.start();
-    }
   };
 
-  const createAirTexture = (destination) => {
-    const sampleRate = context.sampleRate;
-    const buffer = context.createBuffer(1, sampleRate * 3, sampleRate);
-    const data = buffer.getChannelData(0);
-    let previous = 0;
+  const createDelaySpace = (input, destination) => {
+    const dry = context.createGain();
+    const wet = context.createGain();
+    const delayA = context.createDelay(1);
+    const delayB = context.createDelay(1);
+    const feedbackA = context.createGain();
+    const feedbackB = context.createGain();
+    const toneA = context.createBiquadFilter();
+    const toneB = context.createBiquadFilter();
 
-    for (let index = 0; index < data.length; index += 1) {
-      const white = (Math.random() * 2) - 1;
-      previous = (previous * 0.985) + (white * 0.015);
-      data[index] = previous * 2.2;
-    }
+    dry.gain.value = 0.82;
+    wet.gain.value = 0.24;
+    delayA.delayTime.value = 0.31;
+    delayB.delayTime.value = 0.47;
+    feedbackA.gain.value = 0.19;
+    feedbackB.gain.value = 0.14;
+    toneA.type = 'lowpass';
+    toneB.type = 'lowpass';
+    toneA.frequency.value = 1650;
+    toneB.frequency.value = 1380;
 
-    const noise = context.createBufferSource();
-    const filter = context.createBiquadFilter();
-    const gain = context.createGain();
-    noise.buffer = buffer;
-    noise.loop = true;
-    filter.type = 'bandpass';
-    filter.frequency.value = 1250;
-    filter.Q.value = 0.45;
-    gain.gain.value = 0.028;
-    noise.connect(filter);
-    filter.connect(gain);
-    connectWithOptionalPan(gain, destination, 0.15, 0.008);
-    noise.start();
+    input.connect(dry);
+    dry.connect(destination);
+
+    input.connect(delayA);
+    delayA.connect(toneA);
+    toneA.connect(wet);
+    toneA.connect(feedbackA);
+    feedbackA.connect(delayA);
+
+    input.connect(delayB);
+    delayB.connect(toneB);
+    toneB.connect(wet);
+    toneB.connect(feedbackB);
+    feedbackB.connect(delayB);
+
+    wet.connect(destination);
   };
 
-  const createSoundscape = () => {
+  const createSoundtrack = () => {
     if (!AudioContextClass) return;
 
     context = new AudioContextClass();
     master = context.createGain();
     analyser = context.createAnalyser();
+    scoreBus = context.createGain();
+    effectsInput = context.createGain();
     const compressor = context.createDynamicsCompressor();
     const highpass = context.createBiquadFilter();
     const lowpass = context.createBiquadFilter();
-    const ambientBus = context.createGain();
 
-    output = compressor;
     master.gain.value = 0.0001;
+    scoreBus.gain.value = 0.88;
+    effectsInput.gain.value = 1;
     analyser.fftSize = 256;
 
-    // Gentle safety compression: enough to stop peaks, without crushing the ambience.
-    compressor.threshold.value = -18;
-    compressor.knee.value = 12;
-    compressor.ratio.value = 4;
-    compressor.attack.value = 0.015;
-    compressor.release.value = 0.6;
+    compressor.threshold.value = -14;
+    compressor.knee.value = 10;
+    compressor.ratio.value = 3;
+    compressor.attack.value = 0.02;
+    compressor.release.value = 0.65;
     highpass.type = 'highpass';
-    highpass.frequency.value = 42;
+    highpass.frequency.value = 58;
     lowpass.type = 'lowpass';
-    lowpass.frequency.value = 1250;
-    lowpass.Q.value = 0.35;
+    lowpass.frequency.value = 1850;
+    lowpass.Q.value = 0.25;
 
-    ambientBus.connect(highpass);
+    scoreBus.connect(highpass);
     highpass.connect(lowpass);
-    lowpass.connect(master);
+    lowpass.connect(effectsInput);
+    createDelaySpace(effectsInput, master);
     master.connect(analyser);
     analyser.connect(compressor);
     compressor.connect(context.destination);
+  };
 
-    const filterLfo = context.createOscillator();
-    const filterDepth = context.createGain();
-    filterLfo.type = 'sine';
-    filterLfo.frequency.value = 0.021;
-    filterDepth.gain.value = 260;
-    filterLfo.connect(filterDepth);
-    filterDepth.connect(lowpass.frequency);
-    filterLfo.start();
+  const registerSource = (source) => {
+    activeSources.add(source);
+    source.addEventListener('ended', () => activeSources.delete(source), { once: true });
+  };
 
-    const voices = [
-      { frequency: 73.42, gain: 0.17, type: 'sine', pan: -0.38, drift: 0.011 },
-      { frequency: 110, gain: 0.09, type: 'sine', pan: 0.32, drift: 0.014 },
-      { frequency: 146.83, gain: 0.055, type: 'triangle', pan: -0.08, drift: 0.009 },
-      { frequency: 220, gain: 0.026, type: 'sine', pan: 0.48, drift: 0.017 },
-    ];
+  const playPadVoice = (frequency, index, startTime, duration) => {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const filter = context.createBiquadFilter();
+    const detune = context.createOscillator();
+    const detuneDepth = context.createGain();
 
-    voices.forEach((voice, index) => {
-      const oscillator = context.createOscillator();
-      const voiceGain = context.createGain();
-      const detuneLfo = context.createOscillator();
-      const detuneDepth = context.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = frequency;
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200 + (index * 170);
+    filter.Q.value = 0.35;
 
-      oscillator.type = voice.type;
-      oscillator.frequency.value = voice.frequency;
-      voiceGain.gain.value = voice.gain;
-      detuneLfo.type = 'sine';
-      detuneLfo.frequency.value = voice.drift;
-      detuneDepth.gain.value = 1.5 + index * 0.55;
-      detuneLfo.connect(detuneDepth);
-      detuneDepth.connect(oscillator.detune);
-      oscillator.connect(voiceGain);
-      connectWithOptionalPan(voiceGain, ambientBus, voice.pan, voice.drift * 0.6);
-      oscillator.start();
-      detuneLfo.start();
+    const peak = [0.055, 0.041, 0.03, 0.022][index] ?? 0.018;
+    const attackEnd = startTime + 4.6 + (index * 0.35);
+    const releaseStart = startTime + duration - 7.2;
+    const endTime = startTime + duration;
+
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(peak, attackEnd);
+    gain.gain.setValueAtTime(peak, releaseStart);
+    gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+    detune.type = 'sine';
+    detune.frequency.value = 0.018 + (index * 0.004);
+    detuneDepth.gain.value = 1.1 + (index * 0.3);
+    detune.connect(detuneDepth);
+    detuneDepth.connect(oscillator.detune);
+
+    oscillator.connect(filter);
+    filter.connect(gain);
+    connectWithOptionalPan(gain, scoreBus, [-0.34, 0.24, -0.08, 0.38][index] ?? 0);
+
+    registerSource(oscillator);
+    registerSource(detune);
+    oscillator.start(startTime);
+    detune.start(startTime);
+    oscillator.stop(endTime + 0.1);
+    detune.stop(endTime + 0.1);
+  };
+
+  const playChord = () => {
+    if (!playing || !context || !scoreBus || context.state !== 'running') return;
+
+    const now = context.currentTime + 0.04;
+    const chord = CHORDS[chordIndex % CHORDS.length];
+    chordIndex = (chordIndex + 1) % CHORDS.length;
+    chord.forEach((frequency, index) => playPadVoice(frequency, index, now, CHORD_DURATION_SECONDS));
+  };
+
+  const scheduleScore = () => {
+    window.clearInterval(chordTimer);
+    if (!playing) return;
+    playChord();
+    chordTimer = window.setInterval(playChord, CHORD_INTERVAL_MS);
+  };
+
+  const stopScoreSources = () => {
+    if (!context) return;
+    const now = context.currentTime;
+    activeSources.forEach((source) => {
+      try {
+        source.stop(now + 0.9);
+      } catch {
+        // The source may already be scheduled to stop.
+      }
     });
-
-    createAirTexture(ambientBus);
+    activeSources.clear();
   };
 
   const playActivationCue = () => {
-    if (!context || !output || context.state !== 'running') return;
+    if (!context || !master || context.state !== 'running') return;
     const now = context.currentTime;
 
-    [440, 659.25].forEach((frequency, index) => {
+    [440, 554.37, 659.25].forEach((frequency, index) => {
       const oscillator = context.createOscillator();
       const gain = context.createGain();
-      const filter = context.createBiquadFilter();
-      const start = now + (index * 0.07);
-
+      const start = now + (index * 0.085);
       oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(frequency, start);
-      oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.82, start + 0.32);
-      filter.type = 'lowpass';
-      filter.frequency.value = 2200;
+      oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(index === 0 ? 0.055 : 0.038, start + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.42);
-      oscillator.connect(filter);
-      filter.connect(gain);
-      connectWithOptionalPan(gain, output, index === 0 ? -0.16 : 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.026 - (index * 0.004), start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.52);
+      oscillator.connect(gain);
+      connectWithOptionalPan(gain, master, [-0.18, 0, 0.18][index]);
       oscillator.start(start);
-      oscillator.stop(start + 0.45);
+      oscillator.stop(start + 0.55);
     });
   };
 
-  const scheduleShimmer = () => {
-    window.clearTimeout(shimmerTimer);
-    if (!playing || !context || !output) return;
-
-    const delay = 18000 + Math.random() * 19000;
-    shimmerTimer = window.setTimeout(() => {
-      if (!playing || context.state !== 'running') {
-        scheduleShimmer();
-        return;
-      }
-
-      const now = context.currentTime;
-      const notes = [293.66, 369.99, 440, 587.33];
-      const frequency = notes[Math.floor(Math.random() * notes.length)];
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const filter = context.createBiquadFilter();
-
-      oscillator.type = 'sine';
-      oscillator.frequency.value = frequency;
-      filter.type = 'lowpass';
-      filter.frequency.value = 1800;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.012, now + 1.2);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
-      oscillator.connect(filter);
-      filter.connect(gain);
-      connectWithOptionalPan(gain, output, (Math.random() * 1.2) - 0.6);
-      oscillator.start(now);
-      oscillator.stop(now + 5.7);
-      scheduleShimmer();
-    }, delay);
-  };
-
   button.addEventListener('click', async () => {
-    if (!context) createSoundscape();
+    if (!context) createSoundtrack();
     if (!context || !master) {
       button.disabled = true;
-      button.setAttribute('aria-label', 'Ambient audio is unavailable in this browser');
+      button.setAttribute('aria-label', 'Ambient soundtrack is unavailable in this browser');
       return;
     }
 
@@ -227,19 +239,20 @@ if (button instanceof HTMLButtonElement) {
       const now = context.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now);
-      master.gain.exponentialRampToValueAtTime(Math.max(0.0001, targetGain()), now + 0.9);
+      master.gain.exponentialRampToValueAtTime(Math.max(0.0001, targetGain()), now + 1.5);
       playActivationCue();
-      scheduleShimmer();
+      scheduleScore();
     } else {
       playing = false;
-      window.clearTimeout(shimmerTimer);
+      window.clearInterval(chordTimer);
       const now = context.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now);
-      master.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+      stopScoreSources();
       window.setTimeout(() => {
         if (!playing && context?.state === 'running') context.suspend();
-      }, 900);
+      }, 1200);
     }
 
     updateButton();
@@ -250,42 +263,40 @@ if (button instanceof HTMLButtonElement) {
       volumeInput.setAttribute('aria-valuetext', `${volumeInput.value}%`);
       if (!playing || !context || !master) return;
       master.gain.cancelScheduledValues(context.currentTime);
-      master.gain.linearRampToValueAtTime(targetGain(), context.currentTime + 0.08);
+      master.gain.linearRampToValueAtTime(targetGain(), context.currentTime + 0.12);
     });
     volumeInput.setAttribute('aria-valuetext', `${volumeInput.value}%`);
   }
 
+  // Keep controls quiet. Continuous slider ticks were intrusive during reading.
   window.playInteractionSound = (type = 'click') => {
-    if (!playing || !context || context.state !== 'running' || !output) return;
-
+    if (type === 'slider' || !playing || !context || context.state !== 'running' || !master) return;
     const nowMs = performance.now();
-    if (type === 'slider' && nowMs - lastSliderSound < 180) return;
-    if (type === 'slider') lastSliderSound = nowMs;
+    if (nowMs - lastButtonSound < 180) return;
+    lastButtonSound = nowMs;
 
-    const now = context.currentTime;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
-    const filter = context.createBiquadFilter();
-    const isSlider = type === 'slider';
-
+    const now = context.currentTime;
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(isSlider ? 330 : 520, now);
-    oscillator.frequency.exponentialRampToValueAtTime(isSlider ? 270 : 220, now + (isSlider ? 0.035 : 0.09));
-    filter.type = 'lowpass';
-    filter.frequency.value = 1500;
-    gain.gain.setValueAtTime(isSlider ? 0.004 : 0.014, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + (isSlider ? 0.04 : 0.1));
-    oscillator.connect(filter);
-    filter.connect(gain);
-    gain.connect(output);
+    oscillator.frequency.setValueAtTime(392, now);
+    oscillator.frequency.exponentialRampToValueAtTime(293.66, now + 0.12);
+    gain.gain.setValueAtTime(0.003, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+    oscillator.connect(gain);
+    gain.connect(master);
     oscillator.start(now);
-    oscillator.stop(now + (isSlider ? 0.045 : 0.11));
+    oscillator.stop(now + 0.14);
   };
 
   document.addEventListener('visibilitychange', () => {
     if (!context || !playing) return;
-    if (document.hidden && context.state === 'running') context.suspend();
-    if (!document.hidden && context.state === 'suspended') context.resume();
+    if (document.hidden && context.state === 'running') {
+      window.clearInterval(chordTimer);
+      context.suspend();
+    } else if (!document.hidden && context.state === 'suspended') {
+      context.resume().then(scheduleScore);
+    }
   });
 
   window.__EMERGENT_AUDIO_DEBUG__ = {
@@ -295,6 +306,9 @@ if (button instanceof HTMLButtonElement) {
       gain: master?.gain.value ?? 0,
       targetGain: targetGain(),
       volume: selectedVolume(),
+      scoreVersion: SCORE_VERSION,
+      noiseLayer: false,
+      activeSources: activeSources.size,
     }),
     getLevel: () => {
       if (!analyser || !playing) return 0;

@@ -8,10 +8,10 @@ function createMobileHeading(section) {
   const title = section.querySelector('.section-title')?.textContent?.trim() ?? '';
   const heading = document.createElement('div');
   heading.className = 'mobile-section-heading';
-  heading.setAttribute('aria-hidden', 'true');
 
   const copy = document.createElement('div');
   copy.className = 'mobile-section-heading-copy';
+  copy.setAttribute('aria-hidden', 'true');
 
   const numberElement = document.createElement('span');
   numberElement.className = 'mobile-section-number';

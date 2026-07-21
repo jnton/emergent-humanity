@@ -1,18 +1,31 @@
 const button = document.getElementById('toggle-soundscape');
+const volumeInput = document.getElementById('ambient-volume');
+const volumeControl = document.getElementById('ambient-volume-control');
 
 if (button instanceof HTMLButtonElement) {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   let context = null;
   let master = null;
+  let analyser = null;
+  let output = null;
   let playing = false;
   let shimmerTimer = null;
   let lastSliderSound = 0;
 
+  const selectedVolume = () => {
+    const raw = volumeInput instanceof HTMLInputElement ? Number(volumeInput.value) : 65;
+    return Math.min(1, Math.max(0, raw / 100));
+  };
+
+  const targetGain = () => 0.11 * Math.pow(selectedVolume(), 2);
+
   const updateButton = () => {
     button.setAttribute('aria-pressed', String(playing));
     button.classList.toggle('playing', playing);
+    button.dataset.audioState = playing ? 'running' : 'stopped';
     const label = button.querySelector('.audio-label');
     if (label) label.textContent = playing ? 'Soundscape on' : 'Soundscape off';
+    if (volumeControl instanceof HTMLElement) volumeControl.hidden = !playing;
   };
 
   const connectWithOptionalPan = (source, destination, panValue, panLfoFrequency = 0) => {
@@ -70,12 +83,15 @@ if (button instanceof HTMLButtonElement) {
 
     context = new AudioContextClass();
     master = context.createGain();
+    analyser = context.createAnalyser();
     const compressor = context.createDynamicsCompressor();
     const highpass = context.createBiquadFilter();
     const lowpass = context.createBiquadFilter();
     const ambientBus = context.createGain();
 
+    output = compressor;
     master.gain.value = 0.0001;
+    analyser.fftSize = 256;
     compressor.threshold.value = -28;
     compressor.knee.value = 18;
     compressor.ratio.value = 3;
@@ -90,7 +106,8 @@ if (button instanceof HTMLButtonElement) {
     ambientBus.connect(highpass);
     highpass.connect(lowpass);
     lowpass.connect(master);
-    master.connect(compressor);
+    master.connect(analyser);
+    analyser.connect(compressor);
     compressor.connect(context.destination);
 
     const filterLfo = context.createOscillator();
@@ -132,11 +149,37 @@ if (button instanceof HTMLButtonElement) {
     createAirTexture(ambientBus);
   };
 
+  const playActivationCue = () => {
+    if (!context || !output || context.state !== 'running') return;
+    const now = context.currentTime;
+
+    [440, 659.25].forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const filter = context.createBiquadFilter();
+      const start = now + (index * 0.07);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(frequency, start);
+      oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.82, start + 0.32);
+      filter.type = 'lowpass';
+      filter.frequency.value = 1800;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(index === 0 ? 0.018 : 0.012, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.42);
+      oscillator.connect(filter);
+      filter.connect(gain);
+      connectWithOptionalPan(gain, output, index === 0 ? -0.16 : 0.16);
+      oscillator.start(start);
+      oscillator.stop(start + 0.45);
+    });
+  };
+
   const scheduleShimmer = () => {
     window.clearTimeout(shimmerTimer);
-    if (!playing || !context || !master) return;
+    if (!playing || !context || !output) return;
 
-    const delay = 15000 + Math.random() * 17000;
+    const delay = 18000 + Math.random() * 19000;
     shimmerTimer = window.setTimeout(() => {
       if (!playing || context.state !== 'running') {
         scheduleShimmer();
@@ -155,11 +198,11 @@ if (button instanceof HTMLButtonElement) {
       filter.type = 'lowpass';
       filter.frequency.value = 1600;
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.006, now + 1.2);
+      gain.gain.exponentialRampToValueAtTime(0.0045, now + 1.2);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
       oscillator.connect(filter);
       filter.connect(gain);
-      connectWithOptionalPan(gain, master, (Math.random() * 1.2) - 0.6);
+      connectWithOptionalPan(gain, output, (Math.random() * 1.2) - 0.6);
       oscillator.start(now);
       oscillator.stop(now + 5.7);
       scheduleShimmer();
@@ -180,7 +223,8 @@ if (button instanceof HTMLButtonElement) {
       const now = context.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now);
-      master.gain.exponentialRampToValueAtTime(0.018, now + 1.8);
+      master.gain.exponentialRampToValueAtTime(Math.max(0.0001, targetGain()), now + 1.25);
+      playActivationCue();
       scheduleShimmer();
     } else {
       playing = false;
@@ -188,20 +232,30 @@ if (button instanceof HTMLButtonElement) {
       const now = context.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now);
-      master.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
       window.setTimeout(() => {
         if (!playing && context?.state === 'running') context.suspend();
-      }, 1300);
+      }, 900);
     }
 
     updateButton();
   });
 
+  if (volumeInput instanceof HTMLInputElement) {
+    volumeInput.addEventListener('input', () => {
+      volumeInput.setAttribute('aria-valuetext', `${volumeInput.value}%`);
+      if (!playing || !context || !master) return;
+      master.gain.cancelScheduledValues(context.currentTime);
+      master.gain.linearRampToValueAtTime(targetGain(), context.currentTime + 0.08);
+    });
+    volumeInput.setAttribute('aria-valuetext', `${volumeInput.value}%`);
+  }
+
   window.playInteractionSound = (type = 'click') => {
-    if (!playing || !context || context.state !== 'running' || !master) return;
+    if (!playing || !context || context.state !== 'running' || !output) return;
 
     const nowMs = performance.now();
-    if (type === 'slider' && nowMs - lastSliderSound < 140) return;
+    if (type === 'slider' && nowMs - lastSliderSound < 180) return;
     if (type === 'slider') lastSliderSound = nowMs;
 
     const now = context.currentTime;
@@ -215,11 +269,11 @@ if (button instanceof HTMLButtonElement) {
     oscillator.frequency.exponentialRampToValueAtTime(isSlider ? 270 : 220, now + (isSlider ? 0.035 : 0.09));
     filter.type = 'lowpass';
     filter.frequency.value = 1300;
-    gain.gain.setValueAtTime(isSlider ? 0.0011 : 0.0028, now);
+    gain.gain.setValueAtTime(isSlider ? 0.0015 : 0.004, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + (isSlider ? 0.04 : 0.1));
     oscillator.connect(filter);
     filter.connect(gain);
-    gain.connect(master);
+    gain.connect(output);
     oscillator.start(now);
     oscillator.stop(now + (isSlider ? 0.045 : 0.11));
   };
@@ -229,6 +283,21 @@ if (button instanceof HTMLButtonElement) {
     if (document.hidden && context.state === 'running') context.suspend();
     if (!document.hidden && context.state === 'suspended') context.resume();
   });
+
+  window.__EMERGENT_AUDIO_DEBUG__ = {
+    getState: () => ({
+      playing,
+      contextState: context?.state ?? 'not-created',
+      gain: master?.gain.value ?? 0,
+      volume: selectedVolume(),
+    }),
+    getLevel: () => {
+      if (!analyser || !playing) return 0;
+      const data = new Uint8Array(analyser.fftSize);
+      analyser.getByteTimeDomainData(data);
+      return data.reduce((peak, value) => Math.max(peak, Math.abs(value - 128)), 0);
+    },
+  };
 
   updateButton();
 }

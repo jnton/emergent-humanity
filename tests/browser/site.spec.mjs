@@ -104,6 +104,27 @@ test('soundscape creates a running audible signal after explicit activation', as
   expect(errors).toEqual([]);
 });
 
+test('browser-agent API exposes chapters and safely operates controls', async ({ page }) => {
+  const errors = collectRuntimeErrors(page);
+  await page.goto('/');
+  await page.waitForFunction(() => document.documentElement.dataset.agentReady === 'true');
+
+  const chapterCount = await page.evaluate(() => window.emergentHumanity.getChapters().length);
+  expect(chapterCount).toBe(16);
+
+  const controls = await page.evaluate(() => window.emergentHumanity.getControls('node-quantity'));
+  expect(controls).toEqual(expect.arrayContaining([
+    expect.objectContaining({ id: 'population-slider', type: 'slider' }),
+  ]));
+
+  const result = await page.evaluate(() => window.emergentHumanity.operateControl('population-slider', 0.8));
+  expect(result.value).toBe(0.8);
+  await expect(page.locator('#ctrl-population-slider')).toHaveValue('0.8');
+  await expect(page.locator('#ctrl-population-slider')).toHaveAttribute('aria-valuetext', '80%');
+
+  expect(errors).toEqual([]);
+});
+
 test('mobile layout does not create horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = collectRuntimeErrors(page);
@@ -130,6 +151,7 @@ test.describe('reduced motion', () => {
 
   test('hero remains visually stable', async ({ page }) => {
     await page.goto('/');
+    await expect.poll(() => page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
     const heroCanvas = page.locator('#hero-canvas');
     await expect(heroCanvas).toBeVisible();
     await page.waitForTimeout(900);
@@ -138,6 +160,8 @@ test.describe('reduced motion', () => {
     const second = await canvasDigest(heroCanvas);
 
     expect(first.activePixels).toBeGreaterThan(10);
+    expect(second.width).toBe(first.width);
+    expect(second.height).toBe(first.height);
     expect(second.hash).toBe(first.hash);
   });
 });

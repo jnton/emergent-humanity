@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+const SCREENSHOT_CHAPTERS = new Set([
+  'node-limits',
+  'cohesion',
+  'external-storage',
+  'productivity',
+]);
+
 async function canvasDigest(locator) {
   return locator.evaluate((canvas) => {
     const context = canvas.getContext('2d');
@@ -47,14 +54,17 @@ async function assertCanvasHealthy(canvas, sectionId) {
 
 async function operateVisibleControl(page, control) {
   const locator = page.locator(`#ctrl-${control.id}`);
-  await expect(locator, `${control.id} should be visible`).toBeVisible();
+  await expect(locator, `${control.id} should exist`).toBeAttached();
+  await expect(locator).toBeEnabled();
 
   if (control.type === 'button') {
+    await expect(locator, `${control.id} button should be visible`).toBeVisible();
     await locator.click();
     return;
   }
 
   if (control.type === 'slider') {
+    await expect(locator, `${control.id} slider should be visible`).toBeVisible();
     const midpoint = (control.min + control.max) / 2;
     const target = control.value <= midpoint ? control.max : control.min;
     await locator.focus();
@@ -65,7 +75,9 @@ async function operateVisibleControl(page, control) {
 
   if (control.type === 'switch') {
     const expected = !control.checked;
-    await locator.click();
+    const visibleSurface = locator.locator('..');
+    await expect(visibleSurface, `${control.id} switch surface should be visible`).toBeVisible();
+    await visibleSurface.click();
     if (expected) await expect(locator).toBeChecked();
     else await expect(locator).not.toBeChecked();
     return;
@@ -103,14 +115,18 @@ test('every visible visualization control can be operated without breaking its a
       operatedControls += 1;
       await page.waitForTimeout(control.type === 'button' ? 350 : 220);
       await assertCanvasHealthy(canvas, chapter.id);
-      await expect(section).not.toHaveClass(/viz-error/);
+      await expect(section.locator('.viz-pane')).not.toHaveClass(/viz-error/);
     }
 
-    if (controls.length > 0) {
-      const screenshot = await section.screenshot({ animations: 'allow' });
+    if (SCREENSHOT_CHAPTERS.has(chapter.id)) {
+      const screenshot = await section.screenshot({
+        animations: 'allow',
+        type: 'jpeg',
+        quality: 58,
+      });
       await testInfo.attach(`${chapter.id}-after-interactions`, {
         body: screenshot,
-        contentType: 'image/png',
+        contentType: 'image/jpeg',
       });
     }
   }
@@ -178,9 +194,13 @@ test('the open-network canvas accepts a real pointer drag without errors or blan
   expect(await page.locator('.viz-error').count()).toBe(0);
   expect(errors).toEqual([]);
 
-  const screenshot = await section.screenshot({ animations: 'allow' });
+  const screenshot = await section.screenshot({
+    animations: 'allow',
+    type: 'jpeg',
+    quality: 58,
+  });
   await testInfo.attach('whats-next-after-pointer-drag', {
     body: screenshot,
-    contentType: 'image/png',
+    contentType: 'image/jpeg',
   });
 });

@@ -9,22 +9,30 @@ const read = (path) => readFile(resolve(root, path), 'utf8');
 const index = await read('index.html');
 const app = await read('js/app.js');
 const audio = await read('js/audio.js');
+const agentApi = await read('js/agent-api.js');
 const experience = await read('css/experience.css');
 const essay = await read('content/essay.md');
 const llms = await read('llms.txt');
+const agentManifest = JSON.parse(await read('agent-manifest.json'));
 
 assert.match(index, /css\/experience\.css/, 'The experience stylesheet must be loaded.');
 assert.match(index, /css\/audio\.css/, 'The audio stylesheet must be loaded.');
+assert.match(index, /js\/platform\.js/, 'Platform stability guards must load before the app.');
 assert.match(index, /js\/app\.js/, 'The revised application entry point must be loaded.');
+assert.match(index, /js\/agent-api\.js/, 'The browser-agent API must be loaded.');
 assert.match(index, /js\/audio\.js/, 'The soundscape controller must be loaded.');
 assert.doesNotMatch(index, /js\/main\.js/, 'The legacy entry point must not be loaded.');
 assert.match(index, /application\/ld\+json/, 'Structured website metadata must be present.');
 assert.match(index, /href="llms\.txt"/, 'The AI agent guide must be discoverable.');
+assert.match(index, /href="agent-manifest\.json"/, 'The browser-agent manifest must be discoverable.');
 assert.match(app, /https:\/\/github\.com\/jnton\/emergent-humanity/, 'The source link must target this repository.');
 assert.doesNotMatch(app, /startAudioOnInteract|audioBtn\.click\(\)/, 'Ambient audio must never auto-start.');
 assert.doesNotMatch(audio, /startAudioOnInteract|\.click\(\)\s*;/, 'The new soundscape must remain explicitly opt-in.');
 assert.match(audio, /playActivationCue/, 'Audio activation must provide audible feedback.');
 assert.match(audio, /__EMERGENT_AUDIO_DEBUG__/, 'Browser tests need an observable Web Audio signal.');
+assert.match(agentApi, /window\.emergentHumanity/, 'A stable browser-agent global must be exposed.');
+assert.match(agentApi, /operateControl/, 'Browser agents must be able to operate controls by stable ID.');
+assert.equal(agentManifest.browserApi.global, 'window.emergentHumanity');
 assert.match(experience, /scroll-snap-type:\s*none/, 'Mandatory snap scrolling must remain disabled.');
 assert.match(experience, /:focus-visible/, 'Keyboard focus styles must be present.');
 
@@ -52,6 +60,7 @@ for (const asset of [
   'assets/social-preview.png',
   'content/essay.md',
   'llms.txt',
+  'agent-manifest.json',
   'robots.txt',
 ]) {
   await access(resolve(root, asset));

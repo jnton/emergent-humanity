@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "name": "Emergent Humanity",
+  "description": "Interactive network-theory essay with machine-readable content and a browser automation API.",
+  "language": "en",
+  "content": {
+    "textEdition": "content/essay.md",
+    "structuredSource": "content/sections.js",
+    "llmGuide": "llms.txt"
+  },
+  "browserApi": {
+    "global": "window.emergentHumanity",
+    "readySignal": {
+      "htmlAttribute": "data-agent-ready=true",
+      "event": "emergent-humanity:agent-ready"
+    },
+    "methods": {
+      "getChapters": "Return chapter IDs, numbers, titles, subtitles, and insights.",
+      "getCurrentChapter": "Return the active chapter ID.",
+      "getControls": "Return machine-readable controls for a chapter ID.",
+      "getStatus": "Return visualization status, hint text, and controls for a chapter ID.",
+      "operateControl": "Click a button or set a slider/switch using its stable control ID.",
+      "scrollToChapter": "Navigate to a chapter using its stable section ID."
+    }
+  },
+  "constraints": [
+    "Visualizations are conceptual illustrations rather than empirical datasets.",
+    "Ambient audio is optional and disabled by default.",
+    "Canvas pixels are supplementary; agents should use text, controls, and status output for interpretation."
+  ],
+  "sourceRepository": "https://github.com/jnton/emergent-humanity"
+}

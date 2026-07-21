@@ -1,4 +1,5 @@
 const mobileQuery = window.matchMedia('(max-width: 900px)');
+let sectionObserver = null;
 
 function createMobileHeading(section) {
   const existing = section.querySelector(':scope > .mobile-section-heading');
@@ -84,24 +85,49 @@ function restoreDesktopLayout() {
 }
 
 function syncLayout() {
+  const sections = document.querySelectorAll('.section');
+  if (sections.length === 0) return false;
+
   if (mobileQuery.matches) applyMobileLayout();
   else restoreDesktopLayout();
 
   document.documentElement.dataset.mobileLayout = mobileQuery.matches ? 'active' : 'inactive';
+  return true;
+}
+
+function scheduleSync() {
+  window.requestAnimationFrame(() => syncLayout());
+}
+
+function initializeWhenReady() {
+  if (syncLayout()) return;
+
+  const container = document.getElementById('scroll-container');
+  if (!container) return;
+
+  sectionObserver?.disconnect();
+  sectionObserver = new MutationObserver(() => {
+    if (!syncLayout()) return;
+    sectionObserver.disconnect();
+    sectionObserver = null;
+  });
+  sectionObserver.observe(container, { childList: true });
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', syncLayout, { once: true });
+  document.addEventListener('DOMContentLoaded', () => {
+    window.requestAnimationFrame(initializeWhenReady);
+  }, { once: true });
 } else {
-  syncLayout();
+  initializeWhenReady();
 }
 
-mobileQuery.addEventListener?.('change', syncLayout);
+mobileQuery.addEventListener?.('change', scheduleSync);
 
 window.__EMERGENT_MOBILE_DEBUG__ = {
   syncLayout,
   getState: () => ({
-    active: mobileQuery.matches,
+    active: document.documentElement.dataset.mobileLayout === 'active',
     headings: document.querySelectorAll('.mobile-section-heading').length,
     dockedControls: document.querySelectorAll('.mobile-control-dock').length,
   }),

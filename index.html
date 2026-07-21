@@ -16,12 +16,27 @@
 
   <link rel="icon" type="image/png" href="assets/icon.png">
   <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="alternate" type="text/plain" href="llms.txt" title="AI agent guide">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Emergent Humanity",
+    "description": "An interactive exploration of humanity as an emergent network organism through graph theory, information flow, collective memory, and coordination.",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "license": "https://github.com/jnton/emergent-humanity/blob/main/LICENSE",
+    "codeRepository": "https://github.com/jnton/emergent-humanity"
+  }
+  </script>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/experience.css">
+  <link rel="stylesheet" href="css/audio.css">
 </head>
 <body>
   <a class="skip-link" href="#section-node-capacity">Skip to the first chapter</a>
@@ -48,6 +63,10 @@
           </svg>
           <span class="audio-label">Soundscape off</span>
         </button>
+        <label id="ambient-volume-control" class="audio-volume-control" hidden>
+          <span>Volume</span>
+          <input id="ambient-volume" type="range" min="0" max="100" step="5" value="65" aria-label="Ambient soundscape volume">
+        </label>
       </div>
     </div>
 
@@ -57,7 +76,7 @@
   <main class="scroll-container" id="scroll-container" aria-label="Emergent Humanity interactive essay"></main>
 
   <noscript>
-    <p style="padding: 6rem 1.5rem; color: #e8ecf4; background: #080b12;">This interactive essay requires JavaScript to render its chapters and visualizations.</p>
+    <p style="padding: 6rem 1.5rem; color: #e8ecf4; background: #080b12;">This interactive essay requires JavaScript to render its visualizations. A machine-readable text edition is available in <a href="content/essay.md">content/essay.md</a>.</p>
   </noscript>
 
   <script type="module" src="js/app.js"></script>

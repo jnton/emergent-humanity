@@ -17,7 +17,9 @@ if (button instanceof HTMLButtonElement) {
     return Math.min(1, Math.max(0, raw / 100));
   };
 
-  const targetGain = () => 0.11 * Math.pow(selectedVolume(), 2);
+  // The previous ceiling (0.11) was too quiet on small laptop/phone speakers.
+  // This curve keeps the low end controllable while giving the top half useful headroom.
+  const targetGain = () => 0.34 * Math.pow(selectedVolume(), 1.35);
 
   const updateButton = () => {
     button.setAttribute('aria-pressed', String(playing));
@@ -69,9 +71,9 @@ if (button instanceof HTMLButtonElement) {
     noise.buffer = buffer;
     noise.loop = true;
     filter.type = 'bandpass';
-    filter.frequency.value = 1150;
+    filter.frequency.value = 1250;
     filter.Q.value = 0.45;
-    gain.gain.value = 0.018;
+    gain.gain.value = 0.028;
     noise.connect(filter);
     filter.connect(gain);
     connectWithOptionalPan(gain, destination, 0.15, 0.008);
@@ -92,15 +94,17 @@ if (button instanceof HTMLButtonElement) {
     output = compressor;
     master.gain.value = 0.0001;
     analyser.fftSize = 256;
-    compressor.threshold.value = -28;
-    compressor.knee.value = 18;
-    compressor.ratio.value = 3;
-    compressor.attack.value = 0.03;
-    compressor.release.value = 0.8;
+
+    // Gentle safety compression: enough to stop peaks, without crushing the ambience.
+    compressor.threshold.value = -18;
+    compressor.knee.value = 12;
+    compressor.ratio.value = 4;
+    compressor.attack.value = 0.015;
+    compressor.release.value = 0.6;
     highpass.type = 'highpass';
-    highpass.frequency.value = 48;
+    highpass.frequency.value = 42;
     lowpass.type = 'lowpass';
-    lowpass.frequency.value = 980;
+    lowpass.frequency.value = 1250;
     lowpass.Q.value = 0.35;
 
     ambientBus.connect(highpass);
@@ -114,16 +118,16 @@ if (button instanceof HTMLButtonElement) {
     const filterDepth = context.createGain();
     filterLfo.type = 'sine';
     filterLfo.frequency.value = 0.021;
-    filterDepth.gain.value = 210;
+    filterDepth.gain.value = 260;
     filterLfo.connect(filterDepth);
     filterDepth.connect(lowpass.frequency);
     filterLfo.start();
 
     const voices = [
-      { frequency: 73.42, gain: 0.15, type: 'sine', pan: -0.38, drift: 0.011 },
-      { frequency: 110, gain: 0.075, type: 'sine', pan: 0.32, drift: 0.014 },
-      { frequency: 146.83, gain: 0.045, type: 'triangle', pan: -0.08, drift: 0.009 },
-      { frequency: 220, gain: 0.018, type: 'sine', pan: 0.48, drift: 0.017 },
+      { frequency: 73.42, gain: 0.17, type: 'sine', pan: -0.38, drift: 0.011 },
+      { frequency: 110, gain: 0.09, type: 'sine', pan: 0.32, drift: 0.014 },
+      { frequency: 146.83, gain: 0.055, type: 'triangle', pan: -0.08, drift: 0.009 },
+      { frequency: 220, gain: 0.026, type: 'sine', pan: 0.48, drift: 0.017 },
     ];
 
     voices.forEach((voice, index) => {
@@ -163,9 +167,9 @@ if (button instanceof HTMLButtonElement) {
       oscillator.frequency.setValueAtTime(frequency, start);
       oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.82, start + 0.32);
       filter.type = 'lowpass';
-      filter.frequency.value = 1800;
+      filter.frequency.value = 2200;
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(index === 0 ? 0.018 : 0.012, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(index === 0 ? 0.055 : 0.038, start + 0.025);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.42);
       oscillator.connect(filter);
       filter.connect(gain);
@@ -196,9 +200,9 @@ if (button instanceof HTMLButtonElement) {
       oscillator.type = 'sine';
       oscillator.frequency.value = frequency;
       filter.type = 'lowpass';
-      filter.frequency.value = 1600;
+      filter.frequency.value = 1800;
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.0045, now + 1.2);
+      gain.gain.exponentialRampToValueAtTime(0.012, now + 1.2);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
       oscillator.connect(filter);
       filter.connect(gain);
@@ -223,7 +227,7 @@ if (button instanceof HTMLButtonElement) {
       const now = context.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now);
-      master.gain.exponentialRampToValueAtTime(Math.max(0.0001, targetGain()), now + 1.25);
+      master.gain.exponentialRampToValueAtTime(Math.max(0.0001, targetGain()), now + 0.9);
       playActivationCue();
       scheduleShimmer();
     } else {
@@ -268,8 +272,8 @@ if (button instanceof HTMLButtonElement) {
     oscillator.frequency.setValueAtTime(isSlider ? 330 : 520, now);
     oscillator.frequency.exponentialRampToValueAtTime(isSlider ? 270 : 220, now + (isSlider ? 0.035 : 0.09));
     filter.type = 'lowpass';
-    filter.frequency.value = 1300;
-    gain.gain.setValueAtTime(isSlider ? 0.0015 : 0.004, now);
+    filter.frequency.value = 1500;
+    gain.gain.setValueAtTime(isSlider ? 0.004 : 0.014, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + (isSlider ? 0.04 : 0.1));
     oscillator.connect(filter);
     filter.connect(gain);
@@ -289,6 +293,7 @@ if (button instanceof HTMLButtonElement) {
       playing,
       contextState: context?.state ?? 'not-created',
       gain: master?.gain.value ?? 0,
+      targetGain: targetGain(),
       volume: selectedVolume(),
     }),
     getLevel: () => {

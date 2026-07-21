@@ -8,30 +8,30 @@ export function initProductivity(canvas, controls) {
     linkDistance: 40,
     chargeStrength: -50,
     onTick: () => {
-      if (optimized) {
-        const ctx = canvas.getContext('2d');
-        const links = engine.getLinks();
-        const nodes = engine.getNodes();
-        // Randomly draw "knowledge sparks" traveling along links
-        links.forEach(l => {
-          if (Math.random() > 0.95) { // 5% chance per frame per link to spark
-            const s = typeof l.source === 'object' ? l.source : nodes[l.source];
-            const t = typeof l.target === 'object' ? l.target : nodes[l.target];
-            
-            ctx.beginPath();
-            ctx.moveTo(s.x, s.y);
-            ctx.lineTo(t.x, t.y);
-            ctx.strokeStyle = `rgba(79, 156, 247, ${Math.random()})`;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            // Spark node
-            s.signal = 1.0;
-            t.signal = 1.0;
-          }
-        });
-      }
-    }
+      if (!optimized) return;
+
+      const ctx = canvas.getContext('2d');
+      const links = engine.getLinks();
+      const nodes = engine.getNodes();
+
+      // Randomly draw knowledge sparks traveling along links.
+      links.forEach((link) => {
+        if (Math.random() <= 0.95) return;
+        const source = typeof link.source === 'object' ? link.source : nodes[link.source];
+        const target = typeof link.target === 'object' ? link.target : nodes[link.target];
+        if (!source || !target) return;
+
+        ctx.beginPath();
+        ctx.moveTo(source.x, source.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle = `rgba(79, 156, 247, ${Math.random()})`;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        source.signal = 1;
+        target.signal = 1;
+      });
+    },
   });
 
   const defaultInit = engine.init.bind(engine);
@@ -45,64 +45,92 @@ export function initProductivity(canvas, controls) {
       optimized = false;
       nodes.length = 0;
       links.length = 0;
-      
-      // Start with a small, weak network
-      for (let i = 0; i < 30; i++) {
-        nodes.push({ id: i, state: 1, quality: 0.4, signal: 0, radius: 4, degree: 0 });
+
+      for (let index = 0; index < 30; index += 1) {
+        nodes.push({
+          id: index,
+          state: 1,
+          quality: 0.4,
+          signal: 0,
+          signalType: null,
+          radius: 4,
+          degree: 0,
+        });
       }
-      for (let i = 0; i < 30; i++) {
-        const target = Math.floor(Math.random() * 30);
-        if (i !== target) {
-          links.push({ source: i, target: target, type: 'default', weight: 0.5 });
-          nodes[i].degree++;
-          nodes[target].degree++;
-        }
+
+      for (let index = 0; index < 30; index += 1) {
+        const targetIndex = Math.floor(Math.random() * 30);
+        if (index === targetIndex) continue;
+        links.push({
+          source: index,
+          target: targetIndex,
+          type: 'default',
+          weight: 0.5,
+          active: true,
+          phase: Math.random() * Math.PI * 2,
+        });
+        nodes[index].degree += 1;
+        nodes[targetIndex].degree += 1;
       }
-      
-      engine.updateConfig?.({ chargeStrength: -50, linkDistance: 40 });
+
       engine.rebuildSimulation();
-      engine.getSimulation().alpha(1).restart();
+      const simulation = engine.getSimulation();
+      simulation.force('charge').strength(-50);
+      simulation.force('link').distance(40);
+      simulation.alphaTarget(0).alpha(1).restart();
     }
 
     function setOptimized() {
+      if (optimized) return;
       optimized = true;
-      // Massive explosion of nodes
-      for (let i = nodes.length; i < 200; i++) {
-        nodes.push({ 
-          id: i, state: 1, quality: 1.0, signal: 1.0, radius: 6, degree: 0,
-          x: canvas.clientWidth/2 + (Math.random()-0.5)*10,
-          y: canvas.clientHeight/2 + (Math.random()-0.5)*10
+
+      for (let index = nodes.length; index < 200; index += 1) {
+        nodes.push({
+          id: index,
+          state: 1,
+          quality: 1,
+          signal: 1,
+          signalType: 'signal',
+          radius: 6,
+          degree: 0,
+          x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 10,
+          y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 10,
         });
       }
-      // Hyper-dense connections
-      for (let i = 0; i < 200; i++) {
-        for (let j = 0; j < 3; j++) {
-          const target = Math.floor(Math.random() * 200);
-          if (i !== target) {
-            links.push({ source: nodes[i], target: nodes[target], type: 'strong', weight: 1.0 });
-          }
+
+      for (let index = 0; index < 200; index += 1) {
+        for (let edge = 0; edge < 3; edge += 1) {
+          const targetIndex = Math.floor(Math.random() * 200);
+          if (index === targetIndex) continue;
+          links.push({
+            source: nodes[index],
+            target: nodes[targetIndex],
+            type: 'strong',
+            weight: 1,
+            active: true,
+            phase: Math.random() * Math.PI * 2,
+          });
+          nodes[index].degree += 1;
+          nodes[targetIndex].degree += 1;
         }
-        nodes[i].quality = 1.0;
-        nodes[i].radius = 6;
+        nodes[index].quality = 1;
+        nodes[index].radius = 6;
       }
-      
-      // Tight, boiling core
-      const sim = engine.getSimulation();
-      sim.force('charge').strength(-30);
-      sim.force('link').distance(20);
+
+      // Rebuild first, then configure and restart only the current simulation.
+      // Restarting the pre-rebuild simulation previously created competing engines
+      // that could push all nodes out of the drawable area.
       engine.rebuildSimulation();
-      sim.alphaTarget(0.3).restart(); // Keep it boiling indefinitely
+      const simulation = engine.getSimulation();
+      simulation.force('charge').strength(-30);
+      simulation.force('link').distance(20);
+      simulation.alphaTarget(0.3).alpha(1).restart();
     }
 
     setBaseline();
 
-    if (controls['optimize-all']) {
-      controls['optimize-all'].addEventListener('click', setOptimized);
-    }
-    
-    if (controls['reset-productivity']) {
-      controls['reset-productivity'].addEventListener('click', setBaseline);
-    }
+    controls['optimize-all']?.addEventListener('click', setOptimized);
+    controls['reset-productivity']?.addEventListener('click', setBaseline);
   };
 
   engine.init();

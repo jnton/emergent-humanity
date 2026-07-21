@@ -146,22 +146,20 @@ test('mobile layout does not create horizontal overflow', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test.describe('reduced motion', () => {
-  test.use({ reducedMotion: 'reduce' });
+test('reduced-motion preference keeps the hero visually stable', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
 
-  test('hero remains visually stable', async ({ page }) => {
-    await page.goto('/');
-    await expect.poll(() => page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
-    const heroCanvas = page.locator('#hero-canvas');
-    await expect(heroCanvas).toBeVisible();
-    await page.waitForTimeout(900);
-    const first = await canvasDigest(heroCanvas);
-    await page.waitForTimeout(600);
-    const second = await canvasDigest(heroCanvas);
+  const heroCanvas = page.locator('#hero-canvas');
+  await expect(heroCanvas).toBeVisible();
+  await page.waitForTimeout(900);
+  const first = await canvasDigest(heroCanvas);
+  await page.waitForTimeout(600);
+  const second = await canvasDigest(heroCanvas);
 
-    expect(first.activePixels).toBeGreaterThan(10);
-    expect(second.width).toBe(first.width);
-    expect(second.height).toBe(first.height);
-    expect(second.hash).toBe(first.hash);
-  });
+  expect(first.activePixels).toBeGreaterThan(10);
+  expect(second.width).toBe(first.width);
+  expect(second.height).toBe(first.height);
+  expect(second.hash).toBe(first.hash);
 });

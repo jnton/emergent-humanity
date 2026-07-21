@@ -6,6 +6,7 @@
 
 - [Machine-readable text edition](content/essay.md): Complete chapter text and key insights without requiring JavaScript or canvas rendering.
 - [Structured content source](content/sections.js): Canonical section IDs, titles, subtitles, body copy, insights, visualization hints, and controls.
+- [Browser-agent manifest](agent-manifest.json): Stable programmatic interface, readiness signal, methods, and constraints.
 - [Interactive experience](./): Browser-based visualizations and controls.
 - [Source repository](https://github.com/jnton/emergent-humanity): Implementation, history, tests, and license.
 - [License](LICENSE): Repository license terms.
@@ -36,6 +37,16 @@
 14. `entropy` — Entropy & Information Decay
 15. `productivity` — Productivity & Shared Knowledge
 16. `whats-next` — What's Next?
+
+## Browser-agent API
+
+After the `emergent-humanity:agent-ready` event, use `window.emergentHumanity` to:
+
+- call `getChapters()` to list stable chapter IDs and summaries;
+- call `getCurrentChapter()` to read navigation state;
+- call `getControls(sectionId)` and `getStatus(sectionId)` to inspect an interactive chapter;
+- call `operateControl(controlId, value)` to click buttons or set sliders and switches;
+- call `scrollToChapter(sectionId)` to navigate without screen-coordinate guessing.
 
 ## Interaction notes
 

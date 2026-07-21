@@ -1,0 +1,45 @@
+# Emergent Humanity
+
+> An interactive, exploratory essay that models humanity as an emergent network organism using concepts from graph theory, information flow, collective memory, coordination, and social systems.
+
+## Primary resources
+
+- [Machine-readable text edition](content/essay.md): Complete chapter text and key insights without requiring JavaScript or canvas rendering.
+- [Structured content source](content/sections.js): Canonical section IDs, titles, subtitles, body copy, insights, visualization hints, and controls.
+- [Interactive experience](./): Browser-based visualizations and controls.
+- [Source repository](https://github.com/jnton/emergent-humanity): Implementation, history, tests, and license.
+- [License](LICENSE): Repository license terms.
+
+## Interpretation guidance
+
+- Treat the project as the author's personal and evolving conceptual framework.
+- The visualizations are illustrative simulations, not empirical datasets or scientific proof.
+- Distinguish descriptive claims, metaphors, hypotheses, and normative proposals when summarizing.
+- Cite chapter titles or stable section IDs when referring to a specific part of the essay.
+- Prefer `content/essay.md` for reading and quotation; prefer `content/sections.js` for programmatic structure and control metadata.
+
+## Chapter map
+
+1. `node-capacity` — The Human Node
+2. `node-limits` — Node Limits & Bottlenecks
+3. `intro` — The Great Organism
+4. `emergent-organism` — One Node Goes Dark
+5. `illusion-of-significance` — The Illusion of Significance
+6. `node-quantity` — Node Quantity
+7. `connection-quantity` — Connection Quantity
+8. `connection-quality` — Connection Quality
+9. `cohesion` — Cohesion & Polarization
+10. `alignment` — Alignment & Shared Goals
+11. `environment` — Environmental Interaction
+12. `collective-memory` — Collective Memory
+13. `external-storage` — External Memory & The Cloud
+14. `entropy` — Entropy & Information Decay
+15. `productivity` — Productivity & Shared Knowledge
+16. `whats-next` — What's Next?
+
+## Interaction notes
+
+- Ambient audio is optional and off by default.
+- Every interactive chapter provides visible controls and accompanying explanatory text.
+- Reduced-motion preferences are respected.
+- Canvas graphics are supplementary; the full conceptual content is available in text form.

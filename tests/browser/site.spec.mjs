@@ -116,7 +116,7 @@ test('soundscape is controlled from a dismissible menu', async ({ page }) => {
     { timeout: 5_000 }
   ).toBeGreaterThan(0);
 
-  await page.locator('main').click({ position: { x: 10, y: 10 } });
+  await page.mouse.click(20, 180);
   await expect(audioMenu).not.toHaveAttribute('open', '');
   await expect(volume).toBeHidden();
   expect(errors).toEqual([]);
@@ -143,8 +143,8 @@ test('browser-agent API exposes chapters and safely operates controls', async ({
   expect(errors).toEqual([]);
 });
 
-test('mobile header remains compact and never duplicates the chapter title', async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test('reported mobile viewport keeps one compact header and one chapter title', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 367, height: 643 });
   const errors = collectRuntimeErrors(page);
   await page.goto('/');
 
@@ -167,16 +167,25 @@ test('mobile header remains compact and never duplicates the chapter title', asy
   const panelBox = await audioPanel.boundingBox();
   expect(openHeaderBox.height).toBe(initialHeaderBox.height);
   expect(panelBox.x).toBeGreaterThanOrEqual(0);
-  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(390);
+  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(367);
   expect(panelBox.y).toBeGreaterThanOrEqual(initialHeaderBox.y + initialHeaderBox.height);
-  await attachViewportScreenshot(page, testInfo, 'mobile-audio-menu-open');
+  await attachViewportScreenshot(page, testInfo, 'reported-viewport-audio-menu-open');
 
-  await page.locator('#section-emergent-organism').evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    const target = document.getElementById('section-emergent-organism');
+    if (!target) throw new Error('Missing Great Organism chapter');
+    window.scrollTo(0, target.offsetTop);
+  });
+  await expect.poll(
+    () => page.evaluate(() => window.emergentHumanity?.getCurrentChapter()),
+    { timeout: 5_000 }
+  ).toBe('emergent-organism');
   await expect(audioMenu).not.toHaveAttribute('open', '');
   await expect(page.locator('#section-emergent-organism .section-title')).toHaveCount(1);
   await expect(page.locator('#section-emergent-organism .section-title')).toBeVisible();
   await expect(chapterStatus).toBeHidden();
-  await attachViewportScreenshot(page, testInfo, 'mobile-great-organism');
+  await attachViewportScreenshot(page, testInfo, 'reported-viewport-great-organism');
 
   const dimensions = await page.evaluate(() => ({
     viewport: window.innerWidth,

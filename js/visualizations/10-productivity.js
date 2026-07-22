@@ -13,10 +13,11 @@ export function initProductivity(canvas, controls) {
       const ctx = canvas.getContext('2d');
       const links = engine.getLinks();
       const nodes = engine.getNodes();
+      const mobile = canvas.clientWidth <= 900;
 
       // Randomly draw knowledge sparks traveling along links.
       links.forEach((link) => {
-        if (Math.random() <= 0.95) return;
+        if (Math.random() <= 0.96) return;
         const source = typeof link.source === 'object' ? link.source : nodes[link.source];
         const target = typeof link.target === 'object' ? link.target : nodes[link.target];
         if (!source || !target) return;
@@ -25,7 +26,7 @@ export function initProductivity(canvas, controls) {
         ctx.moveTo(source.x, source.y);
         ctx.lineTo(target.x, target.y);
         ctx.strokeStyle = `rgba(79, 156, 247, ${Math.random()})`;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = mobile ? 2 : 3;
         ctx.stroke();
 
         source.signal = 1;
@@ -78,35 +79,41 @@ export function initProductivity(canvas, controls) {
       simulation.force('charge').strength(-50);
       simulation.force('link').distance(40);
       simulation.alphaTarget(0).alpha(1).restart();
+      canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
     }
 
     function setOptimized() {
       if (optimized) return;
       optimized = true;
 
-      for (let index = nodes.length; index < 200; index += 1) {
+      const mobile = canvas.clientWidth <= 900;
+      const targetNodeCount = mobile ? 105 : 200;
+      const edgesPerNode = mobile ? 2 : 3;
+      const nodeRadius = mobile ? 4.2 : 6;
+
+      for (let index = nodes.length; index < targetNodeCount; index += 1) {
         nodes.push({
           id: index,
           state: 1,
           quality: 1,
           signal: 1,
           signalType: 'signal',
-          radius: 6,
+          radius: nodeRadius,
           degree: 0,
-          x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 10,
-          y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 10,
+          x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 20,
+          y: canvas.clientHeight * 0.58 + (Math.random() - 0.5) * 20,
         });
       }
 
-      for (let index = 0; index < 200; index += 1) {
-        for (let edge = 0; edge < 3; edge += 1) {
-          const targetIndex = Math.floor(Math.random() * 200);
+      for (let index = 0; index < targetNodeCount; index += 1) {
+        for (let edge = 0; edge < edgesPerNode; edge += 1) {
+          const targetIndex = Math.floor(Math.random() * targetNodeCount);
           if (index === targetIndex) continue;
           links.push({
             source: nodes[index],
             target: nodes[targetIndex],
             type: 'strong',
-            weight: 1,
+            weight: mobile ? 0.65 : 1,
             active: true,
             phase: Math.random() * Math.PI * 2,
           });
@@ -114,17 +121,15 @@ export function initProductivity(canvas, controls) {
           nodes[targetIndex].degree += 1;
         }
         nodes[index].quality = 1;
-        nodes[index].radius = 6;
+        nodes[index].radius = nodeRadius;
       }
 
-      // Rebuild first, then configure and restart only the current simulation.
-      // Restarting the pre-rebuild simulation previously created competing engines
-      // that could push all nodes out of the drawable area.
       engine.rebuildSimulation();
       const simulation = engine.getSimulation();
-      simulation.force('charge').strength(-30);
-      simulation.force('link').distance(20);
-      simulation.alphaTarget(0.3).alpha(1).restart();
+      simulation.force('charge').strength(mobile ? -18 : -30);
+      simulation.force('link').distance(mobile ? 18 : 20);
+      simulation.alphaTarget(mobile ? 0.08 : 0.3).alpha(1).restart();
+      canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
     }
 
     setBaseline();

@@ -30,6 +30,20 @@ function getSafeBounds(canvas) {
   };
 }
 
+function getComfortBounds(canvas) {
+  const bounds = getSafeBounds(canvas);
+  const mobile = bounds.width <= MOBILE_BREAKPOINT;
+  const horizontalInset = mobile ? 24 : 16;
+  const verticalInset = mobile ? 18 : 14;
+  return {
+    ...bounds,
+    left: bounds.left + horizontalInset,
+    right: Math.max(bounds.left + horizontalInset + 1, bounds.right - horizontalInset),
+    top: bounds.top + verticalInset,
+    bottom: Math.max(bounds.top + verticalInset + 1, bounds.bottom - verticalInset),
+  };
+}
+
 function containNodes(engine, canvas) {
   const bounds = getSafeBounds(canvas);
 
@@ -43,13 +57,13 @@ function containNodes(engine, canvas) {
 
     if (minX <= maxX) {
       const nextX = clamp(node.x, minX, maxX);
-      if (nextX !== node.x) node.vx = (node.vx ?? 0) * 0.2;
+      if (nextX !== node.x) node.vx = (node.vx ?? 0) * 0.15;
       node.x = nextX;
       if (node.fx != null) node.fx = clamp(node.fx, minX, maxX);
     }
     if (minY <= maxY) {
       const nextY = clamp(node.y, minY, maxY);
-      if (nextY !== node.y) node.vy = (node.vy ?? 0) * 0.2;
+      if (nextY !== node.y) node.vy = (node.vy ?? 0) * 0.15;
       node.y = nextY;
       if (node.fy != null) node.fy = clamp(node.fy, minY, maxY);
     }
@@ -60,7 +74,8 @@ function createViewportForce(engine, canvas) {
   let nodes = [];
 
   function force(alpha) {
-    const bounds = getSafeBounds(canvas);
+    const bounds = getComfortBounds(canvas);
+    const strength = 0.12 * Math.max(alpha, 0.18);
 
     for (const node of nodes) {
       if (node.state === 0 || !Number.isFinite(node.x) || !Number.isFinite(node.y)) continue;
@@ -70,8 +85,9 @@ function createViewportForce(engine, canvas) {
       const maxX = bounds.right - radius;
       const minY = bounds.top + radius;
       const maxY = bounds.bottom - radius;
-      const strength = 0.34 * Math.max(alpha, 0.12);
 
+      // Start applying pressure before a node reaches the hard canvas edge. This
+      // prevents dense graphs from turning into artificial rows along the border.
       if (node.x < minX) node.vx = (node.vx ?? 0) + (minX - node.x) * strength;
       if (node.x > maxX) node.vx = (node.vx ?? 0) - (node.x - maxX) * strength;
       if (node.y < minY) node.vy = (node.vy ?? 0) + (minY - node.y) * strength;
@@ -104,7 +120,7 @@ function installViewportGuard(engine, canvas) {
     ));
     if (nodes.length === 0) return;
 
-    const bounds = getSafeBounds(canvas);
+    const bounds = getComfortBounds(canvas);
     const left = Math.min(...nodes.map((node) => node.x - nodeVisualRadius(node)));
     const right = Math.max(...nodes.map((node) => node.x + nodeVisualRadius(node)));
     const top = Math.min(...nodes.map((node) => node.y - nodeVisualRadius(node)));

@@ -182,20 +182,25 @@ test('reported mobile viewport keeps one compact header and one chapter title', 
     { timeout: 5_000 }
   ).toBe('intro');
   await expect(audioMenu).not.toHaveAttribute('open', '');
-  await expect(page.locator('#section-intro .section-title')).toHaveCount(1);
-  await expect(page.locator('#section-intro .section-title')).toBeVisible();
-  await expect(page.locator('#section-intro .section-title')).toHaveText('The Great Organism');
+
+  const chapterTitle = page.locator('#section-intro .section-title');
+  await expect(chapterTitle).toHaveCount(1);
+  await expect(chapterTitle).toHaveText('The Great Organism');
+  await expect.poll(
+    () => chapterTitle.evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity)),
+    { timeout: 3_000 }
+  ).toBeGreaterThan(0.99);
   await expect(chapterStatus).toBeHidden();
 
-  const visibleExactTitleCount = await page.evaluate(() => [...document.querySelectorAll('body *')]
+  const visibleOnScreenTitleCount = await page.evaluate(() => [...document.querySelectorAll('body *')]
     .filter((element) => element.children.length === 0)
     .filter((element) => element.textContent?.trim() === 'The Great Organism')
+    .filter((element) => element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))
     .filter((element) => {
-      const style = getComputedStyle(element);
       const box = element.getBoundingClientRect();
-      return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0;
+      return box.bottom > 0 && box.top < window.innerHeight && box.right > 0 && box.left < window.innerWidth;
     }).length);
-  expect(visibleExactTitleCount).toBe(1);
+  expect(visibleOnScreenTitleCount).toBe(1);
 
   await attachViewportScreenshot(page, testInfo, 'reported-viewport-great-organism');
 

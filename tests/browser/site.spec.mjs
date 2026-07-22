@@ -38,6 +38,13 @@ function collectRuntimeErrors(page) {
   return errors;
 }
 
+async function attachViewportScreenshot(page, testInfo, name) {
+  await testInfo.attach(name, {
+    body: await page.screenshot({ fullPage: false }),
+    contentType: 'image/png',
+  });
+}
+
 test('hero canvas renders and animates without runtime errors', async ({ page }) => {
   const errors = collectRuntimeErrors(page);
   await page.goto('/');
@@ -81,12 +88,20 @@ test('all chapter visualizations initialize and paint a frame', async ({ page })
   expect(errors).toEqual([]);
 });
 
-test('soundscape creates a running audible signal after explicit activation', async ({ page }) => {
+test('soundscape is controlled from a dismissible menu', async ({ page }) => {
   const errors = collectRuntimeErrors(page);
   await page.goto('/');
 
+  const audioMenu = page.locator('#audio-menu');
+  const trigger = audioMenu.locator('summary');
   const soundscape = page.locator('#toggle-soundscape');
   const volume = page.locator('#ambient-volume-control');
+
+  await expect(audioMenu).not.toHaveAttribute('open', '');
+  await expect(soundscape).toBeHidden();
+  await trigger.click();
+  await expect(audioMenu).toHaveAttribute('open', '');
+  await expect(soundscape).toBeVisible();
   await expect(soundscape).toHaveAttribute('aria-pressed', 'false');
   await soundscape.click();
 
@@ -101,6 +116,9 @@ test('soundscape creates a running audible signal after explicit activation', as
     { timeout: 5_000 }
   ).toBeGreaterThan(0);
 
+  await page.locator('main').click({ position: { x: 10, y: 10 } });
+  await expect(audioMenu).not.toHaveAttribute('open', '');
+  await expect(volume).toBeHidden();
   expect(errors).toEqual([]);
 });
 
@@ -122,6 +140,49 @@ test('browser-agent API exposes chapters and safely operates controls', async ({
   await expect(page.locator('#ctrl-population-slider')).toHaveValue('0.8');
   await expect(page.locator('#ctrl-population-slider')).toHaveAttribute('aria-valuetext', '80%');
 
+  expect(errors).toEqual([]);
+});
+
+test('mobile header remains compact and never duplicates the chapter title', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = collectRuntimeErrors(page);
+  await page.goto('/');
+
+  const header = page.locator('.site-header');
+  const audioMenu = page.locator('#audio-menu');
+  const audioTrigger = audioMenu.locator('summary');
+  const audioPanel = page.locator('.audio-menu-panel');
+  const chapterStatus = page.locator('.chapter-status');
+
+  await expect(header).toBeVisible();
+  await expect(chapterStatus).toBeHidden();
+
+  const initialHeaderBox = await header.boundingBox();
+  expect(initialHeaderBox).not.toBeNull();
+  expect(initialHeaderBox.height).toBeLessThanOrEqual(62);
+
+  await audioTrigger.click();
+  await expect(audioPanel).toBeVisible();
+  const openHeaderBox = await header.boundingBox();
+  const panelBox = await audioPanel.boundingBox();
+  expect(openHeaderBox.height).toBe(initialHeaderBox.height);
+  expect(panelBox.x).toBeGreaterThanOrEqual(0);
+  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(390);
+  expect(panelBox.y).toBeGreaterThanOrEqual(initialHeaderBox.y + initialHeaderBox.height);
+  await attachViewportScreenshot(page, testInfo, 'mobile-audio-menu-open');
+
+  await page.locator('#section-emergent-organism').evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  await expect(audioMenu).not.toHaveAttribute('open', '');
+  await expect(page.locator('#section-emergent-organism .section-title')).toHaveCount(1);
+  await expect(page.locator('#section-emergent-organism .section-title')).toBeVisible();
+  await expect(chapterStatus).toBeHidden();
+  await attachViewportScreenshot(page, testInfo, 'mobile-great-organism');
+
+  const dimensions = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+  }));
+  expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.viewport + 1);
   expect(errors).toEqual([]);
 });
 

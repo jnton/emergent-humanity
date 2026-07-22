@@ -173,18 +173,30 @@ test('reported mobile viewport keeps one compact header and one chapter title', 
 
   await page.evaluate(() => {
     document.documentElement.style.scrollBehavior = 'auto';
-    const target = document.getElementById('section-emergent-organism');
+    const target = document.getElementById('section-intro');
     if (!target) throw new Error('Missing Great Organism chapter');
     window.scrollTo(0, target.offsetTop);
   });
   await expect.poll(
     () => page.evaluate(() => window.emergentHumanity?.getCurrentChapter()),
     { timeout: 5_000 }
-  ).toBe('emergent-organism');
+  ).toBe('intro');
   await expect(audioMenu).not.toHaveAttribute('open', '');
-  await expect(page.locator('#section-emergent-organism .section-title')).toHaveCount(1);
-  await expect(page.locator('#section-emergent-organism .section-title')).toBeVisible();
+  await expect(page.locator('#section-intro .section-title')).toHaveCount(1);
+  await expect(page.locator('#section-intro .section-title')).toBeVisible();
+  await expect(page.locator('#section-intro .section-title')).toHaveText('The Great Organism');
   await expect(chapterStatus).toBeHidden();
+
+  const visibleExactTitleCount = await page.evaluate(() => [...document.querySelectorAll('body *')]
+    .filter((element) => element.children.length === 0)
+    .filter((element) => element.textContent?.trim() === 'The Great Organism')
+    .filter((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0;
+    }).length);
+  expect(visibleExactTitleCount).toBe(1);
+
   await attachViewportScreenshot(page, testInfo, 'reported-viewport-great-organism');
 
   const dimensions = await page.evaluate(() => ({

@@ -94,6 +94,13 @@
     @media (max-width: 900px) { :root { --header-height: 60px; } }
   </style>
 
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/lib/network-engine.js": "./js/lib/network-engine-guarded.js"
+    }
+  }
+  </script>
   <script defer src="js/platform.js"></script>
   <script defer src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="preload" href="css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">

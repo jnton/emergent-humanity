@@ -7,6 +7,18 @@ export function initIntro(canvas, controls) {
   let fadeProgress = 0;
   let phase = 0; // 0 = isolated, 1 = blooming, 2 = fading you
 
+  function layoutMetrics() {
+    const mobile = canvas.clientWidth <= 900;
+    const centerX = canvas.clientWidth / 2;
+    const centerY = mobile ? canvas.clientHeight * 0.59 : canvas.clientHeight / 2;
+    const organismRadius = Math.min(
+      mobile ? 132 : 220,
+      canvas.clientWidth * (mobile ? 0.34 : 0.42),
+      canvas.clientHeight * (mobile ? 0.29 : 0.4)
+    );
+    return { mobile, centerX, centerY, organismRadius };
+  }
+
   const engine = createNetworkEngine(canvas, {
     nodeCount: 1, // Start with exactly one node
     linkDistance: 40,
@@ -14,7 +26,8 @@ export function initIntro(canvas, controls) {
     onTick: () => {
       const ctx = canvas.getContext('2d');
       const nodes = engine.getNodes();
-      
+      const { mobile, centerX, centerY, organismRadius } = layoutMetrics();
+
       if (phase >= 1) {
         // Fade in the new nodes elegantly
         let maxQualityFade = 0;
@@ -24,13 +37,13 @@ export function initIntro(canvas, controls) {
           }
           maxQualityFade = Math.max(maxQualityFade, nodes[i].quality);
         }
-        
+
         if (organismOpacity < 1) {
-            organismOpacity += 0.002;
+          organismOpacity += 0.002;
         }
 
         if (zoomProgress < 1) {
-            zoomProgress += 0.005; // Smooth zoom out as network forms
+          zoomProgress += 0.005; // Smooth zoom out as network forms
         }
       }
 
@@ -42,11 +55,11 @@ export function initIntro(canvas, controls) {
 
       if (nodes.length > 0) {
         ctx.save();
-        
+
         if (phase >= 1 && organismOpacity > 0) {
-          // Draw the emergent organism circle "membrane"
+          // Draw the emergent organism circle "membrane" within the visible canvas.
           ctx.beginPath();
-          ctx.arc(canvas.clientWidth / 2, canvas.clientHeight / 2, 220 + Math.sin(Date.now()*0.001)*5, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, organismRadius + Math.sin(Date.now() * 0.001) * 4, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(79, 156, 247, ${0.15 * organismOpacity})`;
           ctx.lineWidth = 1;
           ctx.setLineDash([10, 15]);
@@ -57,20 +70,20 @@ export function initIntro(canvas, controls) {
 
         // "You" is always nodes[0]
         const you = nodes[0];
-        
+
         const youOpacity = 1 - fadeProgress;
         if (youOpacity > 0.01) {
           // Draw the "You" label
           ctx.fillStyle = `rgba(255, 255, 255, ${youOpacity})`; // Fades completely in stillness
-          ctx.font = '500 14px Inter, sans-serif';
+          ctx.font = '500 14px system-ui, sans-serif';
           // Position label slightly further away so it doesn't overlap
           ctx.fillText('You', you.x + 8, you.y + 4);
         }
 
         ctx.restore();
 
-        // Zoom out smoothly from 2.0x to 1x only when blooming starts
-        const currentZoom = 2.0 - (zoomProgress * 1.0);
+        // Desktop keeps the dramatic zoom. On mobile it would crop the graph.
+        const currentZoom = mobile ? 1 : 2.0 - (zoomProgress * 1.0);
         canvas.style.transform = `scale(${currentZoom})`;
       }
     }
@@ -96,6 +109,7 @@ export function initIntro(canvas, controls) {
 
     const nodes = engine.getNodes();
     const links = engine.getLinks();
+    const { centerX, centerY, organismRadius } = layoutMetrics();
 
     // Reset to isolated state
     isIsolated = true;
@@ -103,13 +117,13 @@ export function initIntro(canvas, controls) {
     zoomProgress = 0;
     fadeProgress = 0;
     phase = 0;
-    nodes.length = 1; 
+    nodes.length = 1;
     links.length = 0;
-    
+
     // Make "You" completely normal and insignificant
-    nodes[0].x = canvas.clientWidth / 2;
-    nodes[0].y = canvas.clientHeight / 2;
-    nodes[0].quality = 0.5; 
+    nodes[0].x = centerX;
+    nodes[0].y = centerY;
+    nodes[0].quality = 0.5;
     nodes[0].radius = 3; // Standard tiny size
     nodes[0].vx = 0;
     nodes[0].vy = 0;
@@ -126,9 +140,17 @@ export function initIntro(canvas, controls) {
       isIsolated = false;
       sim.force('charge').strength(-15); // Softer gravity
 
-      // Add a radial force to softly pull into a cell-like circle
+      // Add a radial force sized to the current canvas rather than a fixed desktop radius.
       if (window.d3 && window.d3.forceRadial) {
-         sim.force('radial', window.d3.forceRadial(180, canvas.clientWidth/2, canvas.clientHeight/2).strength(0.04));
+        const metrics = layoutMetrics();
+        sim.force(
+          'radial',
+          window.d3.forceRadial(
+            Math.max(48, metrics.organismRadius * 0.8),
+            metrics.centerX,
+            metrics.centerY
+          ).strength(0.04)
+        );
       }
 
       const targetNodes = 350;
@@ -142,8 +164,8 @@ export function initIntro(canvas, controls) {
         }
 
         // Spawn a small batch of nodes
-        const batchEnd = Math.min(targetNodes, currentIndex + 3); 
-        
+        const batchEnd = Math.min(targetNodes, currentIndex + 3);
+
         for (let i = currentIndex; i < batchEnd; i++) {
           const parentIndex = Math.floor(Math.random() * i);
           const parentNode = nodes[parentIndex];
@@ -151,7 +173,7 @@ export function initIntro(canvas, controls) {
           nodes.push({
             id: i,
             state: 1,
-            quality: 0, 
+            quality: 0,
             targetQuality: 0.1 + Math.random() * 0.8,
             signal: 0,
             radius: 3,
@@ -164,9 +186,9 @@ export function initIntro(canvas, controls) {
           links.push({ source: nodes[i], target: parentNode, type: 'default', weight: 1.0, active: true });
 
           if (Math.random() > 0.7 && i > 3) {
-            let secondParent = Math.floor(Math.random() * i);
+            const secondParent = Math.floor(Math.random() * i);
             if (secondParent !== parentIndex) {
-               links.push({ source: nodes[i], target: nodes[secondParent], type: 'default', weight: 1.0, active: true });
+              links.push({ source: nodes[i], target: nodes[secondParent], type: 'default', weight: 1.0, active: true });
             }
           }
         }
@@ -174,8 +196,8 @@ export function initIntro(canvas, controls) {
         currentIndex = batchEnd;
         sim.nodes(nodes);
         sim.force('link').links(links);
-        sim.alpha(0.3).restart(); 
-      }, 20); 
+        sim.alpha(0.3).restart();
+      }, 20);
 
       // Sequence Step 2: Once network is fully spawned and mostly still, start fading "You"
       fadeTimeout = setTimeout(() => {

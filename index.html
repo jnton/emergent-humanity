@@ -34,8 +34,8 @@
   }
   </script>
 
-  <script src="js/platform.js"></script>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script defer src="js/platform.js"></script>
+  <script defer src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/experience.css">
   <link rel="stylesheet" href="css/audio.css?v=4">
@@ -76,7 +76,22 @@
     <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
   </header>
 
-  <main class="scroll-container" id="scroll-container" aria-label="Emergent Humanity interactive essay"></main>
+  <main class="scroll-container" id="scroll-container" aria-label="Emergent Humanity interactive essay">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <p class="hero-eyebrow">An interactive network essay</p>
+      <h1 class="hero-title" id="hero-title">Emergent Humanity</h1>
+      <p class="hero-subtitle">A personal attempt to understand humanity as an emergent network—and to explore how that network might become healthier, wiser, and more capable.</p>
+      <div class="hero-actions">
+        <a class="hero-primary-action" href="#section-node-capacity">Begin the exploration</a>
+        <button class="hero-secondary-action" type="button">Browse chapters</button>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-indicator-text">Scroll to explore</span>
+        <div class="scroll-indicator-arrow"></div>
+      </div>
+    </section>
+  </main>
 
   <noscript>
     <p style="padding: 6rem 1.5rem; color: #e8ecf4; background: #080b12;">This interactive essay requires JavaScript to render its visualizations. A machine-readable text edition is available in <a href="content/essay.md">content/essay.md</a>.</p>

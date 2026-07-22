@@ -30,6 +30,32 @@ function getSafeBounds(canvas) {
   };
 }
 
+function containNodes(engine, canvas) {
+  const bounds = getSafeBounds(canvas);
+
+  for (const node of engine.getNodes()) {
+    if (node.state === 0 || !Number.isFinite(node.x) || !Number.isFinite(node.y)) continue;
+    const radius = nodeVisualRadius(node);
+    const minX = bounds.left + radius;
+    const maxX = bounds.right - radius;
+    const minY = bounds.top + radius;
+    const maxY = bounds.bottom - radius;
+
+    if (minX <= maxX) {
+      const nextX = clamp(node.x, minX, maxX);
+      if (nextX !== node.x) node.vx = (node.vx ?? 0) * 0.2;
+      node.x = nextX;
+      if (node.fx != null) node.fx = clamp(node.fx, minX, maxX);
+    }
+    if (minY <= maxY) {
+      const nextY = clamp(node.y, minY, maxY);
+      if (nextY !== node.y) node.vy = (node.vy ?? 0) * 0.2;
+      node.y = nextY;
+      if (node.fy != null) node.fy = clamp(node.fy, minY, maxY);
+    }
+  }
+}
+
 function createViewportForce(engine, canvas) {
   let nodes = [];
 
@@ -50,10 +76,6 @@ function createViewportForce(engine, canvas) {
       if (node.x > maxX) node.vx = (node.vx ?? 0) - (node.x - maxX) * strength;
       if (node.y < minY) node.vy = (node.vy ?? 0) + (minY - node.y) * strength;
       if (node.y > maxY) node.vy = (node.vy ?? 0) - (node.y - maxY) * strength;
-
-      // Hard containment prevents transient clipping during interaction and reheating.
-      if (minX <= maxX) node.x = clamp(node.x, minX, maxX);
-      if (minY <= maxY) node.y = clamp(node.y, minY, maxY);
     }
   }
 
@@ -98,21 +120,15 @@ function installViewportGuard(engine, canvas) {
     const targetCenterY = (bounds.top + bounds.bottom) / 2;
 
     for (const node of nodes) {
-      const radius = nodeVisualRadius(node);
-      const minX = bounds.left + radius;
-      const maxX = bounds.right - radius;
-      const minY = bounds.top + radius;
-      const maxY = bounds.bottom - radius;
-      node.x = clamp(targetCenterX + (node.x - sourceCenterX) * scale, minX, maxX);
-      node.y = clamp(targetCenterY + (node.y - sourceCenterY) * scale, minY, maxY);
-      if (node.fx != null) node.fx = clamp(node.fx, minX, maxX);
-      if (node.fy != null) node.fy = clamp(node.fy, minY, maxY);
+      node.x = targetCenterX + (node.x - sourceCenterX) * scale;
+      node.y = targetCenterY + (node.y - sourceCenterY) * scale;
     }
+    containNodes(engine, canvas);
   }
 
   function scheduleFits() {
     cancelPendingFits();
-    [0, 180, 520, 1000].forEach((delay) => {
+    [0, 180, 520, 1000, 1800, 3000].forEach((delay) => {
       const timer = window.setTimeout(() => {
         pendingFits.delete(timer);
         fitNow();
@@ -125,6 +141,9 @@ function installViewportGuard(engine, canvas) {
     const simulation = engine.getSimulation?.();
     if (!simulation) return;
     simulation.force('viewport-bounds', viewportForce);
+    // D3 forces added later by individual visualizations can run after our force.
+    // A namespaced tick listener therefore performs the final hard containment.
+    simulation.on('tick.viewport-guard', () => containNodes(engine, canvas));
     fitNow();
     simulation.alpha(Math.max(simulation.alpha(), 0.25)).restart();
     scheduleFits();
@@ -145,6 +164,7 @@ function installViewportGuard(engine, canvas) {
   const originalDestroy = engine.destroy;
   engine.destroy = function guardedDestroy(...args) {
     cancelPendingFits();
+    engine.getSimulation?.()?.on('tick.viewport-guard', null);
     resizeObserver.disconnect();
     delete canvas.__EMERGENT_NETWORK_VIEWPORT__;
     return originalDestroy?.apply(this, args);

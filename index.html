@@ -34,11 +34,80 @@
   }
   </script>
 
-  <script src="js/platform.js"></script>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-deep: #080b12;
+      --bg-surface: #0f1520;
+      --text-primary: #e8ecf4;
+      --text-secondary: #a4abbc;
+      --accent: #4f9cf7;
+      --border: #1e2738;
+      --border-subtle: #141b28;
+      --space-sm: 8px;
+      --space-lg: 24px;
+      --space-xl: 40px;
+      --space-2xl: 64px;
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --header-height: 68px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg-deep); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      min-height: 100%;
+      overflow-x: hidden;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.7;
+    }
+    .scroll-container { min-height: 100svh; }
+    .hero {
+      min-height: 100svh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--bg-deep);
+      text-align: center;
+    }
+    .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .3; }
+    .hero-title, .hero-subtitle { position: relative; z-index: 2; }
+    .hero-title {
+      margin-bottom: var(--space-lg);
+      color: var(--text-primary);
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+    }
+    .hero-subtitle {
+      max-width: 500px;
+      margin-bottom: var(--space-2xl);
+      color: var(--text-secondary);
+      font-size: clamp(.95rem, 2vw, 1.2rem);
+      line-height: 1.7;
+    }
+    @media (max-width: 900px) { :root { --header-height: 60px; } }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/lib/network-engine.js": "./js/lib/network-engine-guarded.js"
+    }
+  }
+  </script>
+  <script defer src="js/platform.js"></script>
+  <script defer src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="preload" href="css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/style.css"></noscript>
   <link rel="stylesheet" href="css/experience.css">
   <link rel="stylesheet" href="css/audio.css?v=4">
+  <link rel="stylesheet" href="css/mobile.css?v=1">
 </head>
 <body>
   <a class="skip-link" href="#section-node-capacity">Skip to the first chapter</a>
@@ -75,7 +144,22 @@
     <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
   </header>
 
-  <main class="scroll-container" id="scroll-container" aria-label="Emergent Humanity interactive essay"></main>
+  <main class="scroll-container" id="scroll-container" aria-label="Emergent Humanity interactive essay">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <p class="hero-eyebrow">An interactive network essay</p>
+      <h1 class="hero-title" id="hero-title">Emergent Humanity</h1>
+      <p class="hero-subtitle">A personal attempt to understand humanity as an emergent network—and to explore how that network might become healthier, wiser, and more capable.</p>
+      <div class="hero-actions">
+        <a class="hero-primary-action" href="#section-node-capacity">Begin the exploration</a>
+        <button class="hero-secondary-action" type="button">Browse chapters</button>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-indicator-text">Scroll to explore</span>
+        <div class="scroll-indicator-arrow"></div>
+      </div>
+    </section>
+  </main>
 
   <noscript>
     <p style="padding: 6rem 1.5rem; color: #e8ecf4; background: #080b12;">This interactive essay requires JavaScript to render its visualizations. A machine-readable text edition is available in <a href="content/essay.md">content/essay.md</a>.</p>
@@ -84,5 +168,6 @@
   <script type="module" src="js/app.js"></script>
   <script type="module" src="js/agent-api.js"></script>
   <script type="module" src="js/audio.js?v=4"></script>
+  <script type="module" src="js/mobile-layout.js?v=1"></script>
 </body>
 </html>

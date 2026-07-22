@@ -7,9 +7,11 @@
     "preview": "python3 -m http.server 4173 --bind 0.0.0.0",
     "test": "npm run test:static",
     "test:static": "find js content -name '*.js' -print0 | xargs -0 -n1 node --check && node tests/static-smoke.mjs",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "test:lighthouse": "lhci autorun --config=lighthouserc.json"
   },
   "devDependencies": {
+    "@lhci/cli": "0.15.1",
     "@playwright/test": "1.61.1"
   }
 }

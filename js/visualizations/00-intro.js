@@ -30,34 +30,22 @@ export function initIntro(canvas, controls) {
 
       if (phase >= 1) {
         // Fade in the new nodes elegantly
-        let maxQualityFade = 0;
         for (let i = 1; i < nodes.length; i++) {
           if (nodes[i].quality < nodes[i].targetQuality) {
-            nodes[i].quality += 0.005; // faster smooth fade in
+            nodes[i].quality += 0.005;
           }
-          maxQualityFade = Math.max(maxQualityFade, nodes[i].quality);
         }
 
-        if (organismOpacity < 1) {
-          organismOpacity += 0.002;
-        }
-
-        if (zoomProgress < 1) {
-          zoomProgress += 0.005; // Smooth zoom out as network forms
-        }
+        if (organismOpacity < 1) organismOpacity += 0.002;
+        if (zoomProgress < 1) zoomProgress += 0.005;
       }
 
-      if (phase === 2) {
-        if (fadeProgress < 1) {
-          fadeProgress += 0.005; // Takes ~3.3 seconds to fade out completely in stillness
-        }
-      }
+      if (phase === 2 && fadeProgress < 1) fadeProgress += 0.005;
 
       if (nodes.length > 0) {
         ctx.save();
 
         if (phase >= 1 && organismOpacity > 0) {
-          // Draw the emergent organism circle "membrane" within the visible canvas.
           ctx.beginPath();
           ctx.arc(centerX, centerY, organismRadius + Math.sin(Date.now() * 0.001) * 4, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(79, 156, 247, ${0.15 * organismOpacity})`;
@@ -68,22 +56,18 @@ export function initIntro(canvas, controls) {
           ctx.stroke();
         }
 
-        // "You" is always nodes[0]
         const you = nodes[0];
-
         const youOpacity = 1 - fadeProgress;
         if (youOpacity > 0.01) {
-          // Draw the "You" label
-          ctx.fillStyle = `rgba(255, 255, 255, ${youOpacity})`; // Fades completely in stillness
+          ctx.fillStyle = `rgba(255, 255, 255, ${youOpacity})`;
           ctx.font = '500 14px system-ui, sans-serif';
-          // Position label slightly further away so it doesn't overlap
           ctx.fillText('You', you.x + 8, you.y + 4);
         }
 
         ctx.restore();
 
         // Desktop keeps the dramatic zoom. On mobile it would crop the graph.
-        const currentZoom = mobile ? 1 : 2.0 - (zoomProgress * 1.0);
+        const currentZoom = mobile ? 1 : 2.0 - zoomProgress;
         canvas.style.transform = `scale(${currentZoom})`;
       }
     }
@@ -92,7 +76,7 @@ export function initIntro(canvas, controls) {
   const defaultDestroy = engine.destroy.bind(engine);
   engine.destroy = function() {
     defaultDestroy();
-    canvas.style.transform = ''; // Reset zoom when leaving section
+    canvas.style.transform = '';
   };
 
   let spawnInterval;
@@ -109,9 +93,8 @@ export function initIntro(canvas, controls) {
 
     const nodes = engine.getNodes();
     const links = engine.getLinks();
-    const { centerX, centerY, organismRadius } = layoutMetrics();
+    const { mobile, centerX, centerY } = layoutMetrics();
 
-    // Reset to isolated state
     isIsolated = true;
     organismOpacity = 0;
     zoomProgress = 0;
@@ -120,52 +103,49 @@ export function initIntro(canvas, controls) {
     nodes.length = 1;
     links.length = 0;
 
-    // Make "You" completely normal and insignificant
     nodes[0].x = centerX;
     nodes[0].y = centerY;
     nodes[0].quality = 0.5;
-    nodes[0].radius = 3; // Standard tiny size
+    nodes[0].radius = 3;
     nodes[0].vx = 0;
     nodes[0].vy = 0;
 
     const sim = engine.getSimulation();
-    sim.force('charge').strength(-20);
+    sim.force('charge').strength(mobile ? -8 : -20);
     sim.nodes(nodes);
     sim.force('link').links(links);
     sim.alpha(1).restart();
 
-    // Sequence Step 1: Network blooms and zooms out
     transitionTimeout = setTimeout(() => {
       phase = 1;
       isIsolated = false;
-      sim.force('charge').strength(-15); // Softer gravity
+      const metrics = layoutMetrics();
+      sim.force('charge').strength(metrics.mobile ? -6 : -15);
 
-      // Add a radial force sized to the current canvas rather than a fixed desktop radius.
-      if (window.d3 && window.d3.forceRadial) {
-        const metrics = layoutMetrics();
+      if (window.d3?.forceRadial) {
         sim.force(
           'radial',
           window.d3.forceRadial(
-            Math.max(48, metrics.organismRadius * 0.8),
+            Math.max(48, metrics.organismRadius * (metrics.mobile ? 0.68 : 0.8)),
             metrics.centerX,
             metrics.centerY
-          ).strength(0.04)
+          ).strength(metrics.mobile ? 0.09 : 0.04)
         );
       }
 
-      const targetNodes = 350;
+      // Hundreds of dots communicate scale on desktop. On a narrow phone they
+      // merge into an unreadable square, so use a lower but still dramatic count.
+      const targetNodes = metrics.mobile ? 140 : 350;
+      const batchSize = metrics.mobile ? 2 : 3;
       let currentIndex = 1;
 
-      // Progressively spawn nodes for a fluid, elegant buildup
       spawnInterval = setInterval(() => {
         if (currentIndex >= targetNodes) {
           clearInterval(spawnInterval);
           return;
         }
 
-        // Spawn a small batch of nodes
-        const batchEnd = Math.min(targetNodes, currentIndex + 3);
-
+        const batchEnd = Math.min(targetNodes, currentIndex + batchSize);
         for (let i = currentIndex; i < batchEnd; i++) {
           const parentIndex = Math.floor(Math.random() * i);
           const parentNode = nodes[parentIndex];
@@ -183,12 +163,13 @@ export function initIntro(canvas, controls) {
             strategy: null
           });
 
-          links.push({ source: nodes[i], target: parentNode, type: 'default', weight: 1.0, active: true });
+          links.push({ source: nodes[i], target: parentNode, type: 'default', weight: 1, active: true });
 
-          if (Math.random() > 0.7 && i > 3) {
+          const addSecondLink = Math.random() > (metrics.mobile ? 0.86 : 0.7);
+          if (addSecondLink && i > 3) {
             const secondParent = Math.floor(Math.random() * i);
             if (secondParent !== parentIndex) {
-              links.push({ source: nodes[i], target: nodes[secondParent], type: 'default', weight: 1.0, active: true });
+              links.push({ source: nodes[i], target: nodes[secondParent], type: 'default', weight: 1, active: true });
             }
           }
         }
@@ -199,12 +180,10 @@ export function initIntro(canvas, controls) {
         sim.alpha(0.3).restart();
       }, 20);
 
-      // Sequence Step 2: Once network is fully spawned and mostly still, start fading "You"
       fadeTimeout = setTimeout(() => {
         phase = 2;
-      }, 4500); // 4.5 seconds gives physics time to cool down and become completely still
-
-    }, 1000); // Wait 1 second before starting the bloom
+      }, 4500);
+    }, 1000);
   };
 
   engine.init();

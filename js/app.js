@@ -78,7 +78,7 @@ function buildHero() {
   const subtitle = createElement(
     'p',
     'hero-subtitle',
-    'What happens when billions of limited people connect, share information, build memory, and act together? This essay explores humanity as a network.'
+    'A group of humans can do things no member can do alone. From small communities to civilization, this essay explores humanity as an emergent system: what appears when people connect, exchange information, remember, specialize, and coordinate.'
   );
 
   const actions = createElement('div', 'hero-actions');

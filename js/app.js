@@ -78,7 +78,7 @@ function buildHero() {
   const subtitle = createElement(
     'p',
     'hero-subtitle',
-    'A personal attempt to understand humanity as an emergent network—and to explore how that network might become healthier, wiser, and more capable.'
+    'What happens when billions of limited people connect, share information, build memory, and act together? This essay explores humanity as a network.'
   );
 
   const actions = createElement('div', 'hero-actions');

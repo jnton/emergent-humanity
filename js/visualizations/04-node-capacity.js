@@ -1,196 +1,184 @@
-import { createNetworkEngine } from '../lib/network-engine.js';
+export function initNodeCapacity(canvas) {
+  const ctx = canvas.getContext('2d');
+  const stats = document.getElementById('stats-node-capacity');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-export function initNodeCapacity(canvas, controls) {
-  let internalData = [];
-  let startTime = 0;
-  let humanFactor = 0;
-  let currentOpacity = 0;
-  let particleSpread = 0;
+  let active = false;
+  let frameId = null;
+  let width = 0;
+  let height = 0;
+  let start = performance.now();
 
-  const engine = createNetworkEngine(canvas, {
-    nodeCount: 1, // Start with one node
-    linkDistance: 60,
-    chargeStrength: -10,
-    onTick: () => {
-      const ctx = canvas.getContext('2d');
-      const nodes = engine.getNodes();
-      
-      if (nodes.length === 0 || startTime === 0) return;
+  const dimensions = [
+    ['memory', true], ['skills', true], ['goals', true], ['state', true],
+    ['history', false], ['mood', false], ['relationships', false], ['beliefs', false],
+    ['health', false], ['habits', false], ['context', false], ['language', false],
+    ['attention', false], ['preferences', false], ['experience', false], ['body', false]
+  ].map(([label, kept], i) => ({
+    label, kept,
+    angle: (i / 16) * Math.PI * 2,
+    radius: 72 + (i % 3) * 16
+  }));
 
-      const centralNode = nodes[0];
-      const elapsed = performance.now() - startTime;
-      const cycle = elapsed % 12000;
-      
-      let targetRadius = 4;
-      let targetHumanFactor = 0;
-      let opacityTarget = 0;
-      let targetParticleSpread = 0;
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    width = Math.max(1, rect.width);
+    height = Math.max(1, rect.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
 
-      if (cycle < 1000) {
-        // Point
-        targetRadius = 4;
-        targetHumanFactor = 0;
-        opacityTarget = 0;
-        targetParticleSpread = 0;
-      } else if (cycle < 3000) {
-        // Expanding circle
-        targetRadius = 100;
-        targetHumanFactor = 0;
-        opacityTarget = 1;
-        targetParticleSpread = 1;
-      } else if (cycle < 5500) {
-        // Morph to human
-        targetRadius = 4;
-        targetHumanFactor = 1;
-        opacityTarget = 1;
-        targetParticleSpread = 1;
-      } else if (cycle < 7500) {
-        // Human hold
-        targetRadius = 4;
-        targetHumanFactor = 1;
-        opacityTarget = 1;
-        targetParticleSpread = 1;
-      } else if (cycle < 10000) {
-        // Morph to circle
-        targetRadius = 100;
-        targetHumanFactor = 0;
-        opacityTarget = 1;
-        targetParticleSpread = 1;
-      } else if (cycle < 11000) {
-        // Collapse to point
-        targetRadius = 4;
-        targetHumanFactor = 0;
-        opacityTarget = 0;
-        targetParticleSpread = 0;
-      } else {
-        // Wait
-        targetRadius = 4;
-        targetHumanFactor = 0;
-        opacityTarget = 0;
-        targetParticleSpread = 0;
+  function phaseState() {
+    if (reduceMotion.matches) return { phase: 2, t: 1 };
+    const cycle = ((performance.now() - start) % 11000) / 11000;
+    if (cycle < 0.32) return { phase: 0, t: cycle / 0.32 };
+    if (cycle < 0.68) return { phase: 1, t: (cycle - 0.32) / 0.36 };
+    return { phase: 2, t: (cycle - 0.68) / 0.32 };
+  }
+
+  function ease(t) {
+    return t * t * (3 - 2 * t);
+  }
+
+  function drawHuman(cx, cy, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'rgba(226,232,240,0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 48, 16, 0, Math.PI * 2);
+    ctx.moveTo(cx, cy - 32);
+    ctx.lineTo(cx, cy + 28);
+    ctx.moveTo(cx, cy - 10);
+    ctx.lineTo(cx - 30, cy + 10);
+    ctx.moveTo(cx, cy - 10);
+    ctx.lineTo(cx + 30, cy + 10);
+    ctx.moveTo(cx, cy + 28);
+    ctx.lineTo(cx - 22, cy + 66);
+    ctx.moveTo(cx, cy + 28);
+    ctx.lineTo(cx + 22, cy + 66);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    const { phase, t } = phaseState();
+    const p = ease(t);
+    const cx = width * 0.38;
+    const cy = height * 0.5;
+    const nodeX = width * 0.72;
+    const nodeY = height * 0.5;
+
+    const humanAlpha = phase === 0 ? 1 : phase === 1 ? 1 - p * 0.7 : 0.3;
+    drawHuman(cx, cy, humanAlpha);
+
+    dimensions.forEach((d, i) => {
+      const ox = cx + Math.cos(d.angle) * d.radius;
+      const oy = cy + Math.sin(d.angle) * d.radius * 0.72;
+      let x = ox;
+      let y = oy;
+      let alpha = 0.85;
+
+      if (phase === 1) {
+        if (d.kept) {
+          x = ox + (nodeX - ox) * p;
+          y = oy + (nodeY - oy) * p;
+        } else {
+          alpha = 0.85 * (1 - p);
+        }
+      } else if (phase === 2) {
+        if (d.kept) {
+          x = nodeX + Math.cos((i / 4) * Math.PI * 2) * 24;
+          y = nodeY + Math.sin((i / 4) * Math.PI * 2) * 24;
+        } else {
+          alpha = 0;
+        }
       }
 
-      // Smooth interpolations
-      centralNode.radius += (targetRadius - centralNode.radius) * 0.05;
-      humanFactor += (targetHumanFactor - humanFactor) * 0.05;
-      currentOpacity += (opacityTarget - currentOpacity) * 0.05;
-      particleSpread += (targetParticleSpread - particleSpread) * 0.05;
+      if (alpha <= 0.01) return;
+      ctx.beginPath();
+      ctx.arc(x, y, d.kept ? 4.5 : 3, 0, Math.PI * 2);
+      ctx.fillStyle = d.kept
+        ? `rgba(56,189,248,${alpha})`
+        : `rgba(148,163,184,${alpha * 0.75})`;
+      ctx.fill();
 
-      if (currentOpacity > 0.01) {
-        ctx.save();
-        
-        // Background glow
-        ctx.beginPath();
-        const glowRadius = Math.max(centralNode.radius, 4) + 30;
-        ctx.arc(centralNode.x, centralNode.y, glowRadius, 0, Math.PI * 2);
-        const gradient = ctx.createRadialGradient(
-          centralNode.x, centralNode.y, 0,
-          centralNode.x, centralNode.y, glowRadius
-        );
-        // Fade out the blue background glow slightly when in human form
-        const glowOpacity = 0.15 * currentOpacity * (1 - humanFactor * 0.8);
-        gradient.addColorStop(0, `rgba(79, 156, 247, ${glowOpacity})`);
-        gradient.addColorStop(1, 'rgba(79, 156, 247, 0)');
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        ctx.globalAlpha = currentOpacity;
-
-        // Draw internal data points
-        internalData.forEach(p => {
-          p.angle += p.speed;
-          
-          const currentDist = p.dist * particleSpread;
-          const circleX = Math.cos(p.angle) * currentDist;
-          const circleY = Math.sin(p.angle) * currentDist;
-
-          // For human shape, also add a little bit of breathing motion
-          const hBreathX = p.hx + Math.cos(p.angle * 3) * 2;
-          const hBreathY = p.hy + Math.sin(p.angle * 3) * 2;
-
-          const targetX = circleX * (1 - humanFactor) + hBreathX * humanFactor * particleSpread;
-          const targetY = circleY * (1 - humanFactor) + hBreathY * humanFactor * particleSpread;
-
-          const x = centralNode.x + targetX;
-          const y = centralNode.y + targetY;
-
-          ctx.beginPath();
-          ctx.arc(x, y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.fill();
-          
-          if (Math.random() < 0.03) {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(centralNode.x + targetX * 0.5, centralNode.y + targetY * 0.5);
-            ctx.strokeStyle = `rgba(255, 255, 255, 0.05)`;
-            ctx.stroke();
-          }
-        });
-
-        ctx.restore();
+      if (width > 620 && (phase === 0 || d.kept)) {
+        ctx.fillStyle = `rgba(226,232,240,${alpha * 0.75})`;
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(d.label, x, y - 9);
       }
+    });
+
+    const nodeAlpha = phase === 0 ? 0.08 : phase === 1 ? p : 1;
+    ctx.beginPath();
+    ctx.arc(nodeX, nodeY, 28, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(79,156,247,${0.12 * nodeAlpha})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(79,156,247,${0.9 * nodeAlpha})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(255,255,255,${nodeAlpha})`;
+    ctx.font = '600 14px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('xᵢ ∈ ℝᵈ', nodeX, nodeY + 5);
+
+    ctx.fillStyle = 'rgba(226,232,240,0.72)';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    const label = phase === 0
+      ? 'PERSON: MANY RELEVANT AND IRRELEVANT DIMENSIONS'
+      : phase === 1
+        ? 'COARSE-GRAINING: KEEP WHAT THE QUESTION NEEDS'
+        : 'STYLIZED NODE: INFORMATION HAS BEEN DISCARDED';
+    ctx.fillText(label, width / 2, 26);
+
+    if (stats) {
+      stats.textContent = phase === 0
+        ? 'illustration: 16 visible dimensions · model has not compressed them yet'
+        : phase === 1
+          ? '4 illustrative dimensions retained · 12 discarded for this question'
+          : 'xᵢ is a lower-dimensional model state, not a complete person';
     }
-  });
+  }
 
-  const defaultInit = engine.init.bind(engine);
-  engine.init = function() {
-    defaultInit();
+  function loop() {
+    frameId = null;
+    draw();
+    if (active && !reduceMotion.matches) frameId = requestAnimationFrame(loop);
+  }
 
-    const nodes = engine.getNodes();
-    nodes.length = 1;
-    nodes[0].x = canvas.clientWidth / 2;
-    nodes[0].y = canvas.clientHeight / 2;
-    nodes[0].radius = 4;
-    nodes[0].quality = 0.8;
-    
-    startTime = performance.now();
-    humanFactor = 0;
-    currentOpacity = 0;
-    particleSpread = 0;
+  function startLoop() {
+    if (frameId === null) frameId = requestAnimationFrame(loop);
+  }
 
-    engine.getSimulation().force('charge').strength(-10);
+  const observer = new ResizeObserver(resize);
+  observer.observe(canvas.parentElement);
+  resize();
 
-    // Generate internal universe data
-    internalData = [];
-    const colors = ['#ffffff', '#4f9cf7', '#f74f9c', '#4ff7a9'];
-    for (let i = 0; i < 250; i++) {
-      let hx, hy;
-      const part = Math.random();
-      if (part < 0.15) {
-        // Head
-        const a = Math.random() * Math.PI * 2;
-        const r = Math.random() * 18;
-        hx = Math.cos(a) * r;
-        hy = -60 + Math.sin(a) * r;
-      } else if (part < 0.5) {
-        // Torso
-        hx = (Math.random() - 0.5) * 40;
-        hy = -25 + Math.random() * 70;
-      } else if (part < 0.75) {
-        // Legs
-        const isLeft = Math.random() > 0.5;
-        hx = (isLeft ? -15 : 15) + (Math.random() - 0.5) * 12;
-        hy = 45 + Math.random() * 60;
-      } else {
-        // Arms
-        const isLeft = Math.random() > 0.5;
-        hx = (isLeft ? -35 : 35) + (Math.random() - 0.5) * 12;
-        hy = -15 + Math.random() * 55;
-      }
-
-      internalData.push({
-        angle: Math.random() * Math.PI * 2,
-        dist: Math.random() * 90,
-        speed: (Math.random() - 0.5) * 0.05,
-        size: 0.5 + Math.random() * 1.5,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        hx: hx,
-        hy: hy
-      });
+  return {
+    activate() {
+      active = true;
+      start = performance.now();
+      startLoop();
+    },
+    deactivate() {
+      active = false;
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = null;
+    },
+    resize,
+    destroy() {
+      this.deactivate();
+      observer.disconnect();
     }
   };
-
-  engine.init();
-  return engine;
 }

@@ -528,7 +528,7 @@ export function createNetworkEngine(canvas, opts = {}) {
     const activeLinks = links.filter(l => {
       const s = typeof l.source === 'object' ? l.source : nodes.find((node) => node.id === l.source);
       const t = typeof l.target === 'object' ? l.target : nodes.find((node) => node.id === l.target);
-      return s.state === 1 && t.state === 1;
+      return Boolean(s && t && s.state === 1 && t.state === 1);
     });
     const avgDegree = alive.length > 0
       ? (activeLinks.length * 2 / alive.length).toFixed(1)
@@ -551,7 +551,7 @@ export function createNetworkEngine(canvas, opts = {}) {
     for (const link of links) {
       const s = typeof link.source === 'object' ? link.source : nodes.find((node) => node.id === link.source);
       const t = typeof link.target === 'object' ? link.target : nodes.find((node) => node.id === link.target);
-      if (s.state === 1 && t.state === 1) {
+      if (s && t && s.state === 1 && t.state === 1) {
         adj.get(s.id)?.push(t);
         adj.get(t.id)?.push(s);
       }

@@ -94,7 +94,7 @@ test('all mobile graphs remain visible before and after their interactions', asy
   await page.waitForFunction(() => document.documentElement.dataset.mobileLayout === 'active');
 
   const sections = page.locator('.section');
-  await expect(sections).toHaveCount(16);
+  await expect(sections).toHaveCount(17);
   let guardedGraphs = 0;
   const audit = [];
 

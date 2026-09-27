@@ -7,13 +7,13 @@ export const SECTIONS = [
     id: 'node-capacity',
     number: '01',
     title: 'The Human Node',
-    subtitle: 'One person, simplified for the model.',
+    subtitle: 'A stylized approximation of one person.',
     body: [
       'Each person is a complex biological system with changing memories, skills, goals, and internal states.',
-      'In the model, that complexity is compressed into a node. The node is useful because it lets us study the network, but it is never the whole person.'
+      'In this model, a node is a stylized approximation of a person. It keeps only the properties relevant to the question and deliberately discards the rest.'
     ],
-    insight: 'A node is not a person. It is a way to study what happens between people.',
-    vizHint: 'Watch a complex human representation collapse into a single model node.',
+    insight: 'A useful model is incomplete by design.',
+    vizHint: 'Watch a high-dimensional person become a lower-dimensional model state—and see what gets discarded.',
     controls: []
   },
   {
@@ -36,44 +36,45 @@ export const SECTIONS = [
     id: 'intro',
     number: '03',
     title: 'The Great Organism',
-    subtitle: 'Connection creates new capabilities.',
+    subtitle: 'The whole can acquire capabilities no part has alone.',
     body: [
-      'A single person cannot build a civilization. Networks of people can divide work, store knowledge, coordinate, create institutions, and accumulate science and culture across generations.',
-      'I use the organism as an analogy, not a biological claim. The point is simpler: the network can do things no individual can do alone.'
+      'A single person cannot build a civilization. Communities can divide work, preserve knowledge, coordinate, create institutions, and accumulate science and culture across generations.',
+      'Humanity is not literally one biological organism. The useful comparison is structural: many limited units can interact to produce capabilities that exist only at the collective level.'
     ],
-    insight: 'Civilization is not inside any one person. It emerges from the network.',
-    vizHint: 'The network is the object of study. “Organism” is the analogy.',
+    insight: 'Civilization is not inside any one person. It emerges from interaction.',
+    vizHint: 'Watch isolated people connect, differentiate, share information, and acquire collective capabilities.',
     controls: []
   },
   {
     id: 'emergent-organism',
     number: '04',
     title: 'Losing a Node',
-    subtitle: 'Impact depends on what the node does.',
+    subtitle: 'Most nodes barely affect the whole. Some become critical.',
     body: [
-      'In a redundant network, removing one ordinary node may barely change the global structure. Remove a hub, bridge, specialist, or unique source of knowledge and the effect can be much larger.',
-      'Importance is not just about how many nodes remain. It depends on connections, redundancy, and function.'
+      'In a large, redundant network, removing most individual nodes has almost no effect on global structure or performance. In that narrow systems sense, most of us are probably not special to humanity as a whole.',
+      'But importance is not fixed. A node can become a hub, a bridge, a specialist, or the unique carrier of useful information. What matters is marginal effect on a chosen system function—not human worth.'
     ],
-    insight: 'A node’s effect on the system depends on where it sits and what it carries.',
-    vizHint: 'Compare removing an ordinary node with removing a hub.',
+    insight: 'Most nodes are replaceable to the system. Structural importance can change.',
+    vizHint: 'Remove ordinary nodes, then let one develop a critical role and compare its marginal effect.',
     controls: [
       { id: 'show-centrality', type: 'switch', label: 'Show Structural Weight', value: false },
       { id: 'remove-node', type: 'button', label: 'Remove Ordinary Node' },
-      { id: 'remove-hub', type: 'button', label: 'Remove Hub' },
+      { id: 'develop-node', type: 'button', label: 'Develop a Critical Role' },
+      { id: 'remove-hub', type: 'button', label: 'Remove Critical Node' },
       { id: 'reset-network', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
   {
     id: 'illusion-of-significance',
     number: '05',
-    title: 'Small Changes, Different Futures',
-    subtitle: 'Emergence is not automatically chaos.',
+    title: 'Small Causes, Large Futures',
+    subtitle: 'The system decides whether a tiny difference dies or explodes.',
     body: [
-      'A tiny change can disappear, stay local, or spread through the system. In some regimes nearby trajectories converge; in others they separate rapidly.',
-      'Causing a different future does not automatically make an event important. The system determines whether a perturbation is absorbed or amplified.'
+      'In a chaotic regime, two nearly identical states can separate exponentially. A common diagnostic is the largest Lyapunov exponent: positive values indicate local exponential instability.',
+      'In a stable regime, the same perturbation can shrink. The lesson is not that every tiny event changes history. It is that the size of a cause and the size of its eventual effect can be radically different.'
     ],
-    insight: 'Small causes can matter. They do not always matter.',
-    vizHint: 'Apply the same tiny perturbation in a stable and a sensitive regime.',
+    insight: 'A tiny perturbation can become macroscopic when the dynamics amplify it.',
+    vizHint: 'Apply the same ε perturbation in contracting and sensitive regimes; watch divergence and the finite-time Lyapunov estimate.',
     controls: [
       { id: 'stable-regime', type: 'button', label: 'Stable Regime', variant: 'outline' },
       { id: 'sensitive-regime', type: 'button', label: 'Sensitive Regime' },
@@ -101,11 +102,11 @@ export const SECTIONS = [
     title: 'More Connections',
     subtitle: 'Shorter paths change what the network can do.',
     body: [
-      'Writing, printing, telecommunications, and the Internet made it much easier for information to cross distance. They did not connect everyone to everyone, but they made far more people reachable through far fewer steps.',
-      'The remaining limits are attention, trust, language, access, and institutions.'
+      'Adding links can reduce shortest-path distance and make more of a network reachable. Writing, printing, telecommunications, and the Internet did this at enormous scale.',
+      'But possible connections can grow faster than a node’s finite communication and processing capacity. More connectivity changes the bottleneck; it does not abolish bottlenecks.'
     ],
-    insight: 'Connection removes distance. It does not remove bottlenecks.',
-    vizHint: 'Add long-range links and watch distant clusters become easier to reach.',
+    insight: 'Reachability can grow faster than usable attention or bandwidth.',
+    vizHint: 'Add long-range links: path length falls while finite per-node processing budgets begin to saturate.',
     controls: [
       { id: 'deploy-internet', type: 'button', label: 'Add Long-Range Links' },
       { id: 'reset-connections', type: 'button', label: 'Reset', variant: 'outline' }
@@ -115,15 +116,19 @@ export const SECTIONS = [
     id: 'connection-quality',
     number: '08',
     title: 'Better Connections',
-    subtitle: 'More communication is not better information.',
+    subtitle: 'A perfect channel can still deliver bad information.',
     body: [
-      'A message can fail because it is corrupted, irrelevant, misleading, misunderstood, untrusted, or pushed by bad incentives. These are different problems and should not be collapsed into one idea of noise.',
-      'Useful information has to reach the right person with enough fidelity and context to change action.'
+      'Information can fail at different layers: the signal can be corrupted, the source can be wrong, the message can be misinterpreted, or trust can be badly calibrated. These are different mechanisms.',
+      'Incentives are different again. They do not necessarily damage a connection; they change what gets produced, selected, repeated, and amplified. None of these should be collapsed into one idea of “noise.”'
     ],
-    insight: 'Information flow matters only when the receiver gets something useful.',
-    vizHint: 'This toy model isolates one part of quality: transmission reliability.',
+    insight: 'Good information flow depends on the channel, the source, the receiver, and the selection process.',
+    vizHint: 'Change each layer separately and watch accurate, false, rejected, and amplified messages propagate differently.',
     controls: [
-      { id: 'fidelity-slider', type: 'slider', label: 'Edge Reliability', min: '0', max: '1', step: '0.1', value: '0.8' }
+      { id: 'fidelity-slider', type: 'slider', label: 'Channel Fidelity', min: '0', max: '1', step: '0.05', value: '0.9' },
+      { id: 'source-accuracy', type: 'slider', label: 'Source Accuracy', min: '0', max: '1', step: '0.05', value: '0.8' },
+      { id: 'interpretation-fidelity', type: 'slider', label: 'Interpretation Fidelity', min: '0', max: '1', step: '0.05', value: '0.85' },
+      { id: 'trust-calibration', type: 'slider', label: 'Trust Calibration', min: '0', max: '1', step: '0.05', value: '0.75' },
+      { id: 'selection-pressure', type: 'slider', label: 'Amplification Bias', min: '0', max: '1', step: '0.05', value: '0.25' }
     ]
   },
   {
@@ -257,14 +262,24 @@ export const SECTIONS = [
   {
     id: 'whats-next',
     number: '17',
-    title: 'What\'s Next?',
-    subtitle: 'Make the model harder to fool.',
+    title: 'What Helps Humanity Thrive?',
+    subtitle: 'There is no single variable to maximize.',
     body: [
-      'This project is not meant to defend one metaphor. It is meant to turn an intuition into something clearer, testable, and easier to challenge.',
-      'The next step is to connect nodes, links, memory, information quality, coordination, and performance without pretending the toy models are reality.'
+      'If the goals include learning, coordination, resilience, adaptation, and preserving useful knowledge, several properties matter at once: human capability, connectivity, information quality, memory, redundancy, diversity, alignment, and feedback from reality.',
+      'These objectives can conflict. More alignment can reduce exploration. More redundancy costs resources. More connectivity can increase coordination load. Strong memory can preserve errors as well as knowledge. This is a multi-objective problem: improvement can move along a Pareto frontier rather than toward one universal optimum.',
+      'Mathematics can expose the trade-offs. It cannot decide what humanity should value. The practical task is to build systems that learn, coordinate, remember, adapt, correct errors, and recover—without silently sacrificing the properties that make those abilities possible.'
     ],
-    insight: 'A useful model should become easier to test as it becomes more ambitious.',
-    vizHint: 'Keep reshaping the network. Every representation is provisional.',
-    controls: []
+    insight: 'Improve humanity by improving the system—but measure what every improvement costs elsewhere.',
+    vizHint: 'Move the system variables. The dashboard reports several objectives separately; no hidden “humanity score” decides for you.',
+    controls: [
+      { id: 'thrive-capability', type: 'slider', label: 'Node Capability', min: '0', max: '1', step: '0.05', value: '0.65' },
+      { id: 'thrive-connectivity', type: 'slider', label: 'Connectivity', min: '0', max: '1', step: '0.05', value: '0.55' },
+      { id: 'thrive-fidelity', type: 'slider', label: 'Information Fidelity', min: '0', max: '1', step: '0.05', value: '0.7' },
+      { id: 'thrive-memory', type: 'slider', label: 'Memory', min: '0', max: '1', step: '0.05', value: '0.6' },
+      { id: 'thrive-redundancy', type: 'slider', label: 'Redundancy', min: '0', max: '1', step: '0.05', value: '0.5' },
+      { id: 'thrive-alignment', type: 'slider', label: 'Alignment', min: '0', max: '1', step: '0.05', value: '0.55' },
+      { id: 'thrive-diversity', type: 'slider', label: 'Diversity', min: '0', max: '1', step: '0.05', value: '0.6' },
+      { id: 'thrive-feedback', type: 'slider', label: 'Reality Feedback', min: '0', max: '1', step: '0.05', value: '0.7' }
+    ]
   }
 ];

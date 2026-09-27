@@ -157,10 +157,10 @@ export const SECTIONS = [
       'But alignment is not automatically good. Diversity can improve exploration and error correction, and a perfectly coordinated group can still pursue a bad objective.'
     ],
     insight: 'Coordination increases coherence, not correctness.',
-    vizHint: 'Watch directional coherence rise or fall between 0 and 1.',
+    vizHint: 'Watch coherence, directional coverage, and agreement with an external target separately. High R can still point the wrong way.',
     controls: [
       { id: 'align-goals', type: 'button', label: 'Increase Coupling' },
-      { id: 'scramble-goals', type: 'button', label: 'Scramble', variant: 'outline' }
+      { id: 'scramble-goals', type: 'button', label: 'Restore Diversity', variant: 'outline' }
     ]
   },
   {
@@ -173,9 +173,10 @@ export const SECTIONS = [
       'Knowledge also grows by transforming what is already known through inference, recombination, computation, and simulation.'
     ],
     insight: 'Learning needs both evidence and inference.',
-    vizHint: 'Release observations and watch nearby nodes acquire them.',
+    vizHint: 'Release observations from outside the network, then combine stored observations to create an inferred proposition.',
     controls: [
-      { id: 'release-info', type: 'button', label: 'Release Information' }
+      { id: 'release-info', type: 'button', label: 'Release Observations' },
+      { id: 'infer-knowledge', type: 'button', label: 'Run Inference', variant: 'outline' }
     ]
   },
   {

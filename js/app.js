@@ -435,6 +435,16 @@ function setupHeroCanvas() {
   let nodes = [];
   let frame = null;
   let active = true;
+  let startTime = performance.now();
+
+  const visibleCount = () => {
+    if (reduceMotion.matches) return Math.min(nodes.length, 28);
+    const t = ((performance.now() - startTime) % 12000) / 12000;
+    if (t < 0.18) return 1;
+    if (t < 0.42) return Math.min(nodes.length, 8);
+    if (t < 0.68) return Math.min(nodes.length, 28);
+    return nodes.length;
+  };
 
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
@@ -445,10 +455,18 @@ function setupHeroCanvas() {
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const count = reduceMotion.matches ? 70 : (window.innerWidth < 760 ? 80 : 130);
+    const count = window.innerWidth < 760 ? 72 : 110;
     const radius = Math.min(width, height) * 0.34;
-    nodes = Array.from({ length: count }, () => {
-      const r = radius * Math.sqrt(Math.random());
+
+    nodes = Array.from({ length: count }, (_, i) => {
+      if (i === 0) {
+        return { x: width / 2, y: height / 2, vx: 0.035, vy: -0.02 };
+      }
+
+      // The first few nodes form a visibly small community before the
+      // animation expands to a larger collective.
+      const local = i < 8;
+      const r = (local ? radius * 0.22 : radius) * Math.sqrt(Math.random());
       const angle = Math.random() * Math.PI * 2;
       return {
         x: width / 2 + Math.cos(angle) * r,
@@ -457,15 +475,19 @@ function setupHeroCanvas() {
         vy: (Math.random() - 0.5) * 0.12,
       };
     });
+
+    startTime = performance.now();
     draw();
   };
 
   const draw = () => {
     ctx.clearRect(0, 0, width, height);
+    const count = visibleCount();
+
     ctx.beginPath();
-    for (let i = 0; i < nodes.length; i += 1) {
+    for (let i = 0; i < count; i += 1) {
       const a = nodes[i];
-      for (let j = i + 1; j < nodes.length; j += 1) {
+      for (let j = i + 1; j < count; j += 1) {
         const b = nodes[j];
         const dx = a.x - b.x;
         const dy = a.y - b.y;
@@ -480,28 +502,35 @@ function setupHeroCanvas() {
     ctx.stroke();
 
     ctx.fillStyle = 'rgba(121, 183, 255, 0.62)';
-    nodes.forEach((node) => {
+    for (let i = 0; i < count; i += 1) {
+      const node = nodes[i];
       ctx.beginPath();
-      ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, i === 0 && count === 1 ? 2.4 : 1.5, 0, Math.PI * 2);
       ctx.fill();
-    });
+    }
   };
 
   const loop = () => {
     frame = null;
-    if (!active || reduceMotion.matches || document.hidden) return;
-    nodes.forEach((node) => {
-      node.x += node.vx;
-      node.y += node.vy;
-      if (node.x < 0 || node.x > width) node.vx *= -1;
-      if (node.y < 0 || node.y > height) node.vy *= -1;
-    });
+    if (!active || document.hidden) return;
+
+    const count = visibleCount();
+    if (!reduceMotion.matches) {
+      for (let i = 0; i < count; i += 1) {
+        const node = nodes[i];
+        node.x += node.vx;
+        node.y += node.vy;
+        if (node.x < 0 || node.x > width) node.vx *= -1;
+        if (node.y < 0 || node.y > height) node.vy *= -1;
+      }
+    }
+
     draw();
-    frame = requestAnimationFrame(loop);
+    if (!reduceMotion.matches) frame = requestAnimationFrame(loop);
   };
 
   const start = () => {
-    if (frame === null && active && !reduceMotion.matches && !document.hidden) {
+    if (frame === null && active && !document.hidden) {
       frame = requestAnimationFrame(loop);
     }
   };
@@ -523,8 +552,12 @@ function setupHeroCanvas() {
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
   reduceMotion.addEventListener?.('change', () => {
     resize();
-    if (reduceMotion.matches) stop();
-    else start();
+    if (reduceMotion.matches) {
+      stop();
+      draw();
+    } else {
+      start();
+    }
   });
 
   resize();

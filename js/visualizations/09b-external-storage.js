@@ -23,8 +23,8 @@ export function initExternalStorage(canvas, controls) {
   const EPOCH_SUBS = [
     'Information lives and dies with the node',
     'Information outlasts its creator',
-    'Copies make information immortal',
-    'Devices capture reality objectively',
+    'Copies add redundancy and persistence',
+    'Devices record through sensors and encodings',
     'Everything connects. Everyone has access.'
   ];
 
@@ -282,10 +282,10 @@ export function initExternalStorage(canvas, controls) {
         // Trail
         ctx.save();
         ctx.beginPath();
-        ctx.arc(x, y, p.isObjective ? 3 : 4, 0, Math.PI * 2);
+        ctx.arc(x, y, p.isInstrumentCapture ? 3 : 4, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.shadowColor = p.color;
-        ctx.shadowBlur = p.isObjective ? 8 : 12;
+        ctx.shadowBlur = p.isInstrumentCapture ? 8 : 12;
         ctx.fill();
         ctx.shadowBlur = 0;
 
@@ -635,7 +635,7 @@ export function initExternalStorage(canvas, controls) {
         }
       }
 
-      // ── 2. Objective capture (Epoch 3+) ──
+      // ── 2. Instrument-mediated capture (Epoch 3+) ──
       if (epoch >= 3 && instruments.length > 0 && Math.random() < 0.35) {
         const inst = instruments[Math.floor(Math.random() * instruments.length)];
         inst.flashAlpha = 1; // camera flash!
@@ -657,7 +657,7 @@ export function initExternalStorage(canvas, controls) {
             progress: 0,
             color: '#38bdf8',
             speed,
-            isObjective: true
+            isInstrumentCapture: true
           });
         }
       }

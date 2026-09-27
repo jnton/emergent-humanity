@@ -88,7 +88,8 @@ export function createNetworkEngine(canvas, opts = {}) {
   }
 
   /**
-   * Generates a scale-free network using Barabási–Albert preferential attachment.
+   * Generates a finite Barabási–Albert-style preferential-attachment toy network.
+   * This is a visualization substrate, not an empirical claim about human-network topology.
    */
   function generateNetwork(nodeCount) {
     nodes = [];

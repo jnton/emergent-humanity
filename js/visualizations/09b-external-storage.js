@@ -12,6 +12,7 @@ export function initExternalStorage(canvas, controls) {
   let infoSaved = 0;
   let epochFlashAlpha = 0;
   let epochFlashText = '';
+  let nextInfoId = 1;
 
   const EPOCH_NAMES = [
     'Biological Memory',
@@ -395,43 +396,69 @@ export function initExternalStorage(canvas, controls) {
     ctx.closePath();
   }
 
+  function ensureMemorySet(carrier) {
+    if (!(carrier.memoryIds instanceof Set)) carrier.memoryIds = new Set();
+    return carrier.memoryIds;
+  }
+
   function handlePacketArrival(p, nodes) {
     const t = p.target;
-    if (t.isArtifact) {
-      t.marks = (t.marks || 0) + 1;
-      t.pulse = 1;
-      infoSaved++;
+    if (p.infoId == null) return;
 
-      // Epoch 2+: Press duplication — clone to other artifacts
+    if (t.isArtifact) {
+      const memory = ensureMemorySet(t);
+      const wasNew = !memory.has(p.infoId);
+      memory.add(p.infoId);
+      t.marks = memory.size;
+      t.pulse = 1;
+      if (wasNew) infoSaved += 1;
+
+      // Epoch 2+: printing duplicates the same information into other artifacts.
       if (epoch >= 2 && !p.isClone) {
         artifacts.forEach(other => {
-          if (other !== t) {
+          if (other !== t && !ensureMemorySet(other).has(p.infoId)) {
             packets.push({
               source: t, target: other,
               progress: 0, speed: 0.04,
-              color: '#fbbf24', isClone: true
+              color: '#fbbf24', isClone: true,
+              infoId: p.infoId
             });
           }
         });
       }
     } else if (t.isCloud) {
+      const memory = ensureMemorySet(t);
+      const wasNew = !memory.has(p.infoId);
+      memory.add(p.infoId);
       t.pulse = 1;
-      infoSaved++;
-      // Broadcast to a few random humans
+      if (wasNew) infoSaved += 1;
+
+      // Retrieval/broadcast creates additional human copies of the same item.
       const alive = nodes.filter(n => n.state === 1 && !n.isArtifact && !n.isCloud);
-      const sample = alive.sort(() => Math.random() - 0.5).slice(0, 4);
+      const sample = [...alive].sort(() => Math.random() - 0.5).slice(0, 4);
       sample.forEach(n => {
         packets.push({
           source: t, target: n,
           progress: 0, speed: 0.06,
-          color: '#3b82f6'
+          color: '#3b82f6',
+          infoId: p.infoId
         });
       });
     } else {
-      // Human-to-human: mark memory
+      ensureMemorySet(t).add(p.infoId);
       t.hasMemory = true;
       t.pulse = 1;
     }
+  }
+
+  function informationExistsElsewhere(infoId, excludedCarrier) {
+    const carriers = [
+      ...engine.getNodes().filter(node => node !== excludedCarrier),
+      ...artifacts.filter(artifact => artifact !== excludedCarrier)
+    ];
+    if (cloudNode && cloudNode !== excludedCarrier) carriers.push(cloudNode);
+
+    return carriers.some(carrier => ensureMemorySet(carrier).has(infoId));
   }
 
   function createDeathBurst(x, y, preserved) {
@@ -597,6 +624,7 @@ export function initExternalStorage(canvas, controls) {
     infoLost = 0;
     infoSaved = 0;
     epochFlashAlpha = 0;
+    nextInfoId = 1;
 
     if (controls['invent']) {
       controls['invent'].disabled = false;
@@ -614,6 +642,8 @@ export function initExternalStorage(canvas, controls) {
       // ── 1. Subjective idea (human → human or human → artifact) ──
       if (Math.random() < 0.5) {
         const src = alive[Math.floor(Math.random() * alive.length)];
+        const infoId = nextInfoId++;
+        ensureMemorySet(src).add(infoId);
         src.hasMemory = true;
         src.pulse = 1;
 
@@ -631,7 +661,7 @@ export function initExternalStorage(canvas, controls) {
         }
 
         if (target) {
-          packets.push({ source: src, target, progress: 0, color, speed });
+          packets.push({ source: src, target, progress: 0, color, speed, infoId });
         }
       }
 
@@ -657,7 +687,8 @@ export function initExternalStorage(canvas, controls) {
             progress: 0,
             color: '#38bdf8',
             speed,
-            isInstrumentCapture: true
+            isInstrumentCapture: true,
+            infoId: nextInfoId++
           });
         }
       }
@@ -665,18 +696,20 @@ export function initExternalStorage(canvas, controls) {
       // ── 3. Death ──
       if (Math.random() < 0.25 && alive.length > 3) {
         const victim = alive[Math.floor(Math.random() * alive.length)];
-        const hadMemory = victim.hasMemory;
+        const victimMemory = ensureMemorySet(victim);
+        let lostItems = 0;
+        let preservedItems = 0;
 
-        // Determine if info is preserved (artifacts exist)
-        const preserved = epoch >= 1 && artifacts.some(a => a.marks > 0);
-
-        createDeathBurst(victim.x, victim.y, preserved);
-
-        if (hadMemory && !preserved) {
-          infoLost++;
-        } else if (hadMemory && preserved) {
-          // Info was already on a tablet somewhere
+        for (const infoId of victimMemory) {
+          if (informationExistsElsewhere(infoId, victim)) preservedItems += 1;
+          else lostItems += 1;
         }
+
+        const hadMemory = victimMemory.size > 0;
+        const fullyPreserved = hadMemory && lostItems === 0;
+
+        createDeathBurst(victim.x, victim.y, fullyPreserved);
+        infoLost += lostItems;
 
         engine.removeNode(victim);
 

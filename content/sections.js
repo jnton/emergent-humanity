@@ -224,6 +224,7 @@ export const SECTIONS = [
     controls: [
       { id: 'channel-noise', type: 'slider', label: 'Per-Hop Bit Flip', min: '0', max: '0.15', step: '0.01', value: '0.04' },
       { id: 'toggle-redundancy', type: 'switch', label: '5× Repetition Code' },
+      { id: 'interpretation-error', type: 'slider', label: 'Interpretation Error', min: '0', max: '0.5', step: '0.05', value: '0.1' },
       { id: 'send-message', type: 'button', label: 'Send Message' }
     ]
   },

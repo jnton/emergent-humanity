@@ -63,9 +63,12 @@ export function initAlignment(canvas, controls) {
       const meanDirection = Math.atan2(sumSin, sumCos);
       const targetAgreement = (1 + Math.cos(meanDirection - targetDirection)) / 2;
       const coverage = directionalCoverage(nodes);
+      const targetNear = nodes.length
+        ? nodes.filter((node) => Math.abs(angleDifference(targetDirection, node.theta)) <= Math.PI / 6).length / nodes.length
+        : 0;
 
       if (stats) {
-        stats.textContent = `coherence R ${order.toFixed(2)} · target agreement ${targetAgreement.toFixed(2)} · directional coverage ${Math.round(coverage * 100)}% · coupling ${coupling.toFixed(2)}`;
+        stats.textContent = `coherence R ${order.toFixed(2)} · target agreement ${targetAgreement.toFixed(2)} · directional coverage ${Math.round(coverage * 100)}% · target-near alternatives ${Math.round(targetNear * 100)}% · coupling ${coupling.toFixed(2)}`;
       }
     }
   });

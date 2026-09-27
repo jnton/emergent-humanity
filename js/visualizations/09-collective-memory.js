@@ -4,6 +4,7 @@ export function initCollectiveMemory(canvas, controls) {
   let idea = null;
   let packets = [];
   let frame = 0;
+  const mutationProbability = 0.08;
   const stats = document.getElementById('stats-collective-memory');
 
   const engine = createNetworkEngine(canvas, {
@@ -14,7 +15,7 @@ export function initCollectiveMemory(canvas, controls) {
       frame += 1;
       const ctx = canvas.getContext('2d');
 
-      updatePackets();
+      updatePackets(ctx);
       drawCarriers(ctx);
 
       if (idea && !idea.lost && frame % 52 === 0) spreadIdea();
@@ -43,6 +44,10 @@ export function initCollectiveMemory(canvas, controls) {
     return result;
   }
 
+  function variantOf(id) {
+    return idea?.variants.get(id) ?? 0;
+  }
+
   function spreadIdea() {
     if (!idea) return;
 
@@ -65,7 +70,8 @@ export function initCollectiveMemory(canvas, controls) {
       packets.push({
         sourceId,
         targetId,
-        progress: 0
+        progress: 0,
+        variant: variantOf(sourceId)
       });
     }
   }
@@ -75,15 +81,16 @@ export function initCollectiveMemory(canvas, controls) {
 
     for (const id of [...idea.carriers]) {
       if (id === idea.originId) continue;
-      if (Math.random() < 0.04) idea.carriers.delete(id);
+      if (Math.random() < 0.04) {
+        idea.carriers.delete(id);
+        idea.variants.delete(id);
+      }
     }
 
     if (idea.carriers.size === 0) idea.lost = true;
   }
 
-  function updatePackets() {
-    const ctx = canvas.getContext('2d');
-
+  function updatePackets(ctx) {
     for (let i = packets.length - 1; i >= 0; i -= 1) {
       const packet = packets[i];
       const source = nodeById(packet.sourceId);
@@ -98,19 +105,26 @@ export function initCollectiveMemory(canvas, controls) {
 
       const x = source.x + (target.x - source.x) * packet.progress;
       const y = source.y + (target.y - source.y) * packet.progress;
+      const hue = 32 + (packet.variant % 6) * 42;
 
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffb86c';
-      ctx.shadowColor = '#ffb86c';
+      ctx.fillStyle = `hsl(${hue} 82% 66%)`;
+      ctx.shadowColor = `hsl(${hue} 82% 66%)`;
       ctx.shadowBlur = 8;
       ctx.fill();
       ctx.shadowBlur = 0;
 
       if (packet.progress >= 1) {
+        const mutated = Math.random() < mutationProbability;
+        const newVariant = mutated ? idea.nextVariant++ : packet.variant;
+
         idea.carriers.add(packet.targetId);
+        idea.variants.set(packet.targetId, newVariant);
+        if (mutated) idea.mutations += 1;
+
         target.signal = 1;
-        target.signalType = 'signal';
+        target.signalType = mutated ? 'noise' : 'signal';
         packets.splice(i, 1);
       }
     }
@@ -123,16 +137,27 @@ export function initCollectiveMemory(canvas, controls) {
       const node = nodeById(id);
       if (!node) {
         idea.carriers.delete(id);
+        idea.variants.delete(id);
         continue;
       }
+
+      const variant = variantOf(id);
+      const hue = 32 + (variant % 6) * 42;
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.radius + 5, 0, Math.PI * 2);
       ctx.strokeStyle = id === idea.originId
-        ? 'rgba(255, 184, 108, 1)'
-        : 'rgba(255, 184, 108, 0.62)';
+        ? 'rgba(255,184,108,1)'
+        : `hsla(${hue} 82% 66% / 0.72)`;
       ctx.lineWidth = id === idea.originId ? 2 : 1.2;
       ctx.stroke();
+
+      if (variant > 0) {
+        ctx.fillStyle = `hsl(${hue} 82% 70%)`;
+        ctx.font = '600 9px ui-monospace, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`v${variant}`, node.x, node.y - node.radius - 9);
+      }
     }
 
     if (idea.carriers.size === 0) idea.lost = true;
@@ -142,13 +167,14 @@ export function initCollectiveMemory(canvas, controls) {
     if (!stats) return;
 
     if (!idea) {
-      stats.textContent = 'No idea yet · spawn one, then click nodes to remove carriers';
+      stats.textContent = 'No idea yet · copies can spread, mutate, disappear, or outlive the origin';
       return;
     }
 
     const originAlive = Boolean(nodeById(idea.originId));
+    const variants = new Set([...idea.carriers].map((id) => variantOf(id))).size;
     const status = idea.lost ? 'LOST' : 'PERSISTING';
-    stats.textContent = `copies ${idea.carriers.size} · origin ${originAlive ? 'alive' : 'gone'} · ${status}`;
+    stats.textContent = `copies ${idea.carriers.size} · variants ${variants} · mutation events ${idea.mutations} · origin ${originAlive ? 'alive' : 'gone'} · ${status}`;
   }
 
   function spawnIdea() {
@@ -159,6 +185,9 @@ export function initCollectiveMemory(canvas, controls) {
     idea = {
       originId: source.id,
       carriers: new Set([source.id]),
+      variants: new Map([[source.id, 0]]),
+      nextVariant: 1,
+      mutations: 0,
       lost: false
     };
     packets = [];
@@ -186,6 +215,7 @@ export function initCollectiveMemory(canvas, controls) {
 
     if (idea) {
       idea.carriers.delete(removedId);
+      idea.variants.delete(removedId);
       if (idea.carriers.size === 0) idea.lost = true;
     }
 

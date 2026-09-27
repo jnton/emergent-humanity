@@ -1,5 +1,5 @@
 // ==========================================================================
-// The Content Core — V3 Exploratory Edition
+// The Content Core — Formalized exploratory edition
 // ==========================================================================
 
 export const SECTIONS = [
@@ -9,26 +9,25 @@ export const SECTIONS = [
     title: 'The Human Node',
     subtitle: 'The depth of a single point.',
     body: [
-      'Before we draw a single connection, we must look at the node itself. A human being is not a static data point. We are dynamic, living systems, carrying massive amounts of information that varies across every physical part of our bodies and changes from one moment to the next.',
-      'Our physical bodies are shaped by deep biological history and continuous physical changes. On top of that, we hold decades of subjective experience, memories, thoughts, and our own unique views of reality. Even in isolation, a single person is an entire universe of information.',
-      'But to understand humanity at a large scale, we have to simplify. For this network model, we take this vast, ever-changing universe of human complexity and reduce it down to a single point: a Node.'
+      'A human being is not a static data point. We are dynamic biological systems with changing internal states, memories, skills, goals, and incomplete views of reality.',
+      'To study humanity at scale, this framework deliberately compresses that complexity into a node. The node is not the person. It is a coarse-grained representation of whatever properties matter for the question being asked.'
     ],
-    insight: 'The node is a massive oversimplification of a human, necessary to see the larger structure.',
-    vizHint: 'Watch the human form abstract down into a single mathematical point.',
+    insight: 'A node is a useful abstraction, not a complete description of a human.',
+    vizHint: 'Watch a high-dimensional human representation collapse into a single model node.',
     controls: []
   },
   {
     id: 'node-limits',
     number: '02',
     title: 'Node Limits & Bottlenecks',
-    subtitle: 'The boundaries of the biological hardware.',
+    subtitle: 'Finite biological hardware.',
     body: [
-      'While a single node contains a universe of information, its processing power has hard physical and cognitive bottlenecks. For example, we have limited memory and limited information processing abilities. The biological brain is incredibly plastic—it can train, adapt, and highly specialize in specific tasks even into adulthood.',
-      'Historically, we have improved these nodes by optimizing environmental factors: education, mental health, and nutrition allow a node to reach its maximum potential and specialize deeply.',
-      'Even with perfect environmental optimization and extreme specialization, we eventually hit the hard genetic limits of the biological hardware. No single node can hold or process everything. To process reality at scale, the node must connect.'
+      'A single human has finite attention, memory, time, energy, and information-processing capacity. Education, health, nutrition, practice, tools, and environment can change usable capacity enormously.',
+      'But for a fixed organism and current biological technology, removing environmental constraints does not make capacity infinite. Inherited biology still constrains the attainable range, differently across traits and environments.',
+      'This is not one universal maximum potential. It is a multidimensional performance envelope.'
     ],
-    insight: 'Environmental optimization eventually hits the ceiling of genetic limits.',
-    vizHint: 'Click to optimize nodes. Watch them reach their maximum possible capacity before hitting the genetic limit.',
+    insight: 'Environment can move the boundary dramatically; biology still bounds the system.',
+    vizHint: 'The circle is a toy capacity variable: optimization approaches a finite biological envelope.',
     controls: [
       { id: 'optimize-nodes', type: 'button', label: 'Optimize Environment' },
       { id: 'reset-limits', type: 'button', label: 'Reset', variant: 'outline' }
@@ -38,31 +37,31 @@ export const SECTIONS = [
     id: 'intro',
     number: '03',
     title: 'The Great Organism',
-    subtitle: 'Just one point in many.',
+    subtitle: 'Emergence from interaction.',
     body: [
-      'But no matter how complex the individual node is, you are just a single point in space. A mere 1 or a 0 in the grand scheme.',
-      'When these single points begin to connect, something incredible happens. Information flows, structures form, and the network takes on a life of its own.',
-      'The true entity is the network itself. Humanity is a larger organism, an emerging one, just like cells compose a human body. We have to understand it to make it grow and get better.'
+      'When nodes connect, new properties appear at the network level: specialization, coordination, shared memory, institutions, markets, science, and culture.',
+      'I use the organism as a modeling analogy. Humanity is not established here as a literal biological superorganism. The useful claim is narrower: a connected human network can display emergent properties that do not belong to any isolated individual.'
     ],
-    insight: 'This project is about constructing my view of the world: exploring how to improve the Emergent Organism.',
-    vizHint: 'Watch the isolated node get swallowed by the immense scale of the organism.',
+    insight: 'The network can do things no single node can do alone.',
+    vizHint: 'The network is the object of study; “organism” is the guiding analogy.',
     controls: []
   },
   {
     id: 'emergent-organism',
     number: '04',
     title: 'One Node Goes Dark',
-    subtitle: 'What happens when a piece of the network disappears.',
+    subtitle: 'Loss depends on structure.',
     body: [
-      'A human is a node, essentially a state that can flip from 1 to 0.',
-      'If a point suddenly disappears—a 1 flipping to a 0—it doesn\'t affect the net that much. Only the nearest points feel the loss for a limited time. Obviously even a small change has a huge impact in the long term, but the immediate structural loss is minimal.',
-      'The organism easily routes around the dead node. This is the fundamental resilience of a scaled human network.'
+      'Start with the simplest model: equal-weight nodes in a redundant network. Losing one ordinary node usually produces a small global structural change, even when the local human cost is enormous.',
+      'Real networks do not stay equal. Some nodes become hubs, bridges, specialists, or unique repositories of knowledge. Their removal can matter far more because structural and functional importance are unevenly distributed.',
+      'So the effect of losing a node depends on topology, redundancy, and function—not merely on population size.'
     ],
-    insight: 'The loss of a node is a tragedy for the local cluster, but a rounding error for the organism.',
-    vizHint: 'Click a node to flip its state from 1 to 0. Watch the network absorb the loss.',
+    insight: 'Most nodes may be structurally replaceable; some become disproportionately important.',
+    vizHint: 'Reveal structural weight, then compare removing an ordinary node with removing a hub.',
     controls: [
-      { id: 'highlight-affected', type: 'switch', label: 'Highlight Affected Nodes', value: false },
-      { id: 'remove-node', type: 'button', label: 'Remove Node' },
+      { id: 'show-centrality', type: 'switch', label: 'Show Structural Weight', value: false },
+      { id: 'remove-node', type: 'button', label: 'Remove Ordinary Node' },
+      { id: 'remove-hub', type: 'button', label: 'Remove Hub' },
       { id: 'reset-network', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
@@ -70,30 +69,30 @@ export const SECTIONS = [
     id: 'illusion-of-significance',
     number: '05',
     title: 'The Illusion of Significance',
-    subtitle: 'The inevitability of cascading consequences.',
+    subtitle: 'Sensitivity is conditional.',
     body: [
-      'It is true that in a highly connected system, a single node disappearing or shifting slightly will eventually alter the entire future state of the network.',
-      'We often use this fact to comfort ourselves, claiming it proves that every individual node is deeply important and holds inherent meaning within the grand design.',
-      'But this is an illusion of significance. Moving a single grain of sand on a dune will also completely change the long-term cascade of events across the desert. It is not inherent meaning; it is simply the mechanical nature of complex systems over time.'
+      'A small change can alter a system\'s future, but not every complex or emergent system is chaotic. In stable regimes, perturbations can decay. In sensitive regimes, nearby trajectories can diverge rapidly.',
+      'The important philosophical distinction is simpler: causing a different future does not, by itself, establish special meaning or importance. A causal perturbation can be large, small, amplified, or absorbed.'
     ],
-    insight: 'You change the future just by existing, but so does a rock.',
-    vizHint: 'Click to slightly shift a single node. Watch how the passage of time naturally amplifies this tiny change until the two timelines are completely different.',
+    insight: 'Causal influence and significance are different questions.',
+    vizHint: 'Apply the same tiny perturbation in a stable regime and a sensitive regime.',
     controls: [
-      { id: 'shift-node', type: 'button', label: 'Shift One Node' }
+      { id: 'stable-regime', type: 'button', label: 'Stable Regime', variant: 'outline' },
+      { id: 'sensitive-regime', type: 'button', label: 'Sensitive Regime' },
+      { id: 'shift-node', type: 'button', label: 'Perturb One Node' }
     ]
   },
   {
     id: 'node-quantity',
     number: '06',
     title: 'Node Quantity',
-    subtitle: 'Scaling the processing power of the organism.',
+    subtitle: 'More capacity, more coordination.',
     body: [
-      'Since a single node cannot be infinitely upgraded, the first axis to improve the organism is the sheer number of nodes. More nodes mean more processing units.',
-      'Historically, we increased the number of active nodes through massive health interventions, allowing the organism to scale from millions to billions.',
-      'But just adding more nodes isn\'t enough. If the network scales up without the right structure, it becomes fragile. A massive network can easily collapse under its own weight.'
+      'More nodes can provide more parallel search, specialization, observations, and cultural accumulation. That increases the system\'s potential capacity.',
+      'But additional nodes also create coordination and communication costs. Whether the network improves depends on node capabilities, topology, task structure, communication quality, and how well work can be decomposed.'
     ],
-    insight: 'Scaling the node count is the baseline for upgrading the organism.',
-    vizHint: 'Use the slider to scale the population of the network. Notice the structural complexity increase.',
+    insight: 'More nodes create potential; coordination determines how much of it becomes usable.',
+    vizHint: 'Scale the population. Node count rises together with the structure that must coordinate it.',
     controls: [
       { id: 'population-slider', type: 'slider', label: 'Population Scale', min: '0.1', max: '1', step: '0.1', value: '0.3' }
     ]
@@ -102,16 +101,15 @@ export const SECTIONS = [
     id: 'connection-quantity',
     number: '07',
     title: 'Connection Quantity',
-    subtitle: 'Building the wires between the nodes.',
+    subtitle: 'Reducing distance across the graph.',
     body: [
-      'A network of brilliant, healthy nodes still fails if they cannot talk to each other. The next axis is the Number of Connections.',
-      'For most of history, geography strictly limited the edges in our graph. Then came the printing press, the telegraph, and finally, the Internet. We solved the wiring problem. We created a graph where almost any node can connect to any other node instantly.',
-      'But this extreme connectivity created a new problem: the human mind is simply not built to handle thousands of relationships at once.'
+      'For most of history, geography and communication cost constrained who could exchange information. Writing, printing, telecommunications, and the Internet progressively reduced those constraints.',
+      'The result is not a complete graph where everyone meaningfully talks to everyone. It is a network with much greater potential reachability and many shorter paths—still limited by attention, language, institutions, access, and trust.'
     ],
-    insight: 'We successfully wired the entire globe. What could possibly be the next innovation?',
-    vizHint: 'Click to simulate the invention of the internet, massively increasing the number of active edges.',
+    insight: 'Connectivity expands possible coordination, but attention remains scarce.',
+    vizHint: 'Add long-range links and watch formerly local clusters become globally reachable.',
     controls: [
-      { id: 'deploy-internet', type: 'button', label: 'Connect Everyone' },
+      { id: 'deploy-internet', type: 'button', label: 'Add Long-Range Links' },
       { id: 'reset-connections', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
@@ -119,49 +117,48 @@ export const SECTIONS = [
     id: 'connection-quality',
     number: '08',
     title: 'Connection Quality',
-    subtitle: 'Signal, noise, and information flow.',
+    subtitle: 'Useful information is more than bandwidth.',
     body: [
-      'If we have the people and the connections, the next crucial factor is the quality of the data flowing between them. When a channel is flooded with random noise, the actual signal is completely lost.',
-      'Applied to humans, this is the modern internet. We built infinite connections, but the algorithms optimize for engagement (noise) rather than truth (signal). Disinformation propagates through the network far faster than actual knowledge.',
-      'To fix the organism, we have to filter the noise. We need to prioritize high-value edges and ensure that true, useful signals can travel without being drowned out.'
+      'A connection can fail in different ways: transmission error, low trust, low relevance, deception, poor interpretation, or incentives that reward attention rather than accuracy.',
+      'These are not the same thing. Engagement is not noise in the Shannon sense, and misinformation is not random channel noise.',
+      'For the organism to learn, useful information must reach the right nodes with enough fidelity, context, and credibility to be acted on.'
     ],
-    insight: 'A network flooded with noise cannot function efficiently, no matter how large it grows.',
-    vizHint: 'Adjust the algorithm to favor Signal or Noise. Watch how noise physically degrades the network.',
+    insight: 'More communication is not the same as better information flow.',
+    vizHint: 'This toy model isolates one dimension of quality: edge transmission reliability.',
     controls: [
-      { id: 'algorithm-slider', type: 'slider', label: 'Signal vs Noise', min: '0', max: '1', step: '0.1', value: '0.2' }
+      { id: 'fidelity-slider', type: 'slider', label: 'Edge Reliability', min: '0', max: '1', step: '0.1', value: '0.8' }
     ]
   },
   {
     id: 'cohesion',
     number: '09',
     title: 'Cohesion & Polarization',
-    subtitle: 'Echo chambers and the splintering of the graph.',
+    subtitle: 'Beliefs and topology interact.',
     body: [
-      'When connection quality degrades and noise reigns, nodes retreat into local clusters of extreme agreement. The graph undergoes a phase transition: Polarization.',
-      'Echo chambers form. These dense sub-networks repel one another. The overarching emergent entity literally fractures into multiple, hostile sub-graphs that refuse to share processing power.',
-      'To heal the organism, we cannot simply add more connections. We need Bridging Nodes: elements that can span across the chasm, pulling the network back into a single unified architecture.'
+      'Polarization has at least two layers: what nodes believe and who interacts with whom. They can reinforce each other through homophily and selective exposure, but they are not identical.',
+      'Dense local clusters can become weakly connected across disagreement. Bridging ties can restore exchange, but simply exposing opposing groups to one another does not guarantee convergence; the effect depends on the interaction rule, trust, and incentives.'
     ],
-    insight: 'A polarized network is a lobotomized organism.',
-    vizHint: 'Drag the slider to polarize the network into echo chambers. Click to add Bridging Nodes to heal it.',
+    insight: 'A bridge creates an opportunity for exchange, not an automatic cure.',
+    vizHint: 'A bounded-confidence toy model forms opinion clusters as interaction tolerance falls.',
     controls: [
-      { id: 'polarize-slider', type: 'slider', label: 'Polarization', min: '0', max: '1', step: '0.1', value: '0' },
-      { id: 'deploy-bridges', type: 'button', label: 'Add Bridges' }
+      { id: 'polarize-slider', type: 'slider', label: 'Interaction Selectivity', min: '0', max: '1', step: '0.1', value: '0.6' },
+      { id: 'deploy-bridges', type: 'button', label: 'Add Cross-Group Bridges' }
     ]
   },
   {
     id: 'alignment',
     number: '10',
     title: 'Alignment & Shared Goals',
-    subtitle: 'Synchronization of vector paths.',
+    subtitle: 'Coordination without uniformity.',
     body: [
-      'Imagine we have successfully healed the echo chambers. The organism is one mass again. But if the nodes are pulling in opposite directions, the net forward progress of the entire graph is exactly zero.',
-      'Alignment is a meta-layer of the network. If half the nodes optimize for X and the other half for Y, they cancel each other out. The network vibrates in chaotic stagnation.',
-      'When the organism adopts a shared narrative—like exploring space, curing disease, or building a utopia—the vectors of individual nodes synchronize. The entire network begins to move fluidly in a single direction.'
+      'If nodes pursue incompatible directions, some effort can cancel or interfere. But opposite preferences produce exactly zero net movement only under exact cancellation.',
+      'Alignment is better treated as a degree of directional coherence, not an all-or-nothing state. High coordination can increase effectiveness toward a goal, while diversity can improve exploration, specialization, and error correction.',
+      'And alignment says nothing about whether the goal itself is good.'
     ],
-    insight: 'Without a shared goal, extreme processing power is just extreme heat.',
-    vizHint: 'The network is chaotic. Click to align vectors and watch the graph synchronize.',
+    insight: 'Coordination and objective quality are separate variables.',
+    vizHint: 'The displayed order parameter measures directional coherence from 0 to 1.',
     controls: [
-      { id: 'align-goals', type: 'button', label: 'Align Vectors' },
+      { id: 'align-goals', type: 'button', label: 'Increase Coupling' },
       { id: 'scramble-goals', type: 'button', label: 'Scramble', variant: 'outline' }
     ]
   },
@@ -169,14 +166,13 @@ export const SECTIONS = [
     id: 'environment',
     number: '11',
     title: 'Environmental Interaction',
-    subtitle: 'Sensing and storing local information.',
+    subtitle: 'Information enters through contact with reality.',
     body: [
-      "Nodes aren't just calculators; they are sensors. They exist within a physical environment, constantly bombarded by phenomena, signals, and raw data.",
-      "When a node encounters a piece of information in the wild, it can extract it, process it, and store it locally.",
-      "This individual learning is the foundation of all intelligence. Before information can be shared across the network, it must first be harvested from reality by an individual."
+      'Humans and instruments sample the environment. Observations, measurements, experiments, and feedback provide inputs that can update internal models.',
+      'But not all knowledge begins as a fresh local observation. New knowledge can also arise through inference, recombination, computation, simulation, and collective measurement.'
     ],
-    insight: 'All network knowledge begins as a local observation.',
-    vizHint: 'Release information into the environment and watch nodes encounter and store it.',
+    insight: 'Intelligence depends on both sensing reality and transforming what is already known.',
+    vizHint: 'Release observations into the environment and watch local nodes acquire them.',
     controls: [
       { id: 'release-info', type: 'button', label: 'Release Information' }
     ]
@@ -185,14 +181,14 @@ export const SECTIONS = [
     id: 'collective-memory',
     number: '12',
     title: 'Collective Memory',
-    subtitle: 'Information persistence beyond the individual.',
+    subtitle: 'Information survives by replication.',
     body: [
-      "Nodes are mortal. A human eventually flips from 1 to 0. If all knowledge lived purely inside individual nodes, the organism would suffer catastrophic amnesia constantly.",
-      "But ideas, culture, and discoveries are messages that circulate through the network. When a node spawns an idea, it passes it to its connections.",
-      "Even when the original node dies, the message continues to propagate through the surviving structure. This circulating information is the collective memory of the organism."
+      'A node is mortal. Information can persist when it is copied into other people, practices, institutions, or artifacts.',
+      'Persistence is therefore a population process: copies spread, mutate, disappear, and sometimes become redundant enough to survive the loss of the originator.',
+      'The network does not magically rescue an idea. If every surviving copy disappears, the information is lost.'
     ],
-    insight: 'An idea can outlive its creator if the network is strong enough to carry it.',
-    vizHint: 'Spawn an idea, then click its creator node to kill it. Watch the idea continue to circulate.',
+    insight: 'Collective memory is redundancy across carriers.',
+    vizHint: 'Spawn one idea, let it replicate, then kill carriers—including its originator.',
     controls: [
       { id: 'spawn-idea', type: 'button', label: 'Spawn Idea' }
     ]
@@ -201,16 +197,14 @@ export const SECTIONS = [
     id: 'external-storage',
     number: '13',
     title: 'External Memory & The Cloud',
-    subtitle: 'The evolution of information storage outside the human brain.',
+    subtitle: 'Storage escapes the biological lifetime.',
     body: [
-      "Initially, biological nodes were the only containers of memory. This was fragile: nodes die, and communication heavily distorts information.",
-      "Then, we started storing information externally. Cave paintings and monuments created almost permanent storage. Writing locked information into physical objects, making it effectively permanent.",
-      "The Printing Press became fundamental. By creating massive redundancy through copies, it made information effectively immortal.",
-      "Photography and recording instruments revolutionized things further. We invented instruments to objectively store information independently of humans. Visual and auditory information was captured by a third device, completely bypassing human senses, brain elaboration, and vocal transmission. Experience was locked in time from an object.",
-      "Finally, the Internet and the ubiquitous availability of these instruments (smartphones, cameras) to everyone connected every node to a central 'Cloud', flooding the network with indestructible, instant redundancy."
+      'Writing, printing, photography, recording, databases, and networked storage changed the persistence, fidelity, capacity, and searchability of human memory.',
+      'None of these media is permanent or perfectly objective. Instruments sample reality through limited sensors and encodings; physical and digital records can decay, disappear, become unreadable, or be altered.',
+      'The Internet is also not one central cloud. It is distributed infrastructure that makes replication and retrieval dramatically easier.'
     ],
-    insight: 'By offloading memory to the environment, the organism became immortal.',
-    vizHint: 'Click the button to guide the organism through technological innovations.',
+    insight: 'External storage makes knowledge more persistent—not immortal.',
+    vizHint: 'Move through storage epochs and watch information gain non-biological carriers.',
     controls: [
       { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' }
     ]
@@ -218,34 +212,35 @@ export const SECTIONS = [
   {
     id: 'entropy',
     number: '14',
-    title: 'Entropy & Information Decay',
-    subtitle: 'The distortion of knowledge over distance.',
+    title: 'Noise, Fidelity & Error Correction',
+    subtitle: 'Transmission can fail—and can be repaired.',
     body: [
-      "When information travels across a network, it doesn't arrive perfectly. Each hop introduces a chance for distortion, misinterpretation, or loss.",
-      "This is the fundamental problem of entropy in communication. A message passed through ten nodes will rarely resemble the original. To combat this, networks require redundancy, error correction, and reliable storage.",
-      "Without these mechanisms, the organism's shared knowledge degrades into noise."
+      'Noisy communication can corrupt information, but degradation is not an unavoidable increase of entropy at every hop. Shannon entropy, semantic drift, and thermodynamic entropy are different concepts.',
+      'A channel has an error process. Redundancy and error-correcting codes can make communication highly reliable when the transmission rate stays within the channel\'s capacity.',
+      'Human retelling adds another layer: interpretation can change meaning even when the physical signal is transmitted perfectly.'
     ],
-    insight: 'The universe naturally tends toward chaos.',
-    vizHint: 'Send a message across the network. Watch as the packet travels and accumulates distortion over multiple hops.',
+    insight: 'Information loss is a channel-and-decoding problem, not a universal march toward chaos.',
+    vizHint: 'Send a bit string through noisy hops; enable five-copy majority decoding to correct errors.',
     controls: [
-      { id: 'send-message', type: 'button', label: 'Send Message' },
-      { id: 'toggle-redundancy', type: 'switch', label: 'Enable Redundancy' }
+      { id: 'channel-noise', type: 'slider', label: 'Per-Hop Bit Flip', min: '0', max: '0.15', step: '0.01', value: '0.04' },
+      { id: 'toggle-redundancy', type: 'switch', label: '5× Repetition Code' },
+      { id: 'send-message', type: 'button', label: 'Send Message' }
     ]
   },
   {
     id: 'productivity',
     number: '15',
     title: 'Productivity & Shared Knowledge',
-    subtitle: 'The ultimate output of the organism.',
+    subtitle: 'From distributed capacity to collective intelligence.',
     body: [
-      'When you optimize Node Quantity, Node Quality, Connection Quantity, and Connection Quality—and when the organism is cohesive, aligned, and capable of fighting decay—what is the result?',
-      'Massive, compounding collective intelligence. The organism computes solutions to problems that no individual node could even comprehend. Science accelerates. Poverty collapses. Art flourishes.',
-      'This is not an abstract concept. This is the observable mechanism of human progress over the last ten thousand years.'
+      'A network can combine specialization, memory, parallel search, and coordination to solve problems beyond any single person\'s capacity.',
+      'But performance is not a monotonic function of population or edge count. Bottlenecks, coordination costs, misinformation, duplicated work, incentives, and resource constraints can erase the benefit of scale.',
+      'Shared knowledge can support collective intelligence. That does not establish a single collective consciousness.'
     ],
-    insight: 'Shared knowledge is the emergent consciousness of the organism.',
-    vizHint: 'Watch the organism achieve high productivity. Clusters of high-quality nodes with strong edges generate intense bursts of shared knowledge.',
+    insight: 'Collective intelligence emerges when distributed capacity is organized well enough to become usable.',
+    vizHint: 'The metrics are transparent proxies for capacity, reachability, and coordination load—not empirical productivity.',
     controls: [
-      { id: 'optimize-all', type: 'button', label: 'Maximize Network' },
+      { id: 'optimize-all', type: 'button', label: 'Build Scalable Network' },
       { id: 'reset-productivity', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
@@ -253,14 +248,14 @@ export const SECTIONS = [
     id: 'whats-next',
     number: '16',
     title: 'What\'s Next?',
-    subtitle: 'Building the next evolution.',
+    subtitle: 'An open model.',
     body: [
-      'This project is a living framework. I want everything to be correct, logically grounded, and auditable. There will surely be errors, and things to integrate or adjust over time.',
-      'We still have to solve the core problem: how do we filter noise and amplify the signal? How do we fix the network we built?',
-      'This is how I am constructing my view of the world. Sharing it. Building it. Improving it.'
+      'This project is a living framework. The goal is not to make the metaphor win; it is to make every claim progressively clearer, more testable, and easier to falsify.',
+      'The next step is to connect heterogeneous nodes, network structure, information fidelity, memory, coordination, and performance.',
+      'A separate technical note defines the toy models and their limits so the visual story can stay simple without hiding the mathematics.'
     ],
-    insight: 'The organism is not finished growing.',
-    vizHint: 'The network is open. Drag nodes to reshape the topology yourself.',
+    insight: 'Keep the interface intuitive and the assumptions auditable.',
+    vizHint: 'The network stays open: reshape it and treat every representation as provisional.',
     controls: []
   }
 ];

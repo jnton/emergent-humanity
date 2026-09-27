@@ -220,7 +220,7 @@ export const SECTIONS = [
       'Human communication adds another problem: a message can arrive perfectly and still be misunderstood. Physical fidelity and meaning are different layers.'
     ],
     insight: 'Reliable communication depends on both the channel and the interpretation.',
-    vizHint: 'Send a bit string through noisy links, then use redundancy to recover it.',
+    vizHint: 'Separate physical transmission from interpretation: coding can repair bit errors, while meaning can still be misread afterward.',
     controls: [
       { id: 'channel-noise', type: 'slider', label: 'Per-Hop Bit Flip', min: '0', max: '0.15', step: '0.01', value: '0.04' },
       { id: 'toggle-redundancy', type: 'switch', label: '5× Repetition Code' },

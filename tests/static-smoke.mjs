@@ -30,6 +30,8 @@ assert.match(app, /https:\/\/github\.com\/jnton\/emergent-humanity/, 'The source
 assert.match(app, /content\/model-notes\.md/, 'The formal model notes must be linked from the experience.');
 assert.match(modelNotes, /binary symmetric channel/i, 'Formal notes must document the channel model.');
 assert.match(modelNotes, /bounded-confidence/i, 'Formal notes must document the polarization model.');
+assert.match(modelNotes, /comparative emergence/i, 'Formal notes must document the cross-substrate comparison.');
+assert.match(modelNotes, /Physarum/i, 'Formal notes must document the adaptive-network comparison.');
 assert.doesNotMatch(app, /startAudioOnInteract|audioBtn\.click\(\)/, 'Ambient audio must never auto-start.');
 assert.doesNotMatch(audio, /startAudioOnInteract|\.click\(\)\s*;/, 'The soundtrack must remain explicitly opt-in.');
 assert.match(audio, /tonal-score-v2/, 'The tonal score version must be identifiable.');

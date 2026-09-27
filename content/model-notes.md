@@ -1,0 +1,407 @@
+# Emergent Humanity — Formal Model Notes
+
+This note documents the mathematical ideas behind the interactive essay. It is deliberately separate from the main narrative so the interface can stay readable.
+
+The visualizations are **toy models**. They are intended to make assumptions inspectable, not to reproduce empirical human society or prove the philosophical interpretation.
+
+## 1. Core representation
+
+At time (t), represent the system as a temporal network
+
+[
+mathcal G_t=(V,E_t).
+]
+
+A useful extension is a heterogeneous node set
+
+[
+V = H cup S,
+]
+
+where (H) contains humans and (S) contains external storage or institutional artifacts.
+
+A human node (i) has an internal state
+
+[
+x_i(t)inmathbb R^d
+]
+
+and an activity variable
+
+[
+a_i(t)in{0,1}.
+]
+
+The binary variable is only an availability state. It does **not** imply that a human is intrinsically one bit.
+
+Edges can carry multiple attributes:
+
+[
+e_{ij}(t)=
+igl(
+w_{ij},
+q_{ij},
+b_{ij},
+	au_{ij},
+ell_{ij},
+dots
+igr),
+]
+
+for influence or trust (w), transmission reliability (q), bandwidth (b), latency (	au), and relationship layer (ell).
+
+Human society is therefore better understood as a temporal, heterogeneous, multilayer network than as one static graph.
+
+## 2. Node limits
+
+For a trait or task (k), performance can be represented schematically as
+
+[
+P_{ik}
+=
+F_k(G_i,E_i,D_i,T_i),
+]
+
+where (G_i) represents inherited biological variation, (E_i) environment and development, (D_i) current physiological state, and (T_i) tools or augmentation.
+
+The framework's claim is not that there is one scalar genetic maximum. It is that, for a fixed biological organism and current technology, the attainable state space is finite. Removing environmental constraints can move performance toward the biological envelope without making that envelope unbounded.
+
+Genotype and environment can interact, so the boundary itself may depend on the environment.
+
+## 3. Node loss and structural importance
+
+For any network-level observable (M), define the consequence of removing node (v) as
+
+[
+Delta_v M
+=
+M(G)-M(G-v).
+]
+
+There is no universal node importance. The result depends on the chosen observable.
+
+Examples include:
+
+- giant-component size;
+- average path length;
+- global efficiency;
+- information throughput;
+- task coverage;
+- access to unique knowledge.
+
+Degree, betweenness, PageRank, articulation status, and functional specialization can be useful predictors of impact, but none is a universal definition of human importance.
+
+The runtime network currently uses preferential attachment as a **stylized topology**, not as a claim that human society is exactly scale-free. Strongly scale-free structure is not empirically universal across real networks.
+
+## 4. Perturbations, stability, and chaos
+
+Complexity does not imply chaos.
+
+For a dynamical system
+
+[
+x_{t+1}=F(x_t),
+]
+
+a perturbation (delta x_0) may shrink, remain bounded, or grow.
+
+A positive maximal Lyapunov exponent is commonly used as evidence of exponential sensitivity to initial conditions:
+
+[
+lambda_{max}
+=
+limsup_{t	oinfty}
+rac{1}{t}
+log
+rac{|delta x_t|}{|delta x_0|}.
+]
+
+The Chapter 05 visualization therefore compares two deliberately different regimes:
+
+1. a contracting consensus process where perturbations decay;
+2. a sensitive nonlinear process where nearby trajectories tend to diverge.
+
+It does not claim that all emergent systems are chaotic.
+
+## 5. Node quantity and coordination cost
+
+More nodes can increase potential parallel capacity:
+
+[
+C_{mathrm{potential}}
+propto
+sum_i c_i,
+]
+
+where (c_i) is a task-relevant capacity.
+
+But realized performance need not rise monotonically with (N). Coordination cost depends on architecture and task structure.
+
+A fully connected communication pattern has
+
+[
+|E|=rac{N(N-1)}{2},
+]
+
+but real scalable systems usually avoid all-to-all communication through modularity, hierarchy, specialization, routing, institutions, and external memory.
+
+The project therefore treats node count as **potential capacity**, not guaranteed output.
+
+## 6. Connection quantity
+
+Useful structural observables include:
+
+[
+langle kangle=rac{2|E|}{|V|}
+]
+
+for mean degree and shortest-path distance (d(i,j)).
+
+Long-range links can sharply improve reachability and reduce mean path length without making the network complete.
+
+The Internet lowers the cost of potential connection; it does not eliminate attention, trust, language, access, or institutional constraints.
+
+## 7. Connection quality
+
+"Quality" is multidimensional. It may include:
+
+- physical transmission fidelity;
+- semantic fidelity;
+- relevance;
+- trust calibration;
+- source reliability;
+- timeliness;
+- incentive compatibility;
+- usefulness for the receiver's task.
+
+These must not be collapsed into Shannon noise.
+
+The Chapter 08 visualization intentionally isolates only one component: **edge transmission reliability**. It is a toy proxy, not a complete epistemic model.
+
+## 8. Polarization
+
+Separate node state from graph structure.
+
+Let opinion be
+
+[
+o_i(t)in[-1,1].
+]
+
+One standard toy rule is bounded-confidence interaction. For an interacting pair (i,j), if
+
+[
+|o_i-o_j|learepsilon,
+]
+
+then
+
+[
+o_i' = o_i+mu(o_j-o_i),
+]
+
+[
+o_j' = o_j+mu(o_i-o_j),
+]
+
+with (0<mule 1/2).
+
+When confidence bounds are narrow, multiple persistent opinion clusters can form.
+
+The visualization uses this family of dynamics plus a structural display of cross-group ties. "Bridge" nodes are modeled as trusted cross-group interactions with a wider confidence bound.
+
+That is a **specific mechanism**, not a theorem that exposure to disagreement always depolarizes people.
+
+## 9. Alignment
+
+Give each node a direction
+
+[
+	heta_iin[0,2pi).
+]
+
+Directional coherence is measured by the circular order parameter
+
+[
+R
+=
+left|
+rac{1}{N}
+sum_{i=1}^{N} e^{i	heta_i}
+ight|,
+]
+
+with
+
+[
+0le Rle1.
+]
+
+(R=1) means perfect directional alignment.
+
+(Rapprox0) means the directions largely cancel, but exact zero requires exact cancellation.
+
+The visualization uses local angular consensus on a graph. It is inspired by consensus, Vicsek, and Kuramoto-style models but is not presented as an exact implementation of any one of them.
+
+High (R) is coordination, not correctness or welfare.
+
+## 10. Environmental information
+
+Information can enter through observations and measurements, but inference can create new propositions without a fresh observation at every step.
+
+A fuller epistemic model would distinguish:
+
+[
+	ext{measurement}
+ightarrow
+	ext{representation}
+ightarrow
+	ext{inference}
+ightarrow
+	ext{communication}
+ightarrow
+	ext{verification}.
+]
+
+The current visualization models only the first acquisition step.
+
+## 11. Collective memory
+
+For one information item (m), let
+
+[
+c_i^{(m)}(t)in{0,1}
+]
+
+indicate whether carrier (i) currently contains a usable copy.
+
+The number of live copies is
+
+[
+C_m(t)=sum_i a_i(t)c_i^{(m)}(t).
+]
+
+An item survives while
+
+[
+C_m(t)>0.
+]
+
+Transmission increases copy count; forgetting, corruption, or node loss can decrease it.
+
+Chapter 12 implements replication rather than teleportation: if every live carrier disappears, the idea disappears from the toy system.
+
+## 12. External memory
+
+External media add carrier classes with different failure rates, capacities, access costs, and fidelities.
+
+For storage medium (s), useful variables include
+
+[
+(	au_s,f_s,r_s,c_s,b_s),
+]
+
+for expected lifetime, fidelity, replication, retrieval cost, and bandwidth.
+
+External storage can greatly increase persistence without making information permanent or perfectly objective.
+
+## 13. Noisy transmission and error correction
+
+Chapter 14 uses a binary symmetric channel as a deliberately simple communication model.
+
+At each hop, each bit flips independently with probability (p).
+
+For (h) identical independent hops, the effective probability that a bit has flipped an odd number of times is
+
+[
+p_h
+=
+rac{1-(1-2p)^h}{2}.
+]
+
+This is a real mathematical channel model, unlike an arbitrary "distortion += constant" rule.
+
+With five independently transmitted copies and bitwise majority decoding, the probability that the majority is wrong is
+
+[
+P_{mathrm{maj}}
+=
+sum_{k=3}^{5}
+{5choose k}
+p_h^k(1-p_h)^{5-k}.
+]
+
+The repetition code spends more bandwidth to gain reliability.
+
+This illustrates a central information-theoretic point: noisy transmission does not imply unavoidable accumulating corruption. Appropriate coding can make error probabilities very small when operating within channel constraints.
+
+Shannon entropy, semantic drift, and thermodynamic entropy remain distinct concepts.
+
+## 14. Collective intelligence and productivity
+
+The project does not define a universal scalar "humanity score."
+
+Instead, the Chapter 15 display reports transparent proxies such as:
+
+[
+C=sum_i q_i
+]
+
+for aggregate node-capacity proxy,
+
+[
+R_G=rac{|G_{max}|}{|V|}
+]
+
+for the fraction of active nodes in the largest connected component, and
+
+[
+L=rac{|E|}{|V|}
+]
+
+for a simple coordination-load proxy.
+
+These are descriptors, not an empirical production function.
+
+Real collective performance also depends on task decomposition, incentives, resource distribution, institutions, diversity, conflict, verification, and the external environment.
+
+Collective intelligence does not imply collective phenomenal consciousness.
+
+## 15. What "organism" means here
+
+"Organism" is a modeling analogy.
+
+Evolutionary biology contains stronger concepts such as organismality and superorganisms, often associated with very high cooperation, low internal conflict, functional integration, and adaptation at the collective level.
+
+Human civilization satisfies some organism-like analogies and violates others. This project therefore uses **networked collective** as the literal description and **emergent organism** as the exploratory metaphor.
+
+## Selected references
+
+- Albert R, Jeong H, Barabási A-L. *Error and attack tolerance of complex networks*. Nature (2000). https://doi.org/10.1038/35019019
+- Broido AD, Clauset A. *Scale-free networks are rare*. Nature Communications (2019). https://doi.org/10.1038/s41467-019-08746-5
+- Watts DJ, Strogatz SH. *Collective dynamics of small-world networks*. Nature (1998). https://doi.org/10.1038/30918
+- Deffuant G et al. *Mixing beliefs among interacting agents*. Advances in Complex Systems (2000). https://doi.org/10.1142/S0219525900000078
+- Vicsek T et al. *Novel type of phase transition in a system of self-driven particles*. Physical Review Letters (1995). https://doi.org/10.1103/PhysRevLett.75.1226
+- Shannon CE. *A Mathematical Theory of Communication*. Bell System Technical Journal (1948). https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
+- Queller DC, Strassmann JE. *Beyond society: the evolution of organismality*. Philosophical Transactions B (2009). https://doi.org/10.1098/rstb.2009.0095
+- Muthukrishna M, Henrich J. *Innovation in the collective brain*. Philosophical Transactions B (2016). https://doi.org/10.1098/rstb.2015.0192
+- Woolley AW et al. *Evidence for a collective intelligence factor in the performance of human groups*. Science (2010). https://doi.org/10.1126/science.1193147
+- Vosoughi S, Roy D, Aral S. *The spread of true and false news online*. Science (2018). https://doi.org/10.1126/science.aap9559
+
+## Interpretation rule
+
+For every chapter, keep four layers separate:
+
+[
+oxed{
+	ext{metaphor}
+ightarrow
+	ext{toy model}
+ightarrow
+	ext{empirical claim}
+ightarrow
+	ext{philosophical interpretation}
+}
+]
+
+A successful visualization can demonstrate the behavior of its toy model. It cannot, by itself, establish that the same mechanism dominates real human civilization.

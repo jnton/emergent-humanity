@@ -25,28 +25,6 @@ function createMobileHeading(section) {
   copy.append(numberElement, titleElement);
   heading.appendChild(copy);
 
-  if (section.dataset.sectionId === 'whats-next') {
-    const toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.className = 'canvas-touch-toggle';
-    toggle.setAttribute('aria-pressed', 'false');
-    toggle.setAttribute('aria-label', 'Move nodes');
-    toggle.title = 'Enable node dragging on the visualization';
-    toggle.textContent = 'Move nodes';
-    toggle.addEventListener('click', () => {
-      const pane = section.querySelector('.viz-pane');
-      if (!pane) return;
-      const active = pane.classList.toggle('touch-interaction-active');
-      const label = active ? 'Done' : 'Move nodes';
-      toggle.setAttribute('aria-pressed', String(active));
-      toggle.setAttribute('aria-label', label);
-      toggle.title = active
-        ? 'Disable node dragging and restore page scrolling'
-        : 'Enable node dragging on the visualization';
-      toggle.textContent = label;
-    });
-    heading.appendChild(toggle);
-  }
 
   return heading;
 }

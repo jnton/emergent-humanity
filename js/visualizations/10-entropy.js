@@ -3,11 +3,13 @@ import { createNetworkEngine } from '../lib/network-engine.js';
 export function initEntropy(canvas, controls) {
   let channelNoise = Number.parseFloat(controls['channel-noise']?.value ?? '0.04');
   let redundancyActive = Boolean(controls['toggle-redundancy']?.checked);
+  let interpretationError = Number.parseFloat(controls['interpretation-error']?.value ?? '0.1');
   let packets = [];
   let originalBits = [];
   let receivedCopies = [];
   let path = [];
   let resultText = 'Ready';
+  let interpretationText = 'not interpreted';
 
   const stats = document.getElementById('stats-entropy');
   const bitCount = 15;
@@ -134,6 +136,7 @@ export function initEntropy(canvas, controls) {
     }
 
     resultText = 'Transmitting';
+    interpretationText = 'awaiting physical decode';
     const source = nodeById(path[0]);
     if (source) {
       source.signal = 1;
@@ -154,12 +157,18 @@ export function initEntropy(canvas, controls) {
     const pEff = effectiveHopError(channelNoise, hops);
     const expected = redundancyActive ? majorityError5(pEff) : pEff;
 
-    resultText = `decoded errors ${errors}/${bitCount} · expected bit error ≈ ${(expected * 100).toFixed(1)}%`;
+    const physicalCorrect = errors === 0;
+    const interpretationCorrect = Math.random() >= interpretationError;
+    interpretationText = physicalCorrect
+      ? (interpretationCorrect ? 'signal intact, meaning interpreted correctly' : 'signal intact, meaning MISINTERPRETED')
+      : 'physical decode already corrupted';
+
+    resultText = `decoded errors ${errors}/${bitCount} · expected bit error ≈ ${(expected * 100).toFixed(1)}% · ${interpretationText}`;
 
     const target = nodeById(path[path.length - 1]);
     if (target) {
       target.signal = 1;
-      target.signalType = errors === 0 ? 'signal' : 'noise';
+      target.signalType = physicalCorrect && interpretationCorrect ? 'signal' : 'noise';
     }
   }
 
@@ -208,7 +217,7 @@ export function initEntropy(canvas, controls) {
   function updateStats() {
     if (!stats) return;
     const hops = path.length > 1 ? path.length - 1 : 0;
-    stats.textContent = `p ${(channelNoise * 100).toFixed(0)}%/hop · ${hops} hops · ${redundancyActive ? '5× majority decode' : 'single copy'} · ${resultText}`;
+    stats.textContent = `channel p ${(channelNoise * 100).toFixed(0)}%/hop · interpretation error ${Math.round(interpretationError * 100)}% · ${hops} hops · ${redundancyActive ? '5× majority decode' : 'single copy'} · ${resultText}`;
   }
 
   controls['channel-noise']?.addEventListener('input', (event) => {
@@ -218,6 +227,11 @@ export function initEntropy(canvas, controls) {
 
   controls['toggle-redundancy']?.addEventListener('change', (event) => {
     redundancyActive = event.target.checked;
+    updateStats();
+  });
+
+  controls['interpretation-error']?.addEventListener('input', (event) => {
+    interpretationError = Number.parseFloat(event.target.value);
     updateStats();
   });
 
@@ -231,6 +245,7 @@ export function initEntropy(canvas, controls) {
     path = [];
     originalBits = [];
     resultText = 'Ready';
+    interpretationText = 'not interpreted';
 
     for (const node of engine.getNodes()) {
       node.signal = 0;

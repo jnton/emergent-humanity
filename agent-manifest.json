@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "name": "Emergent Humanity",
-  "description": "Interactive network-theory essay with machine-readable content and a browser automation API.",
+  "description": "Interactive essay and simulations about humanity as an emergent network, grounded in explicit toy models from network science, dynamical systems, and information theory.",
   "language": "en",
   "content": {
     "textEdition": "content/essay.md",

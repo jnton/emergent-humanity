@@ -1,6 +1,6 @@
 # Emergent Humanity
 
-> An interactive, exploratory essay that models humanity as an emergent network organism using concepts from graph theory, information flow, collective memory, coordination, and social systems.
+> An interactive essay about humanity as an emergent network, from small communities to civilization, grounded in explicit toy models from network science, dynamical systems, information theory, collective memory, and coordination.
 
 ## Primary resources
 
@@ -24,22 +24,22 @@
 ## Chapter map
 
 1. `node-capacity` — The Human Node
-2. `node-limits` — Node Limits & Bottlenecks
+2. `node-limits` — Node Limits
 3. `intro` — The Great Organism
-4. `emergent-organism` — One Node Goes Dark
-5. `illusion-of-significance` — The Illusion of Significance
-6. `node-quantity` — Node Quantity
-7. `connection-quantity` — Connection Quantity
-8. `connection-quality` — Connection Quality
-9. `cohesion` — Cohesion & Polarization
-10. `alignment` — Alignment & Shared Goals
-11. `environment` — Environmental Interaction
+4. `emergent-organism` — Losing a Node
+5. `illusion-of-significance` — Small Causes, Large Futures
+6. `node-quantity` — More Nodes
+7. `connection-quantity` — More Connections
+8. `connection-quality` — Better Connections
+9. `cohesion` — Polarization
+10. `alignment` — Alignment
+11. `environment` — Learning from Reality
 12. `collective-memory` — Collective Memory
-13. `external-storage` — External Memory & The Cloud
-14. `entropy` — Noise, Fidelity & Error Correction
-15. `productivity` — Productivity & Shared Knowledge
-16. `comparative-emergence` — Same Pattern, Different Substrate
-17. `whats-next` — What's Next?
+13. `external-storage` — External Memory
+14. `entropy` — Noise and Error Correction
+15. `productivity` — Collective Intelligence
+16. `comparative-emergence` — Different Systems, Same Pattern
+17. `whats-next` — What Helps Humanity Thrive?
 
 ## Browser-agent API
 

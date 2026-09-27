@@ -1,5 +1,5 @@
 // ==========================================================================
-// The Content Core — Formalized exploratory edition
+ // The Content Core — concise reader-facing edition
 // ==========================================================================
 
 export const SECTIONS = [
@@ -7,27 +7,26 @@ export const SECTIONS = [
     id: 'node-capacity',
     number: '01',
     title: 'The Human Node',
-    subtitle: 'The depth of a single point.',
+    subtitle: 'A stylized approximation of one person.',
     body: [
-      'A human being is not a static data point. We are dynamic biological systems with changing internal states, memories, skills, goals, and incomplete views of reality.',
-      'To study humanity at scale, this framework deliberately compresses that complexity into a node. The node is not the person. It is a coarse-grained representation of whatever properties matter for the question being asked.'
+      'Each person is a complex biological system with changing memories, skills, goals, and internal states.',
+      'In this model, a node is a stylized approximation of a person. It keeps only the properties relevant to the question and deliberately discards the rest.'
     ],
-    insight: 'A node is a useful abstraction, not a complete description of a human.',
-    vizHint: 'Watch a high-dimensional human representation collapse into a single model node.',
+    insight: 'A useful model is incomplete by design.',
+    vizHint: 'Watch a high-dimensional person become a lower-dimensional model state—and see what gets discarded.',
     controls: []
   },
   {
     id: 'node-limits',
     number: '02',
-    title: 'Node Limits & Bottlenecks',
-    subtitle: 'Finite biological hardware.',
+    title: 'Node Limits',
+    subtitle: 'No person has unlimited capacity.',
     body: [
-      'A single human has finite attention, memory, time, energy, and information-processing capacity. Education, health, nutrition, practice, tools, and environment can change usable capacity enormously.',
-      'But for a fixed organism and current biological technology, removing environmental constraints does not make capacity infinite. Inherited biology still constrains the attainable range, differently across traits and environments.',
-      'This is not one universal maximum potential. It is a multidimensional performance envelope.'
+      'Attention, memory, time, energy, and information processing are finite. Health, education, practice, tools, and environment can push performance much higher, but they do not make a fixed human unlimited.',
+      'There is no single maximum potential. Different traits have different limits, and those limits depend partly on environment.'
     ],
-    insight: 'Environment can move the boundary dramatically; biology still bounds the system.',
-    vizHint: 'The circle is a toy capacity variable: optimization approaches a finite biological envelope.',
+    insight: 'Environment can move the limit. It does not remove it.',
+    vizHint: 'Improve the environment and watch performance approach a finite limit.',
     controls: [
       { id: 'optimize-nodes', type: 'button', label: 'Optimize Environment' },
       { id: 'reset-limits', type: 'button', label: 'Reset', variant: 'outline' }
@@ -37,45 +36,45 @@ export const SECTIONS = [
     id: 'intro',
     number: '03',
     title: 'The Great Organism',
-    subtitle: 'Emergence from interaction.',
+    subtitle: 'The whole can acquire capabilities no part has alone.',
     body: [
-      'When nodes connect, new properties appear at the network level: specialization, coordination, shared memory, institutions, markets, science, and culture.',
-      'I use the organism as a modeling analogy. Humanity is not established here as a literal biological superorganism. The useful claim is narrower: a connected human network can display emergent properties that do not belong to any isolated individual.'
+      'A single person cannot build a civilization. Communities can divide work, preserve knowledge, coordinate, create institutions, and accumulate science and culture across generations.',
+      'At that scale, the system becomes organism-like: many limited parts interact to produce capabilities that exist only at the collective level. The analogy is structural, not literal; a human community is not one biological organism.'
     ],
-    insight: 'The network can do things no single node can do alone.',
-    vizHint: 'The network is the object of study; “organism” is the guiding analogy.',
+    insight: 'Civilization is not inside any one person. It emerges from interaction.',
+    vizHint: 'Watch isolated people connect, differentiate, share information, and acquire collective capabilities.',
     controls: []
   },
   {
     id: 'emergent-organism',
     number: '04',
-    title: 'One Node Goes Dark',
-    subtitle: 'Loss depends on structure.',
+    title: 'Losing a Node',
+    subtitle: 'Most nodes barely affect the whole. Some become critical.',
     body: [
-      'Start with the simplest model: equal-weight nodes in a redundant network. Losing one ordinary node usually produces a small global structural change, even when the local human cost is enormous.',
-      'Real networks do not stay equal. Some nodes become hubs, bridges, specialists, or unique repositories of knowledge. Their removal can matter far more because structural and functional importance are unevenly distributed.',
-      'So the effect of losing a node depends on topology, redundancy, and function—not merely on population size.'
+      'In a large, redundant network, removing most individual nodes has almost no effect on global structure or performance. In that narrow systems sense, most of us are probably not special to humanity as a whole.',
+      'But importance is not fixed. A node can become a hub, a bridge, a specialist, or the unique carrier of useful information. What matters is marginal effect on a chosen system function—not human worth.'
     ],
-    insight: 'Most nodes may be structurally replaceable; some become disproportionately important.',
-    vizHint: 'Reveal structural weight, then compare removing an ordinary node with removing a hub.',
+    insight: 'Most nodes are replaceable to the system. Structural importance can change.',
+    vizHint: 'Remove ordinary nodes, then let one develop a critical role and compare its marginal effect.',
     controls: [
       { id: 'show-centrality', type: 'switch', label: 'Show Structural Weight', value: false },
       { id: 'remove-node', type: 'button', label: 'Remove Ordinary Node' },
-      { id: 'remove-hub', type: 'button', label: 'Remove Hub' },
+      { id: 'develop-node', type: 'button', label: 'Develop a Critical Role' },
+      { id: 'remove-hub', type: 'button', label: 'Remove Critical Node' },
       { id: 'reset-network', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
   {
     id: 'illusion-of-significance',
     number: '05',
-    title: 'The Illusion of Significance',
-    subtitle: 'Sensitivity is conditional.',
+    title: 'Small Causes, Large Futures',
+    subtitle: 'The system decides whether a tiny difference dies or explodes.',
     body: [
-      'A small change can alter a system\'s future, but not every complex or emergent system is chaotic. In stable regimes, perturbations can decay. In sensitive regimes, nearby trajectories can diverge rapidly.',
-      'The important philosophical distinction is simpler: causing a different future does not, by itself, establish special meaning or importance. A causal perturbation can be large, small, amplified, or absorbed.'
+      'In a chaotic regime, two nearly identical states can separate exponentially. A common diagnostic is the largest Lyapunov exponent: positive values indicate local exponential instability.',
+      'In a stable regime, the same perturbation can shrink. The lesson is not that every tiny event changes history. It is that the size of a cause and the size of its eventual effect can be radically different.'
     ],
-    insight: 'Causal influence and significance are different questions.',
-    vizHint: 'Apply the same tiny perturbation in a stable regime and a sensitive regime.',
+    insight: 'A tiny perturbation can become macroscopic when the dynamics amplify it.',
+    vizHint: 'Apply the same ε perturbation in contracting and sensitive regimes; watch divergence and the finite-time Lyapunov estimate.',
     controls: [
       { id: 'stable-regime', type: 'button', label: 'Stable Regime', variant: 'outline' },
       { id: 'sensitive-regime', type: 'button', label: 'Sensitive Regime' },
@@ -85,14 +84,14 @@ export const SECTIONS = [
   {
     id: 'node-quantity',
     number: '06',
-    title: 'Node Quantity',
-    subtitle: 'More capacity, more coordination.',
+    title: 'More Nodes',
+    subtitle: 'Scale adds capacity and coordination costs.',
     body: [
-      'More nodes can provide more parallel search, specialization, observations, and cultural accumulation. That increases the system\'s potential capacity.',
-      'But additional nodes also create coordination and communication costs. Whether the network improves depends on node capabilities, topology, task structure, communication quality, and how well work can be decomposed.'
+      'More people can mean more ideas, specialization, observations, and parallel work. It also means more communication, duplication, conflict, and coordination.',
+      'Scale helps only when the network can turn extra people into usable collective capacity.'
     ],
-    insight: 'More nodes create potential; coordination determines how much of it becomes usable.',
-    vizHint: 'Scale the population. Node count rises together with the structure that must coordinate it.',
+    insight: 'More nodes create potential. Organization determines how much becomes usable.',
+    vizHint: 'Increase the population and watch capacity and coordination load grow together.',
     controls: [
       { id: 'population-slider', type: 'slider', label: 'Population Scale', min: '0.1', max: '1', step: '0.1', value: '0.3' }
     ]
@@ -100,14 +99,14 @@ export const SECTIONS = [
   {
     id: 'connection-quantity',
     number: '07',
-    title: 'Connection Quantity',
-    subtitle: 'Reducing distance across the graph.',
+    title: 'More Connections',
+    subtitle: 'Shorter paths change what the network can do.',
     body: [
-      'For most of history, geography and communication cost constrained who could exchange information. Writing, printing, telecommunications, and the Internet progressively reduced those constraints.',
-      'The result is not a complete graph where everyone meaningfully talks to everyone. It is a network with much greater potential reachability and many shorter paths—still limited by attention, language, institutions, access, and trust.'
+      'Adding links can reduce shortest-path distance and make more of a network reachable. Writing, printing, telecommunications, and the Internet did this at enormous scale.',
+      'But possible connections can grow faster than a node’s finite communication and processing capacity. More connectivity changes the bottleneck; it does not abolish bottlenecks.'
     ],
-    insight: 'Connectivity expands possible coordination, but attention remains scarce.',
-    vizHint: 'Add long-range links and watch formerly local clusters become globally reachable.',
+    insight: 'Reachability can grow faster than usable attention or bandwidth.',
+    vizHint: 'Add long-range links: path length falls while finite per-node processing budgets begin to saturate.',
     controls: [
       { id: 'deploy-internet', type: 'button', label: 'Add Long-Range Links' },
       { id: 'reset-connections', type: 'button', label: 'Reset', variant: 'outline' }
@@ -116,79 +115,81 @@ export const SECTIONS = [
   {
     id: 'connection-quality',
     number: '08',
-    title: 'Connection Quality',
-    subtitle: 'Useful information is more than bandwidth.',
+    title: 'Better Connections',
+    subtitle: 'A perfect channel can still deliver bad information.',
     body: [
-      'A connection can fail in different ways: transmission error, low trust, low relevance, deception, poor interpretation, or incentives that reward attention rather than accuracy.',
-      'These are not the same thing. Engagement is not noise in the Shannon sense, and misinformation is not random channel noise.',
-      'For the organism to learn, useful information must reach the right nodes with enough fidelity, context, and credibility to be acted on.'
+      'Information can fail at different layers: the signal can be corrupted, the source can be wrong, the message can be misinterpreted, or trust can be badly calibrated. These are different mechanisms.',
+      'Incentives are different again. They do not necessarily damage a connection; they change what gets produced, selected, repeated, and amplified. None of these should be collapsed into one idea of “noise.”'
     ],
-    insight: 'More communication is not the same as better information flow.',
-    vizHint: 'This toy model isolates one dimension of quality: edge transmission reliability.',
+    insight: 'Good information flow depends on the channel, the source, the receiver, and the selection process.',
+    vizHint: 'Change each layer separately and watch accurate, false, rejected, and amplified messages propagate differently.',
     controls: [
-      { id: 'fidelity-slider', type: 'slider', label: 'Edge Reliability', min: '0', max: '1', step: '0.1', value: '0.8' }
+      { id: 'fidelity-slider', type: 'slider', label: 'Channel Fidelity', min: '0', max: '1', step: '0.05', value: '0.9' },
+      { id: 'source-accuracy', type: 'slider', label: 'Source Accuracy', min: '0', max: '1', step: '0.05', value: '0.8' },
+      { id: 'interpretation-fidelity', type: 'slider', label: 'Interpretation Fidelity', min: '0', max: '1', step: '0.05', value: '0.85' },
+      { id: 'trust-calibration', type: 'slider', label: 'Trust Calibration', min: '0', max: '1', step: '0.05', value: '0.75' },
+      { id: 'selection-pressure', type: 'slider', label: 'Amplification Bias', min: '0', max: '1', step: '0.05', value: '0.25' }
     ]
   },
   {
     id: 'cohesion',
     number: '09',
-    title: 'Cohesion & Polarization',
-    subtitle: 'Beliefs and topology interact.',
+    title: 'Polarization',
+    subtitle: 'Beliefs and connections can pull apart together.',
     body: [
-      'Polarization has at least two layers: what nodes believe and who interacts with whom. They can reinforce each other through homophily and selective exposure, but they are not identical.',
-      'Dense local clusters can become weakly connected across disagreement. Bridging ties can restore exchange, but simply exposing opposing groups to one another does not guarantee convergence; the effect depends on the interaction rule, trust, and incentives.'
+      'People tend to interact with people they already understand or trust. That can create clusters where opinions and network structure reinforce each other.',
+      'Bridges between groups can reopen exchange, but contact alone does not guarantee convergence. Trust, incentives, and the rules of interaction still matter.'
     ],
-    insight: 'A bridge creates an opportunity for exchange, not an automatic cure.',
-    vizHint: 'A bounded-confidence toy model forms opinion clusters as interaction tolerance falls.',
+    insight: 'A bridge creates contact. What happens next depends on the interaction.',
+    vizHint: 'Change interaction selectivity and watch opinion clusters form or reconnect.',
     controls: [
       { id: 'polarize-slider', type: 'slider', label: 'Interaction Selectivity', min: '0', max: '1', step: '0.1', value: '0.6' },
-      { id: 'deploy-bridges', type: 'button', label: 'Add Cross-Group Bridges' }
+      { id: 'deploy-bridges', type: 'button', label: 'Add Trusted Bridges' }
     ]
   },
   {
     id: 'alignment',
     number: '10',
-    title: 'Alignment & Shared Goals',
-    subtitle: 'Coordination without uniformity.',
+    title: 'Alignment',
+    subtitle: 'Moving together is different from moving well.',
     body: [
-      'If nodes pursue incompatible directions, some effort can cancel or interfere. But opposite preferences produce exactly zero net movement only under exact cancellation.',
-      'Alignment is better treated as a degree of directional coherence, not an all-or-nothing state. High coordination can increase effectiveness toward a goal, while diversity can improve exploration, specialization, and error correction.',
-      'And alignment says nothing about whether the goal itself is good.'
+      'When people push in incompatible directions, some effort cancels or interferes. Greater alignment can make a group more effective at pursuing a goal.',
+      'But alignment is not automatically good. Diversity can improve exploration and error correction, and a perfectly coordinated group can still pursue a bad objective.'
     ],
-    insight: 'Coordination and objective quality are separate variables.',
-    vizHint: 'The displayed order parameter measures directional coherence from 0 to 1.',
+    insight: 'Coordination increases coherence, not correctness.',
+    vizHint: 'Watch coherence, directional coverage, and agreement with an external target separately. High R can still point the wrong way.',
     controls: [
       { id: 'align-goals', type: 'button', label: 'Increase Coupling' },
-      { id: 'scramble-goals', type: 'button', label: 'Scramble', variant: 'outline' }
+      { id: 'scramble-goals', type: 'button', label: 'Restore Diversity', variant: 'outline' }
     ]
   },
   {
     id: 'environment',
     number: '11',
-    title: 'Environmental Interaction',
-    subtitle: 'Information enters through contact with reality.',
+    title: 'Learning from Reality',
+    subtitle: 'The network needs input from the world.',
     body: [
-      'Humans and instruments sample the environment. Observations, measurements, experiments, and feedback provide inputs that can update internal models.',
-      'But not all knowledge begins as a fresh local observation. New knowledge can also arise through inference, recombination, computation, simulation, and collective measurement.'
+      'Observation, measurement, experiments, and feedback give the network new information.',
+      'Knowledge also grows by transforming what is already known through inference, recombination, computation, and simulation.'
     ],
-    insight: 'Intelligence depends on both sensing reality and transforming what is already known.',
-    vizHint: 'Release observations into the environment and watch local nodes acquire them.',
+    insight: 'Learning needs both evidence and inference.',
+    vizHint: 'Release observations from outside the network, then combine stored observations to create an inferred proposition.',
     controls: [
-      { id: 'release-info', type: 'button', label: 'Release Information' }
+      { id: 'release-info', type: 'button', label: 'Release Observations' },
+      { id: 'infer-knowledge', type: 'button', label: 'Run Inference', variant: 'outline' }
     ]
   },
   {
     id: 'collective-memory',
     number: '12',
     title: 'Collective Memory',
-    subtitle: 'Information survives by replication.',
+    subtitle: 'Ideas survive only if they have somewhere to go.',
     body: [
-      'A node is mortal. Information can persist when it is copied into other people, practices, institutions, or artifacts.',
-      'Persistence is therefore a population process: copies spread, mutate, disappear, and sometimes become redundant enough to survive the loss of the originator.',
-      'The network does not magically rescue an idea. If every surviving copy disappears, the information is lost.'
+      'People die and memories fade. Information persists when it is copied into other people, practices, institutions, or artifacts.',
+      'Copies can spread, change, disappear, or become redundant enough to survive the loss of the original carrier.'
     ],
-    insight: 'Collective memory is redundancy across carriers.',
-    vizHint: 'Spawn one idea, let it replicate, then kill carriers—including its originator.',
+    insight: 'Memory becomes collective when information outlives the person who first held it.',
+    vizHint: 'Create one idea. Copies spread, sometimes mutate, and can survive—or disappear with—their carriers.',
     controls: [
       { id: 'spawn-idea', type: 'button', label: 'Spawn Idea' }
     ]
@@ -196,49 +197,48 @@ export const SECTIONS = [
   {
     id: 'external-storage',
     number: '13',
-    title: 'External Memory & The Cloud',
-    subtitle: 'Storage escapes the biological lifetime.',
+    title: 'External Memory',
+    subtitle: 'Writing changed what humanity could remember.',
     body: [
-      'Writing, printing, photography, recording, databases, and networked storage changed the persistence, fidelity, capacity, and searchability of human memory.',
-      'None of these media is permanent or perfectly objective. Instruments sample reality through limited sensors and encodings; physical and digital records can decay, disappear, become unreadable, or be altered.',
-      'The Internet is also not one central cloud. It is distributed infrastructure that makes replication and retrieval dramatically easier.'
+      'Writing, printing, photography, databases, and networked storage moved memory outside the brain. That increased capacity, fidelity, searchability, and the chance that knowledge survives a human lifetime.',
+      'External memory is still fragile. Records can decay, disappear, become unreadable, or be altered.'
     ],
-    insight: 'External storage makes knowledge more persistent—not immortal.',
-    vizHint: 'Move through storage epochs and watch information gain non-biological carriers.',
+    insight: 'External storage lets knowledge survive us, but not forever.',
+    vizHint: 'Move through storage technologies, then damage a record. External copies improve persistence without becoming permanent.',
     controls: [
-      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' }
+      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' },
+      { id: 'stress-storage', type: 'button', label: 'Damage a Record', variant: 'outline' }
     ]
   },
   {
     id: 'entropy',
     number: '14',
-    title: 'Noise, Fidelity & Error Correction',
-    subtitle: 'Transmission can fail—and can be repaired.',
+    title: 'Noise and Error Correction',
+    subtitle: 'Information can be damaged—and repaired.',
     body: [
-      'Noisy communication can corrupt information, but degradation is not an unavoidable increase of entropy at every hop. Shannon entropy, semantic drift, and thermodynamic entropy are different concepts.',
-      'A channel has an error process. Redundancy and error-correcting codes can make communication highly reliable when the transmission rate stays within the channel\'s capacity.',
-      'Human retelling adds another layer: interpretation can change meaning even when the physical signal is transmitted perfectly.'
+      'Communication channels make errors. Repetition and coding can reduce those errors dramatically; corruption is not an unavoidable march toward disorder.',
+      'Human communication adds another problem: a message can arrive perfectly and still be misunderstood. Physical fidelity and meaning are different layers.'
     ],
-    insight: 'Information loss is a channel-and-decoding problem, not a universal march toward chaos.',
-    vizHint: 'Send a bit string through noisy hops; enable five-copy majority decoding to correct errors.',
+    insight: 'Reliable communication depends on both the channel and the interpretation.',
+    vizHint: 'Separate physical transmission from interpretation: coding can repair bit errors, while meaning can still be misread afterward.',
     controls: [
       { id: 'channel-noise', type: 'slider', label: 'Per-Hop Bit Flip', min: '0', max: '0.15', step: '0.01', value: '0.04' },
       { id: 'toggle-redundancy', type: 'switch', label: '5× Repetition Code' },
+      { id: 'interpretation-error', type: 'slider', label: 'Interpretation Error', min: '0', max: '0.5', step: '0.05', value: '0.1' },
       { id: 'send-message', type: 'button', label: 'Send Message' }
     ]
   },
   {
     id: 'productivity',
     number: '15',
-    title: 'Productivity & Shared Knowledge',
-    subtitle: 'From distributed capacity to collective intelligence.',
+    title: 'Collective Intelligence',
+    subtitle: 'The network can solve problems no individual can.',
     body: [
-      'A network can combine specialization, memory, parallel search, and coordination to solve problems beyond any single person\'s capacity.',
-      'But performance is not a monotonic function of population or edge count. Bottlenecks, coordination costs, misinformation, duplicated work, incentives, and resource constraints can erase the benefit of scale.',
-      'Shared knowledge can support collective intelligence. That does not establish a single collective consciousness.'
+      'Specialization, shared memory, parallel search, and coordination let groups solve problems beyond the capacity of one person. But scale alone is not enough.',
+      'Bottlenecks, duplicated work, bad incentives, misinformation, and coordination costs can waste that capacity. Collective intelligence appears when the network turns distributed ability into useful work.'
     ],
-    insight: 'Collective intelligence emerges when distributed capacity is organized well enough to become usable.',
-    vizHint: 'The metrics are transparent proxies for capacity, reachability, and coordination load—not empirical productivity.',
+    insight: 'Collective capacity matters only when the network can use it.',
+    vizHint: 'Compare capacity, reachability, specialization, shared memory, duplicate work, bad information, incentive mismatch, and coordination load.',
     controls: [
       { id: 'optimize-all', type: 'button', label: 'Build Scalable Network' },
       { id: 'reset-productivity', type: 'button', label: 'Reset', variant: 'outline' }
@@ -247,15 +247,15 @@ export const SECTIONS = [
   {
     id: 'comparative-emergence',
     number: '16',
-    title: 'Same Pattern, Different Substrate',
-    subtitle: 'Emergence can rhyme without being identical.',
+    title: 'Different Systems, Same Pattern',
+    subtitle: 'Different systems can follow the same rule.',
     body: [
-      'Very different systems can share the same abstract dynamical motif. Ant trails, flocks, adaptive slime-mold networks, and human networks can all be described with recurring ideas such as feedback, order parameters, distributed traces, and cost-efficiency trade-offs.',
-      'That does not make the systems equivalent. Reusing an equation or observable means that one structural relationship is shared; the underlying biology, cognition, scale, and causal mechanism may still be radically different.',
-      'The useful question is therefore not “is humanity literally an ant colony?” but “which mathematical patterns transfer across substrates, and exactly where does the analogy break?”'
+      'Ant colonies, flocks, slime molds, and human networks are very different. Yet some of their large-scale behavior can be described with the same kinds of feedback, alignment, memory, and network trade-offs.',
+      'That does not make the systems equivalent. It means the same mathematical pattern can appear in very different physical systems.',
+      'The useful question is simple: where does the comparison work, and where does it stop?'
     ],
-    insight: 'Shared mathematics can reveal a recurring structure without erasing the differences between systems.',
-    vizHint: 'Switch motifs. The biological and human substrates change while the same mathematical object remains on screen.',
+    insight: 'Same pattern does not mean same mechanism.',
+    vizHint: 'Switch examples. The system changes; the mathematical pattern stays.',
     controls: [
       { id: 'pattern-trace', type: 'button', label: 'Reinforcing Traces' },
       { id: 'pattern-alignment', type: 'button', label: 'Directional Order', variant: 'outline' },
@@ -265,15 +265,24 @@ export const SECTIONS = [
   {
     id: 'whats-next',
     number: '17',
-    title: 'What\'s Next?',
-    subtitle: 'An open model.',
+    title: 'What Helps Humanity Thrive?',
+    subtitle: 'There is no single variable to maximize.',
     body: [
-      'This project is a living framework. The goal is not to make the metaphor win; it is to make every claim progressively clearer, more testable, and easier to falsify.',
-      'The next step is to connect heterogeneous nodes, network structure, information fidelity, memory, coordination, and performance.',
-      'A separate technical note defines the toy models and their limits so the visual story can stay simple without hiding the mathematics.'
+      'If the goals include learning, coordination, resilience, adaptation, and preserving useful knowledge, several properties matter at once: human capability, connectivity, information quality, memory, redundancy, diversity, alignment, and feedback from reality.',
+      'These objectives can conflict. More alignment can reduce exploration. More redundancy costs resources. More connectivity can increase coordination load. Strong memory can preserve errors as well as knowledge. This is a multi-objective problem: improvement can move along a Pareto frontier rather than toward one universal optimum.',
+      'Mathematics can expose the trade-offs. It cannot decide what humanity should value. The practical task is to build systems that learn, coordinate, remember, adapt, correct errors, and recover—without silently sacrificing the properties that make those abilities possible.'
     ],
-    insight: 'Keep the interface intuitive and the assumptions auditable.',
-    vizHint: 'The network stays open: reshape it and treat every representation as provisional.',
-    controls: []
+    insight: 'Improve humanity by improving the system—but measure what every improvement costs elsewhere.',
+    vizHint: 'Move the system variables. The dashboard reports several objectives separately; no hidden “humanity score” decides for you.',
+    controls: [
+      { id: 'thrive-capability', type: 'slider', label: 'Node Capability', min: '0', max: '1', step: '0.05', value: '0.65' },
+      { id: 'thrive-connectivity', type: 'slider', label: 'Connectivity', min: '0', max: '1', step: '0.05', value: '0.55' },
+      { id: 'thrive-fidelity', type: 'slider', label: 'Information Fidelity', min: '0', max: '1', step: '0.05', value: '0.7' },
+      { id: 'thrive-memory', type: 'slider', label: 'Memory', min: '0', max: '1', step: '0.05', value: '0.6' },
+      { id: 'thrive-redundancy', type: 'slider', label: 'Redundancy', min: '0', max: '1', step: '0.05', value: '0.5' },
+      { id: 'thrive-alignment', type: 'slider', label: 'Alignment', min: '0', max: '1', step: '0.05', value: '0.55' },
+      { id: 'thrive-diversity', type: 'slider', label: 'Diversity', min: '0', max: '1', step: '0.05', value: '0.6' },
+      { id: 'thrive-feedback', type: 'slider', label: 'Reality Feedback', min: '0', max: '1', step: '0.05', value: '0.7' }
+    ]
   }
 ];

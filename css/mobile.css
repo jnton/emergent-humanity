@@ -70,38 +70,7 @@
     padding: 12px 14px;
   }
 
-  .audio-controls {
-    position: relative;
-  }
 
-  .audio-volume-control {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 1100;
-    width: min(220px, calc(100vw - 20px));
-    min-height: 58px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(15, 21, 32, 0.98);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.46);
-  }
-
-  .audio-volume-control span {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip: auto;
-    clip-path: none;
-    white-space: nowrap;
-  }
-
-  .audio-volume-control input[type='range'] {
-    width: 100%;
-    min-width: 0;
-    min-height: 40px;
-  }
 
   .hero {
     min-height: 100svh;

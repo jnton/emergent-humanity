@@ -93,6 +93,7 @@ test('mobile audio volume is a popover and node dragging has an explicit mode', 
   await page.goto('/');
   await page.waitForFunction(() => document.documentElement.dataset.mobileLayout === 'active');
 
+  await page.locator('#audio-menu > summary').tap();
   await page.locator('#toggle-soundscape').tap();
   const volume = page.locator('#ambient-volume-control');
   await expect(volume).toBeVisible();

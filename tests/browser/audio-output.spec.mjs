@@ -8,6 +8,7 @@ test('maximum tonal soundtrack volume produces a strong measurable signal withou
   });
 
   await page.goto('/');
+  await page.locator('#audio-menu > summary').click();
   const soundtrack = page.locator('#toggle-soundscape');
   const volume = page.locator('#ambient-volume');
 

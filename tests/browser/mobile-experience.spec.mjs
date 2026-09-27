@@ -88,7 +88,7 @@ test('mobile controls sit below the canvas with large touch targets', async ({ p
   expect(errors).toEqual([]);
 });
 
-test('mobile audio volume stays contained and the final dashboard controls remain usable', async ({ page }, testInfo) => {
+test('mobile audio volume is a popover and node dragging has an explicit mode', async ({ page }, testInfo) => {
   const errors = collectRuntimeErrors(page);
   await page.goto('/');
   await page.waitForFunction(() => document.documentElement.dataset.mobileLayout === 'active');
@@ -103,16 +103,21 @@ test('mobile audio volume stays contained and the final dashboard controls remai
 
   const finalSection = page.locator('#section-whats-next');
   await finalSection.scrollIntoViewIfNeeded();
+  const toggle = finalSection.locator('.canvas-touch-toggle');
+  await expect(toggle).toBeVisible();
+  await toggle.tap();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(finalSection.locator('.viz-pane')).toHaveClass(/touch-interaction-active/);
 
-  const alignment = finalSection.locator('#ctrl-thrive-alignment');
-  const before = await alignment.inputValue();
-  await alignment.tap({ position: { x: 12, y: 20 } });
-  await expect(alignment).not.toHaveValue(before);
+  const touchAction = await finalSection.locator('canvas').evaluate(
+    (canvas) => getComputedStyle(canvas).touchAction
+  );
+  expect(touchAction).toBe('none');
 
-  const stats = finalSection.locator('#stats-whats-next');
-  await expect(stats).toContainText('no scalar humanity score');
+  await toggle.tap();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
 
-  await testInfo.attach('mobile-final-dashboard', {
+  await testInfo.attach('mobile-node-mode', {
     body: await page.screenshot({ type: 'jpeg', quality: 82 }),
     contentType: 'image/jpeg',
   });

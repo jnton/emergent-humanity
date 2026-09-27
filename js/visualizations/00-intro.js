@@ -1,172 +1,189 @@
 import { createNetworkEngine } from '../lib/network-engine.js';
 
-export function initIntro(canvas) {
-  const stats = document.getElementById('stats-intro');
-  let phase = 0;
-  let spawnInterval = null;
-  let transitionTimer = null;
-  let active = false;
+export function initIntro(canvas, controls) {
+  let isIsolated = true;
+  let organismOpacity = 0;
+  let zoomProgress = 0;
+  let fadeProgress = 0;
+  let phase = 0; // 0 = isolated, 1 = blooming, 2 = fading you
+
+  function layoutMetrics() {
+    const mobile = canvas.clientWidth <= 900;
+    const centerX = canvas.clientWidth / 2;
+    const centerY = mobile ? canvas.clientHeight * 0.59 : canvas.clientHeight / 2;
+    const organismRadius = Math.min(
+      mobile ? 132 : 220,
+      canvas.clientWidth * (mobile ? 0.34 : 0.42),
+      canvas.clientHeight * (mobile ? 0.29 : 0.4)
+    );
+    return { mobile, centerX, centerY, organismRadius };
+  }
 
   const engine = createNetworkEngine(canvas, {
-    nodeCount: 1,
-    linkDistance: 54,
-    chargeStrength: -38,
+    nodeCount: 1, // Start with exactly one node
+    linkDistance: 40,
+    chargeStrength: -20,
     onTick: () => {
       const ctx = canvas.getContext('2d');
       const nodes = engine.getNodes();
-      const links = engine.getLinks();
+      const { mobile, centerX, centerY, organismRadius } = layoutMetrics();
 
-      // Collective capabilities are encoded only after the network has enough
-      // structure to support the corresponding toy behavior.
-      const capabilities = [];
-      if (nodes.length >= 8) capabilities.push('coordination');
-      if (nodes.length >= 16) capabilities.push('specialization');
-      if (nodes.length >= 24) capabilities.push('shared memory');
-      if (nodes.length >= 36) capabilities.push('collective search');
-
-      if (nodes.length >= 16) {
-        // Role differentiation: nodes take on distinct toy functions.
-        nodes.forEach((node, i) => {
-          node.community = i % 4;
-          node.radius = 4.4 + (i % 11 === 0 ? 2.4 : 0);
-        });
-      }
-
-      if (nodes.length >= 24 && Math.random() < 0.035) {
-        // A visible packet stands for information that exists in more than one node.
-        const source = nodes[Math.floor(Math.random() * nodes.length)];
-        const neighbors = engine.getAdjacency().get(source.id) ?? [];
-        if (neighbors.length) {
-          const target = neighbors[Math.floor(Math.random() * neighbors.length)];
-          source.signal = 1;
-          source.signalType = 'signal';
-          target.signal = 1;
-          target.signalType = 'signal';
+      if (phase >= 1) {
+        // Fade in the new nodes elegantly
+        for (let i = 1; i < nodes.length; i++) {
+          if (nodes[i].quality < nodes[i].targetQuality) {
+            nodes[i].quality += 0.005;
+          }
         }
+
+        if (organismOpacity < 1) organismOpacity += 0.002;
+        if (zoomProgress < 1) zoomProgress += 0.005;
       }
 
-      for (const node of nodes) {
-        if (node.signal > 0) node.signal = Math.max(0, node.signal - 0.015);
-      }
+      if (phase === 2 && fadeProgress < 1) fadeProgress += 0.005;
 
-      ctx.save();
-      ctx.fillStyle = 'rgba(226,232,240,0.72)';
-      ctx.font = '12px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      const label = nodes.length === 1
-        ? 'ONE PERSON'
-        : nodes.length < 12
-          ? 'SMALL COMMUNITY'
-          : nodes.length < 36
-            ? 'CONNECTED COMMUNITY'
-            : 'LARGER COLLECTIVE';
-      ctx.fillText(label, canvas.clientWidth / 2, 25);
+      if (nodes.length > 0) {
+        ctx.save();
 
-      if (capabilities.length) {
-        ctx.fillStyle = 'rgba(56,189,248,0.8)';
-        ctx.font = '600 11px Inter, sans-serif';
-        ctx.fillText(
-          'toy collective capabilities: ' + capabilities.join(' · '),
-          canvas.clientWidth / 2,
-          canvas.clientHeight - 22
-        );
-      }
-      ctx.restore();
+        if (phase >= 1 && organismOpacity > 0) {
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, organismRadius + Math.sin(Date.now() * 0.001) * 4, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(79, 156, 247, ${0.15 * organismOpacity})`;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([10, 15]);
+          ctx.fillStyle = `rgba(79, 156, 247, ${0.015 * organismOpacity})`;
+          ctx.fill();
+          ctx.stroke();
+        }
 
-      if (stats) {
-        stats.textContent = `${nodes.length} nodes · ${links.length} links · ${capabilities.length ? capabilities.join(' + ') : 'no collective capability encoded yet'}`;
+        const you = nodes[0];
+        const youOpacity = 1 - fadeProgress;
+        if (youOpacity > 0.01) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${youOpacity})`;
+          ctx.font = '500 14px system-ui, sans-serif';
+          ctx.fillText('You', you.x + 8, you.y + 4);
+        }
+
+        ctx.restore();
+
+        // Desktop keeps the dramatic zoom. On mobile it would crop the graph.
+        const currentZoom = mobile ? 1 : 2.0 - zoomProgress;
+        canvas.style.transform = `scale(${currentZoom})`;
       }
     }
   });
 
-  function clearTimers() {
-    if (spawnInterval) clearInterval(spawnInterval);
-    if (transitionTimer) clearTimeout(transitionTimer);
-    spawnInterval = null;
-    transitionTimer = null;
-  }
+  const defaultDestroy = engine.destroy.bind(engine);
+  engine.destroy = function() {
+    defaultDestroy();
+    canvas.style.transform = '';
+  };
 
-  function reset() {
-    clearTimers();
-    phase = 0;
-    engine.reset(1);
+  let spawnInterval;
+  let transitionTimeout;
+  let fadeTimeout;
+
+  const defaultInit = engine.init.bind(engine);
+  engine.init = function() {
+    defaultInit();
+
+    if (spawnInterval) clearInterval(spawnInterval);
+    if (transitionTimeout) clearTimeout(transitionTimeout);
+    if (fadeTimeout) clearTimeout(fadeTimeout);
+
     const nodes = engine.getNodes();
     const links = engine.getLinks();
+    const { mobile, centerX, centerY } = layoutMetrics();
+
+    isIsolated = true;
+    organismOpacity = 0;
+    zoomProgress = 0;
+    fadeProgress = 0;
+    phase = 0;
     nodes.length = 1;
     links.length = 0;
-    nodes[0].radius = 5;
-    nodes[0].quality = 0.9;
-    nodes[0].x = canvas.clientWidth / 2;
-    nodes[0].y = canvas.clientHeight / 2;
-    engine.rebuildSimulation();
 
-    transitionTimer = setTimeout(() => {
-      if (!active) return;
+    nodes[0].x = centerX;
+    nodes[0].y = centerY;
+    nodes[0].quality = 0.5;
+    nodes[0].radius = 3;
+    nodes[0].vx = 0;
+    nodes[0].vy = 0;
+
+    const sim = engine.getSimulation();
+    sim.force('charge').strength(mobile ? -8 : -20);
+    sim.nodes(nodes);
+    sim.force('link').links(links);
+    sim.alpha(1).restart();
+
+    transitionTimeout = setTimeout(() => {
       phase = 1;
-      const target = canvas.clientWidth <= 900 ? 42 : 64;
-      let nextId = 1;
+      isIsolated = false;
+      const metrics = layoutMetrics();
+      sim.force('charge').strength(metrics.mobile ? -6 : -15);
+
+      if (window.d3?.forceRadial) {
+        sim.force(
+          'radial',
+          window.d3.forceRadial(
+            Math.max(48, metrics.organismRadius * (metrics.mobile ? 0.68 : 0.8)),
+            metrics.centerX,
+            metrics.centerY
+          ).strength(metrics.mobile ? 0.09 : 0.04)
+        );
+      }
+
+      // Hundreds of dots communicate scale on desktop. On a narrow phone they
+      // merge into an unreadable square, so use a lower but still dramatic count.
+      const targetNodes = metrics.mobile ? 140 : 350;
+      const batchSize = metrics.mobile ? 2 : 3;
+      let currentIndex = 1;
 
       spawnInterval = setInterval(() => {
-        if (!active || nextId >= target) {
+        if (currentIndex >= targetNodes) {
           clearInterval(spawnInterval);
-          spawnInterval = null;
           return;
         }
 
-        const batch = Math.min(2, target - nextId);
-        for (let n = 0; n < batch; n += 1) {
-          const parent = nodes[Math.floor(Math.random() * nodes.length)];
-          const node = {
-            id: nextId++,
-            state: 1,
-            quality: 0.8,
-            signal: 0,
-            signalType: null,
-            radius: 4.4,
-            community: null,
-            x: parent.x + (Math.random() - 0.5) * 18,
-            y: parent.y + (Math.random() - 0.5) * 18
-          };
-          nodes.push(node);
-          links.push({ source: node, target: parent, type: 'default', weight: 0.7, active: true });
+        const batchEnd = Math.min(targetNodes, currentIndex + batchSize);
+        for (let i = currentIndex; i < batchEnd; i++) {
+          const parentIndex = Math.floor(Math.random() * i);
+          const parentNode = nodes[parentIndex];
 
-          if (nodes.length > 6 && Math.random() < 0.45) {
-            const second = nodes[Math.floor(Math.random() * (nodes.length - 1))];
-            if (second && second !== parent) {
-              links.push({ source: node, target: second, type: 'default', weight: 0.5, active: true });
+          nodes.push({
+            id: i,
+            state: 1,
+            quality: 0,
+            targetQuality: 0.1 + Math.random() * 0.8,
+            signal: 0,
+            radius: 3,
+            x: parentNode.x + (Math.random() - 0.5) * 10,
+            y: parentNode.y + (Math.random() - 0.5) * 10,
+            community: null,
+            strategy: null
+          });
+
+          links.push({ source: nodes[i], target: parentNode, type: 'default', weight: 1, active: true });
+
+          const addSecondLink = Math.random() > (metrics.mobile ? 0.86 : 0.7);
+          if (addSecondLink && i > 3) {
+            const secondParent = Math.floor(Math.random() * i);
+            if (secondParent !== parentIndex) {
+              links.push({ source: nodes[i], target: nodes[secondParent], type: 'default', weight: 1, active: true });
             }
           }
         }
-        engine.rebuildSimulation();
-      }, 110);
-    }, 700);
-  }
 
-  const defaultInit = engine.init.bind(engine);
-  engine.init = function init() {
-    defaultInit();
-    reset();
-    return engine;
-  };
+        currentIndex = batchEnd;
+        sim.nodes(nodes);
+        sim.force('link').links(links);
+        sim.alpha(0.3).restart();
+      }, 20);
 
-  const defaultDestroy = engine.destroy?.bind(engine);
-  engine.destroy = function destroy() {
-    clearTimers();
-    defaultDestroy?.();
-  };
-
-  const baseActivate = engine.activate?.bind(engine);
-  engine.activate = function activate() {
-    active = true;
-    baseActivate?.();
-    reset();
-  };
-
-  const baseDeactivate = engine.deactivate?.bind(engine);
-  engine.deactivate = function deactivate() {
-    active = false;
-    clearTimers();
-    baseDeactivate?.();
+      fadeTimeout = setTimeout(() => {
+        phase = 2;
+      }, 4500);
+    }, 1000);
   };
 
   engine.init();

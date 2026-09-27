@@ -10,8 +10,6 @@ export function initExternalStorage(canvas, controls) {
   let deathBursts = [];   // Visual bursts when nodes die & info is lost
   let infoLost = 0;
   let infoSaved = 0;
-  let recordFailures = 0;
-  let recordAlterations = 0;
   let epochFlashAlpha = 0;
   let epochFlashText = '';
   let nextInfoId = 1;
@@ -64,10 +62,6 @@ export function initExternalStorage(canvas, controls) {
       if (infoSaved > 0) {
         ctx.fillStyle = 'rgba(34, 197, 94, 0.7)';
         ctx.fillText(`✦ External copies: ${infoSaved}`, W - 16, 40);
-      }
-      if (recordFailures + recordAlterations > 0) {
-        ctx.fillStyle = 'rgba(248, 113, 113, 0.72)';
-        ctx.fillText(`record loss ${recordFailures} · altered ${recordAlterations}`, W - 16, 56);
       }
       ctx.restore();
 
@@ -123,10 +117,8 @@ export function initExternalStorage(canvas, controls) {
             : '#1e293b';
           ctx.fill();
 
-          ctx.strokeStyle = a.damaged
-            ? '#ef4444'
-            : a.marks > 0 ? '#d97706' : '#475569';
-          ctx.lineWidth = a.damaged ? 2.2 : 1.5;
+          ctx.strokeStyle = a.marks > 0 ? '#d97706' : '#475569';
+          ctx.lineWidth = 1.5;
           ctx.stroke();
           ctx.shadowBlur = 0;
 
@@ -238,8 +230,8 @@ export function initExternalStorage(canvas, controls) {
         ctx.arc(0, 0, 28, 0, Math.PI * 2);
         ctx.fillStyle = '#1e3a8a';
         ctx.fill();
-        ctx.strokeStyle = cloudNode.damaged ? '#ef4444' : '#3b82f6';
-        ctx.lineWidth = cloudNode.damaged ? 3.2 : 2.5;
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
         // Cloud symbol
@@ -505,21 +497,18 @@ export function initExternalStorage(canvas, controls) {
       const cx = W / 2, cy = H / 2;
       for (let i = 0; i < 3; i++) {
         const angle = (Math.PI * 2 / 3) * i - Math.PI / 2;
-        const dist = W <= 900 ? 70 : 120 + Math.random() * 30;
+        const dist = 120 + Math.random() * 30;
         const a = {
           id: 'art' + i,
           x: cx + Math.cos(angle) * dist,
           y: cy + Math.sin(angle) * dist,
-          fx: cx + Math.cos(angle) * dist,
-          fy: cy + Math.sin(angle) * dist,
           vx: 0, vy: 0,
           radius: 14,
           state: 1,
           isArtifact: true,
           marks: 0,
           pulse: 0,
-          spawnT: 0,
-          damaged: false
+          spawnT: 0
         };
         artifacts.push(a);
         nodes.push(a);
@@ -539,21 +528,18 @@ export function initExternalStorage(canvas, controls) {
       const cx = W / 2, cy = H / 2;
       for (let i = 0; i < 4; i++) {
         const angle = (Math.PI * 2 / 4) * i + Math.PI / 4;
-        const dist = W <= 900 ? 62 : 80 + Math.random() * 50;
+        const dist = 80 + Math.random() * 50;
         const a = {
           id: 'press' + i,
           x: cx + Math.cos(angle) * dist,
           y: cy + Math.sin(angle) * dist,
-          fx: cx + Math.cos(angle) * dist,
-          fy: cy + Math.sin(angle) * dist,
           vx: 0, vy: 0,
           radius: 12,
           state: 1,
           isArtifact: true,
           marks: 0,
           pulse: 0,
-          spawnT: 0,
-          damaged: false
+          spawnT: 0
         };
         artifacts.push(a);
         nodes.push(a);
@@ -582,19 +568,17 @@ export function initExternalStorage(canvas, controls) {
 
     if (e === 4) {
       // Cloud node
-      const cloudY = W <= 900 ? Math.max(145, H * 0.30) : H * 0.15;
       cloudNode = {
         id: 'cloud',
-        x: W / 2, y: cloudY,
+        x: W / 2, y: H * 0.15,
         vx: 0, vy: 0,
         radius: 28,
         state: 1,
         isCloud: true,
         pulse: 0,
         spawnT: 0,
-        damaged: false,
         fx: W / 2,
-        fy: cloudY
+        fy: H * 0.15
       };
       nodes.push(cloudNode);
 
@@ -613,61 +597,6 @@ export function initExternalStorage(canvas, controls) {
     }
 
     engine.rebuildSimulation();
-    canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
-  }
-
-  function damageExternalRecord() {
-    const candidates = [
-      ...artifacts.filter((carrier) => ensureMemorySet(carrier).size > 0),
-      ...(cloudNode && ensureMemorySet(cloudNode).size > 0 ? [cloudNode] : [])
-    ];
-
-    if (candidates.length === 0) {
-      // If the user asks for failure before any record exists, create one
-      // visible external record first rather than pretending nothing happened.
-      if (epoch === 0) {
-        epoch = 1;
-        setupEpoch(epoch);
-        if (controls['invent']) controls['invent'].textContent = BUTTON_LABELS[epoch];
-      }
-      const retry = artifacts.filter((carrier) => ensureMemorySet(carrier).size > 0);
-      if (retry.length === 0) {
-        // Seed one explicit record solely so the failure mechanism can be inspected.
-        const carrier = artifacts[0];
-        if (!carrier) return;
-        const seededId = nextInfoId++;
-        ensureMemorySet(carrier).add(seededId);
-        carrier.marks = 1;
-        infoSaved += 1;
-      }
-    }
-
-    const available = [
-      ...artifacts.filter((carrier) => ensureMemorySet(carrier).size > 0),
-      ...(cloudNode && ensureMemorySet(cloudNode).size > 0 ? [cloudNode] : [])
-    ];
-    if (!available.length) return;
-
-    const carrier = available[Math.floor(Math.random() * available.length)];
-    const memory = ensureMemorySet(carrier);
-    const ids = [...memory];
-    const originalId = ids[Math.floor(Math.random() * ids.length)];
-    const alteration = Math.random() < 0.5;
-
-    memory.delete(originalId);
-    carrier.damaged = true;
-    carrier.pulse = 1;
-
-    if (alteration) {
-      const alteredId = `altered:${originalId}:${recordAlterations + 1}`;
-      memory.add(alteredId);
-      recordAlterations += 1;
-    } else {
-      recordFailures += 1;
-      if (!informationExistsElsewhere(originalId, carrier)) infoLost += 1;
-    }
-
-    if (carrier.isArtifact) carrier.marks = memory.size;
   }
 
   // ── Button Wiring ──
@@ -691,8 +620,6 @@ export function initExternalStorage(canvas, controls) {
     });
   }
 
-  controls['stress-storage']?.addEventListener('click', damageExternalRecord);
-
   // ── Init Override ──
 
   const defaultInit = engine.init.bind(engine);
@@ -706,8 +633,6 @@ export function initExternalStorage(canvas, controls) {
     deathBursts = [];
     infoLost = 0;
     infoSaved = 0;
-    recordFailures = 0;
-    recordAlterations = 0;
     epochFlashAlpha = 0;
     nextInfoId = 1;
 

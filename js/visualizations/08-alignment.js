@@ -4,7 +4,6 @@ export function initAlignment(canvas, controls) {
   let coupling = 0.04;
   let noise = 0.28;
   let frame = 0;
-  const targetDirection = 0;
   const stats = document.getElementById('stats-alignment');
 
   const engine = createNetworkEngine(canvas, {
@@ -26,49 +25,29 @@ export function initAlignment(canvas, controls) {
         sumCos += Math.cos(node.theta);
         sumSin += Math.sin(node.theta);
 
+        // Give the abstract direction a small physical consequence.
         node.vx = (node.vx ?? 0) + Math.cos(node.theta) * 0.08;
         node.vy = (node.vy ?? 0) + Math.sin(node.theta) * 0.08;
 
         const length = 12;
         ctx.beginPath();
         ctx.moveTo(node.x, node.y);
-        ctx.lineTo(node.x + Math.cos(node.theta) * length, node.y + Math.sin(node.theta) * length);
-        ctx.strokeStyle = 'rgba(79,156,247,0.78)';
+        ctx.lineTo(
+          node.x + Math.cos(node.theta) * length,
+          node.y + Math.sin(node.theta) * length
+        );
+        ctx.strokeStyle = 'rgba(79, 156, 247, 0.78)';
         ctx.lineWidth = 1.4;
         ctx.stroke();
       }
-
-      const cx = canvas.clientWidth * 0.82;
-      const cy = 36;
-      ctx.beginPath();
-      ctx.moveTo(cx - 24, cy);
-      ctx.lineTo(cx + 24, cy);
-      ctx.strokeStyle = 'rgba(34,197,94,0.9)';
-      ctx.lineWidth = 2.3;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cx + 24, cy);
-      ctx.lineTo(cx + 15, cy - 6);
-      ctx.lineTo(cx + 15, cy + 6);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(34,197,94,0.9)';
-      ctx.fill();
-      ctx.fillStyle = 'rgba(226,232,240,0.72)';
-      ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('external target', cx, cy - 11);
       ctx.restore();
 
-      const order = nodes.length ? Math.hypot(sumCos, sumSin) / nodes.length : 0;
-      const meanDirection = Math.atan2(sumSin, sumCos);
-      const targetAgreement = (1 + Math.cos(meanDirection - targetDirection)) / 2;
-      const coverage = directionalCoverage(nodes);
-      const targetNear = nodes.length
-        ? nodes.filter((node) => Math.abs(angleDifference(targetDirection, node.theta)) <= Math.PI / 6).length / nodes.length
+      const order = nodes.length
+        ? Math.hypot(sumCos, sumSin) / nodes.length
         : 0;
 
       if (stats) {
-        stats.textContent = `coherence R ${order.toFixed(2)} · target agreement ${targetAgreement.toFixed(2)} · directional coverage ${Math.round(coverage * 100)}% · target-near alternatives ${Math.round(targetNear * 100)}% · coupling ${coupling.toFixed(2)}`;
+        stats.textContent = `directional coherence R = ${order.toFixed(2)} · coupling ${coupling.toFixed(2)} · noise ${noise.toFixed(2)}`;
       }
     }
   });
@@ -92,6 +71,7 @@ export function initAlignment(canvas, controls) {
     let x = Math.cos(self.theta);
     let y = Math.sin(self.theta);
     let count = 1;
+
     for (const id of ids) {
       const node = byId.get(id);
       if (!node) continue;
@@ -99,6 +79,7 @@ export function initAlignment(canvas, controls) {
       y += Math.sin(node.theta);
       count += 1;
     }
+
     return Math.atan2(y / count, x / count);
   }
 
@@ -106,22 +87,12 @@ export function initAlignment(canvas, controls) {
     return Math.atan2(Math.sin(target - current), Math.cos(target - current));
   }
 
-  function directionalCoverage(nodes) {
-    const bins = new Set();
-    for (const node of nodes) {
-      let theta = node.theta % (Math.PI * 2);
-      if (theta < 0) theta += Math.PI * 2;
-      bins.add(Math.min(7, Math.floor(theta / (Math.PI * 2) * 8)));
-    }
-    return bins.size / 8;
-  }
-
   function angularConsensusStep() {
     const nodes = engine.getNodes();
     const byId = new Map(nodes.map((node) => [node.id, node]));
     const adjacency = buildAdjacency();
-    const updates = new Map();
 
+    const updates = new Map();
     for (const node of nodes) {
       const mean = circularMean(adjacency.get(node.id) ?? [], byId, node);
       const drift = angleDifference(mean, node.theta) * coupling;
@@ -132,14 +103,6 @@ export function initAlignment(canvas, controls) {
     for (const node of nodes) node.theta = updates.get(node.id);
   }
 
-  function seedMostlyWrongButDiverse() {
-    const nodes = engine.getNodes();
-    for (let i = 0; i < nodes.length; i += 1) {
-      const spread = ((i * 37) % 101) / 100;
-      nodes[i].theta = Math.PI * 0.68 + (spread - 0.5) * Math.PI * 1.5;
-    }
-  }
-
   function randomizeDirections() {
     for (const node of engine.getNodes()) {
       node.theta = Math.random() * Math.PI * 2;
@@ -147,14 +110,14 @@ export function initAlignment(canvas, controls) {
   }
 
   controls['align-goals']?.addEventListener('click', () => {
-    coupling = 0.24;
-    noise = 0.018;
+    coupling = 0.22;
+    noise = 0.025;
     engine.getSimulation()?.alpha(0.5).restart();
   });
 
   controls['scramble-goals']?.addEventListener('click', () => {
-    coupling = 0.025;
-    noise = 0.34;
+    coupling = 0.035;
+    noise = 0.32;
     randomizeDirections();
     engine.getSimulation()?.alpha(0.5).restart();
   });
@@ -165,7 +128,7 @@ export function initAlignment(canvas, controls) {
     frame = 0;
     coupling = 0.04;
     noise = 0.28;
-    seedMostlyWrongButDiverse();
+    randomizeDirections();
 
     const simulation = engine.getSimulation();
     simulation.force('center', d3.forceCenter(canvas.clientWidth / 2, canvas.clientHeight / 2).strength(0.02));

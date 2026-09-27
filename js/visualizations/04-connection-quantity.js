@@ -3,7 +3,6 @@ import { createNetworkEngine } from '../lib/network-engine.js';
 export function initConnectionQuantity(canvas, controls) {
   let deployInterval = null;
   const stats = document.getElementById('stats-connection-quantity');
-  const processingBudget = 8;
 
   const engine = createNetworkEngine(canvas, {
     nodeCount: 60,
@@ -23,27 +22,6 @@ export function initConnectionQuantity(canvas, controls) {
     });
   }
 
-  function degreeMap() {
-    const degree = new Map(engine.getNodes().map((n) => [n.id, 0]));
-    for (const link of engine.getLinks()) {
-      const a = endpointId(link.source);
-      const b = endpointId(link.target);
-      degree.set(a, (degree.get(a) ?? 0) + 1);
-      degree.set(b, (degree.get(b) ?? 0) + 1);
-    }
-    return degree;
-  }
-
-  function applyBudgetEncoding() {
-    const degrees = degreeMap();
-    for (const node of engine.getNodes()) {
-      const overloaded = (degrees.get(node.id) ?? 0) > processingBudget;
-      node.signal = overloaded ? 0.75 : 0;
-      node.signalType = overloaded ? 'noise' : null;
-      node.radius = overloaded ? 6.3 : 5;
-    }
-  }
-
   function buildLocalNetwork() {
     const nodes = engine.getNodes();
     const links = engine.getLinks();
@@ -52,21 +30,29 @@ export function initConnectionQuantity(canvas, controls) {
 
     for (let i = 0; i < 60; i += 1) {
       nodes.push({
-        id: i, state: 1, quality: 1, signal: 0, signalType: null,
-        radius: 5, community: Math.floor(i / 10), degree: 0,
+        id: i,
+        state: 1,
+        quality: 1,
+        signal: 0,
+        signalType: null,
+        radius: 5,
+        community: Math.floor(i / 10),
+        degree: 0,
         x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 180,
         y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 180
       });
     }
 
+    // Dense local communities.
     for (let i = 0; i < 60; i += 1) {
       for (let j = i + 1; j < 60; j += 1) {
-        if (nodes[i].community === nodes[j].community && Math.random() < 0.3) {
-          links.push({ source: nodes[i], target: nodes[j], type: 'strong', weight: 0.75, active: true });
+        if (nodes[i].community === nodes[j].community && Math.random() < 0.42) {
+          links.push({ source: nodes[i], target: nodes[j], type: 'strong', weight: 0.9, active: true });
         }
       }
     }
 
+    // A sparse backbone keeps the initial graph reachable but path-heavy.
     for (let community = 0; community < 6; community += 1) {
       const a = nodes[community * 10];
       const b = nodes[((community + 1) % 6) * 10];
@@ -74,17 +60,16 @@ export function initConnectionQuantity(canvas, controls) {
     }
 
     engine.rebuildSimulation();
-    applyBudgetEncoding();
     updateStats();
   }
 
   function adjacency() {
     const map = new Map(engine.getNodes().map((node) => [node.id, []]));
     for (const link of engine.getLinks()) {
-      const a = endpointId(link.source);
-      const b = endpointId(link.target);
-      map.get(a)?.push(b);
-      map.get(b)?.push(a);
+      const sourceId = endpointId(link.source);
+      const targetId = endpointId(link.target);
+      map.get(sourceId)?.push(targetId);
+      map.get(targetId)?.push(sourceId);
     }
     return map;
   }
@@ -102,6 +87,7 @@ export function initConnectionQuantity(canvas, controls) {
       const start = ids[index];
       const queue = [start];
       const distances = new Map([[start, 0]]);
+
       while (queue.length) {
         const current = queue.shift();
         for (const next of graph.get(current) ?? []) {
@@ -110,6 +96,7 @@ export function initConnectionQuantity(canvas, controls) {
           queue.push(next);
         }
       }
+
       for (let j = index + 1; j < ids.length; j += 1) {
         const distance = distances.get(ids[j]);
         if (distance === undefined) continue;
@@ -124,61 +111,60 @@ export function initConnectionQuantity(canvas, controls) {
     };
   }
 
-  function budgetMetrics() {
-    const degrees = degreeMap();
-    const degreeValues = [...degrees.values()];
-    const directedDemand = degreeValues.reduce((sum, d) => sum + d, 0);
-    const directedUsable = degreeValues.reduce((sum, d) => sum + Math.min(d, processingBudget), 0);
-    const saturated = degreeValues.filter((d) => d > processingBudget).length;
-    return {
-      usableFraction: directedDemand ? directedUsable / directedDemand : 1,
-      saturatedFraction: degreeValues.length ? saturated / degreeValues.length : 0,
-      meanDegree: degreeValues.length ? directedDemand / degreeValues.length : 0
-    };
-  }
-
   function updateStats() {
     if (!stats) return;
     const paths = meanShortestPath();
-    const budget = budgetMetrics();
     const meanText = Number.isFinite(paths.mean) ? paths.mean.toFixed(2) : '∞';
-    stats.textContent = `${engine.getLinks().length} edges · mean path ${meanText} hops · reachable ${Math.round(paths.reachableFraction * 100)}% · mean degree ${budget.meanDegree.toFixed(1)} · usable under b=${processingBudget}: ${Math.round(budget.usableFraction * 100)}% · saturated nodes ${Math.round(budget.saturatedFraction * 100)}%`;
+    stats.textContent = `${engine.getLinks().length} edges · mean shortest path ${meanText} hops · reachable pairs ${Math.round(paths.reachableFraction * 100)}%`;
   }
 
   function addLongRangeLinks() {
     if (deployInterval) clearInterval(deployInterval);
+
     const nodes = engine.getNodes();
     let added = 0;
-    const target = 150;
+    const target = 120;
 
     deployInterval = setInterval(() => {
       let batch = 0;
       let attempts = 0;
-      while (batch < 5 && added < target && attempts < 100) {
+
+      while (batch < 4 && added < target && attempts < 80) {
         attempts += 1;
         const a = nodes[Math.floor(Math.random() * nodes.length)];
         const b = nodes[Math.floor(Math.random() * nodes.length)];
+
         if (a === b || a.community === b.community || linkExists(a.id, b.id)) continue;
 
         engine.getLinks().push({
-          source: a, target: b, type: 'bridge', weight: 0.55, active: true
+          source: a,
+          target: b,
+          type: 'bridge',
+          weight: 0.55,
+          active: true
         });
+        a.signal = 1;
+        a.signalType = 'signal';
+        b.signal = 1;
+        b.signalType = 'signal';
         added += 1;
         batch += 1;
       }
 
       engine.rebuildSimulation();
-      applyBudgetEncoding();
-      updateStats();
+
+      if (added % 20 === 0 || added >= target) updateStats();
 
       if (added >= target) {
         clearInterval(deployInterval);
         deployInterval = null;
+        updateStats();
       }
-    }, 90);
+    }, 70);
   }
 
   controls['deploy-internet']?.addEventListener('click', addLongRangeLinks);
+
   controls['reset-connections']?.addEventListener('click', () => {
     if (deployInterval) clearInterval(deployInterval);
     deployInterval = null;

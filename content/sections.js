@@ -19,7 +19,7 @@ export const SECTIONS = [
   {
     id: 'node-limits',
     number: '02',
-    title: 'Node Limits',
+    title: 'The Limits of a Node',
     subtitle: 'No person has unlimited capacity.',
     body: [
       'Attention, memory, time, energy, and information processing are finite. Health, education, practice, tools, and environment can push performance much higher, but they do not make a fixed human unlimited.',
@@ -48,7 +48,7 @@ export const SECTIONS = [
   {
     id: 'emergent-organism',
     number: '04',
-    title: 'Losing a Node',
+    title: 'A Node Goes Dark',
     subtitle: 'Most nodes barely affect the whole. Some become critical.',
     body: [
       'In a large, redundant network, removing most individual nodes has almost no effect on global structure or performance. In that narrow systems sense, most of us are probably not special to humanity as a whole.',
@@ -66,7 +66,7 @@ export const SECTIONS = [
   {
     id: 'illusion-of-significance',
     number: '05',
-    title: 'Small Causes, Large Futures',
+    title: 'A Tiny Difference',
     subtitle: 'The system decides whether a tiny difference dies or explodes.',
     body: [
       'In a chaotic regime, two nearly identical states can separate exponentially. A common diagnostic is the largest Lyapunov exponent: positive values indicate local exponential instability.',
@@ -83,7 +83,7 @@ export const SECTIONS = [
   {
     id: 'node-quantity',
     number: '06',
-    title: 'More Nodes',
+    title: 'More Minds',
     subtitle: 'Scale adds capacity and coordination costs.',
     body: [
       'More people can mean more ideas, specialization, observations, and parallel work. It also means more communication, duplication, conflict, and coordination.',
@@ -98,7 +98,7 @@ export const SECTIONS = [
   {
     id: 'connection-quantity',
     number: '07',
-    title: 'More Connections',
+    title: 'Closing the Distance',
     subtitle: 'Shorter paths change what the network can do.',
     body: [
       'Adding links can reduce shortest-path distance and make more of a network reachable. Writing, printing, telecommunications, and the Internet did this at enormous scale.',
@@ -114,7 +114,7 @@ export const SECTIONS = [
   {
     id: 'connection-quality',
     number: '08',
-    title: 'Better Connections',
+    title: 'When Information Fails',
     subtitle: 'A perfect channel can still deliver bad information.',
     body: [
       'Information can fail at different layers: the signal can be corrupted, the source can be wrong, the message can be misinterpreted, or trust can be badly calibrated. These are different mechanisms.',
@@ -129,7 +129,7 @@ export const SECTIONS = [
   {
     id: 'cohesion',
     number: '09',
-    title: 'Polarization',
+    title: 'The Network Splits',
     subtitle: 'Beliefs and connections can pull apart together.',
     body: [
       'People tend to interact with people they already understand or trust. That can create clusters where opinions and network structure reinforce each other.',
@@ -145,7 +145,7 @@ export const SECTIONS = [
   {
     id: 'alignment',
     number: '10',
-    title: 'Alignment',
+    title: 'Moving Together',
     subtitle: 'Moving together is different from moving well.',
     body: [
       'When people push in incompatible directions, some effort cancels or interferes. Greater alignment can make a group more effective at pursuing a goal.',
@@ -161,7 +161,7 @@ export const SECTIONS = [
   {
     id: 'environment',
     number: '11',
-    title: 'Learning from Reality',
+    title: 'Touching Reality',
     subtitle: 'The network needs input from the world.',
     body: [
       'Observation, measurement, experiments, and feedback give the network new information.',
@@ -176,7 +176,7 @@ export const SECTIONS = [
   {
     id: 'collective-memory',
     number: '12',
-    title: 'Collective Memory',
+    title: 'Memory Beyond the Individual',
     subtitle: 'Ideas survive only if they have somewhere to go.',
     body: [
       'People die and memories fade. Information persists when it is copied into other people, practices, institutions, or artifacts.',
@@ -191,7 +191,7 @@ export const SECTIONS = [
   {
     id: 'external-storage',
     number: '13',
-    title: 'External Memory',
+    title: 'Memory Outside the Brain',
     subtitle: 'Writing changed what humanity could remember.',
     body: [
       'Writing, printing, photography, databases, and networked storage moved memory outside the brain. That increased capacity, fidelity, searchability, and the chance that knowledge survives a human lifetime.',
@@ -206,7 +206,7 @@ export const SECTIONS = [
   {
     id: 'entropy',
     number: '14',
-    title: 'Noise and Error Correction',
+    title: 'Against Noise',
     subtitle: 'Information can be damaged—and repaired.',
     body: [
       'Communication channels make errors. Repetition and coding can reduce those errors dramatically; corruption is not an unavoidable march toward disorder.',
@@ -223,7 +223,7 @@ export const SECTIONS = [
   {
     id: 'productivity',
     number: '15',
-    title: 'Collective Intelligence',
+    title: 'More Than the Sum',
     subtitle: 'The network can solve problems no individual can.',
     body: [
       'Specialization, shared memory, parallel search, and coordination let groups solve problems beyond the capacity of one person. But scale alone is not enough.',
@@ -239,7 +239,7 @@ export const SECTIONS = [
   {
     id: 'comparative-emergence',
     number: '16',
-    title: 'Different Systems, Same Pattern',
+    title: 'Same Pattern, Different Matter',
     subtitle: 'Different systems can follow the same rule.',
     body: [
       'Ant colonies, flocks, slime molds, and human networks are very different. Yet some of their large-scale behavior can be described with the same kinds of feedback, alignment, memory, and network trade-offs.',
@@ -257,7 +257,7 @@ export const SECTIONS = [
   {
     id: 'whats-next',
     number: '17',
-    title: 'What Helps Humanity Thrive?',
+    title: 'How Humanity Thrives',
     subtitle: 'There is no single variable to maximize.',
     body: [
       'If the goals include learning, coordination, resilience, adaptation, and preserving useful knowledge, several properties matter at once: human capability, connectivity, information quality, memory, redundancy, diversity, alignment, and feedback from reality.',

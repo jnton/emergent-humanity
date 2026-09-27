@@ -510,6 +510,8 @@ export function initExternalStorage(canvas, controls) {
           id: 'art' + i,
           x: cx + Math.cos(angle) * dist,
           y: cy + Math.sin(angle) * dist,
+          fx: cx + Math.cos(angle) * dist,
+          fy: cy + Math.sin(angle) * dist,
           vx: 0, vy: 0,
           radius: 14,
           state: 1,
@@ -542,6 +544,8 @@ export function initExternalStorage(canvas, controls) {
           id: 'press' + i,
           x: cx + Math.cos(angle) * dist,
           y: cy + Math.sin(angle) * dist,
+          fx: cx + Math.cos(angle) * dist,
+          fy: cy + Math.sin(angle) * dist,
           vx: 0, vy: 0,
           radius: 12,
           state: 1,
@@ -609,6 +613,7 @@ export function initExternalStorage(canvas, controls) {
     }
 
     engine.rebuildSimulation();
+    canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
   }
 
   function damageExternalRecord() {

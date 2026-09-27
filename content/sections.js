@@ -206,7 +206,8 @@ export const SECTIONS = [
     insight: 'External storage lets knowledge survive us, but not forever.',
     vizHint: 'Move through storage technologies and watch information gain new carriers.',
     controls: [
-      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' }
+      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' },
+      { id: 'stress-storage', type: 'button', label: 'Damage a Record', variant: 'outline' }
     ]
   },
   {

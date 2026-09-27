@@ -505,7 +505,7 @@ export function initExternalStorage(canvas, controls) {
       const cx = W / 2, cy = H / 2;
       for (let i = 0; i < 3; i++) {
         const angle = (Math.PI * 2 / 3) * i - Math.PI / 2;
-        const dist = 120 + Math.random() * 30;
+        const dist = W <= 900 ? 70 : 120 + Math.random() * 30;
         const a = {
           id: 'art' + i,
           x: cx + Math.cos(angle) * dist,
@@ -537,7 +537,7 @@ export function initExternalStorage(canvas, controls) {
       const cx = W / 2, cy = H / 2;
       for (let i = 0; i < 4; i++) {
         const angle = (Math.PI * 2 / 4) * i + Math.PI / 4;
-        const dist = 80 + Math.random() * 50;
+        const dist = W <= 900 ? 62 : 80 + Math.random() * 50;
         const a = {
           id: 'press' + i,
           x: cx + Math.cos(angle) * dist,
@@ -578,9 +578,10 @@ export function initExternalStorage(canvas, controls) {
 
     if (e === 4) {
       // Cloud node
+      const cloudY = W <= 900 ? Math.max(145, H * 0.30) : H * 0.15;
       cloudNode = {
         id: 'cloud',
-        x: W / 2, y: H * 0.15,
+        x: W / 2, y: cloudY,
         vx: 0, vy: 0,
         radius: 28,
         state: 1,
@@ -589,7 +590,7 @@ export function initExternalStorage(canvas, controls) {
         spawnT: 0,
         damaged: false,
         fx: W / 2,
-        fy: H * 0.15
+        fy: cloudY
       };
       nodes.push(cloudNode);
 

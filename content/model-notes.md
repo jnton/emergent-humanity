@@ -182,6 +182,8 @@ but real scalable systems usually avoid all-to-all communication through modular
 
 The project therefore treats node count as **potential capacity**, not guaranteed output.
 
+Chapter 06 also displays deliberately simple potential-capacity descriptors: node count as a parallel-work upper bound, six stylized specialty labels, and one observation channel per node. These do not assert that real people contribute independently or equally; they make visible why population can expand the space of possible parallel work and specialization while the edge structure still creates coordination load.
+
 ## 6. Connection quantity
 
 Useful structural observables include:
@@ -299,6 +301,16 @@ The visualization uses local angular consensus on a graph. It is inspired by con
 
 High (R) is coordination, not correctness or welfare.
 
+The visualization therefore also defines an external reference direction \(\theta^*=0\) and reports both mean-direction agreement
+
+\[
+A_{\mathrm{target}}
+=
+\frac{1+\cos(\bar\theta-\theta^*)}{2}
+\]
+
+and the fraction of nodes lying within \(\pi/6\) of that target. This makes it possible for a group to have high coherence while pointing away from the reference target, and for a more diverse state to retain some target-near alternatives. The external target is a toy benchmark, not a claim that real social goals have an objectively given direction.
+
 ## 10. Environmental information
 
 Information can enter through observations and measurements, but inference can create new propositions without a fresh observation at every step.
@@ -398,6 +410,8 @@ The repetition code spends more bandwidth to gain reliability.
 This illustrates a central information-theoretic point: noisy transmission does not imply unavoidable accumulating corruption. Appropriate coding can make error probabilities very small when operating within channel constraints.
 
 Shannon entropy, semantic drift, and thermodynamic entropy remain distinct concepts.
+
+The revised interface adds a second, explicitly non-Shannon layer after physical decoding. With toy probability \(p_{\mathrm{int}}\), a physically correct decoded message can still be marked as semantically misinterpreted. This independent Bernoulli step is not a model of human semantics; it exists to demonstrate that channel fidelity and interpretation are logically distinct failure modes.
 
 ## 14. Collective intelligence and productivity
 

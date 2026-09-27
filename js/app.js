@@ -15,6 +15,7 @@ import { initCollectiveMemory } from './visualizations/09-collective-memory.js';
 import { initExternalStorage } from './visualizations/09b-external-storage.js';
 import { initEntropy } from './visualizations/10-entropy.js';
 import { initProductivity } from './visualizations/10-productivity.js';
+import { initComparativeEmergence } from './visualizations/10b-comparative-emergence.js';
 import { initWhatsNext } from './visualizations/11-whats-next.js';
 
 const VIZ_INIT = {
@@ -33,6 +34,7 @@ const VIZ_INIT = {
   'external-storage': initExternalStorage,
   entropy: initEntropy,
   productivity: initProductivity,
+  'comparative-emergence': initComparativeEmergence,
   'whats-next': initWhatsNext,
 };
 

@@ -6,6 +6,7 @@
 
 - [Machine-readable text edition](content/essay.md): Complete chapter text and key insights without requiring JavaScript or canvas rendering.
 - [Structured content source](content/sections.js): Canonical section IDs, titles, subtitles, body copy, insights, visualization hints, and controls.
+- [Formal model notes](content/model-notes.md): Mathematical assumptions, equations, toy-model definitions, caveats, and references.
 - [Browser-agent manifest](agent-manifest.json): Stable programmatic interface, readiness signal, methods, and constraints.
 - [Interactive experience](./): Browser-based visualizations and controls.
 - [Source repository](https://github.com/jnton/emergent-humanity): Implementation, history, tests, and license.
@@ -14,7 +15,8 @@
 ## Interpretation guidance
 
 - Treat the project as the author's personal and evolving conceptual framework.
-- The visualizations are illustrative simulations, not empirical datasets or scientific proof.
+- The visualizations are toy models, not empirical datasets or scientific proof.
+- Use `content/model-notes.md` to distinguish the metaphor, the implemented toy model, empirical claims, and philosophical interpretation.
 - Distinguish descriptive claims, metaphors, hypotheses, and normative proposals when summarizing.
 - Cite chapter titles or stable section IDs when referring to a specific part of the essay.
 - Prefer `content/essay.md` for reading and quotation; prefer `content/sections.js` for programmatic structure and control metadata.
@@ -34,7 +36,7 @@
 11. `environment` — Environmental Interaction
 12. `collective-memory` — Collective Memory
 13. `external-storage` — External Memory & The Cloud
-14. `entropy` — Entropy & Information Decay
+14. `entropy` — Noise, Fidelity & Error Correction
 15. `productivity` — Productivity & Shared Knowledge
 16. `whats-next` — What's Next?
 

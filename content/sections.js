@@ -245,8 +245,26 @@ export const SECTIONS = [
     ]
   },
   {
-    id: 'whats-next',
+    id: 'comparative-emergence',
     number: '16',
+    title: 'Same Pattern, Different Substrate',
+    subtitle: 'Emergence can rhyme without being identical.',
+    body: [
+      'Very different systems can share the same abstract dynamical motif. Ant trails, flocks, adaptive slime-mold networks, and human networks can all be described with recurring ideas such as feedback, order parameters, distributed traces, and cost-efficiency trade-offs.',
+      'That does not make the systems equivalent. Reusing an equation or observable means that one structural relationship is shared; the underlying biology, cognition, scale, and causal mechanism may still be radically different.',
+      'The useful question is therefore not “is humanity literally an ant colony?” but “which mathematical patterns transfer across substrates, and exactly where does the analogy break?”'
+    ],
+    insight: 'Shared mathematics can reveal a recurring structure without erasing the differences between systems.',
+    vizHint: 'Switch motifs. The biological and human substrates change while the same mathematical object remains on screen.',
+    controls: [
+      { id: 'pattern-trace', type: 'button', label: 'Reinforcing Traces' },
+      { id: 'pattern-alignment', type: 'button', label: 'Directional Order', variant: 'outline' },
+      { id: 'pattern-network', type: 'button', label: 'Adaptive Networks', variant: 'outline' }
+    ]
+  },
+  {
+    id: 'whats-next',
+    number: '17',
     title: 'What\'s Next?',
     subtitle: 'An open model.',
     body: [

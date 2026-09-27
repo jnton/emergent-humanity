@@ -28,7 +28,7 @@ There is no single maximum potential. Different traits have different limits, an
 
 A single person cannot build a civilization. Communities can divide work, preserve knowledge, coordinate, create institutions, and accumulate science and culture across generations.
 
-Humanity is not literally one biological organism. The useful comparison is structural: many limited units can interact to produce capabilities that exist only at the collective level.
+At that scale, the system becomes organism-like: many limited parts interact to produce capabilities that exist only at the collective level. The analogy is structural, not literal; a human community is not one biological organism.
 
 **Key insight:** Civilization is not inside any one person. It emerges from interaction.
 

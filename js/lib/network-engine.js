@@ -467,16 +467,38 @@ export function createNetworkEngine(canvas, opts = {}) {
   }
 
   function removeNode(node) {
-    node.state = 0;
-    // Don't remove from arrays — D3 references matter.
-    // Just filter rendering by state.
+    if (!node || node.state === 0) return new Set();
+
     const affectedIds = new Set();
+    const nodeId = node.id;
+
+    // Capture neighbors before deleting incident edges.
     for (const link of links) {
-      const s = typeof link.source === 'object' ? link.source : nodes[link.source];
-      const t = typeof link.target === 'object' ? link.target : nodes[link.target];
-      if (s.id === node.id) affectedIds.add(t.id);
-      if (t.id === node.id) affectedIds.add(s.id);
+      const source = typeof link.source === 'object'
+        ? link.source
+        : nodes.find((candidate) => candidate.id === link.source);
+      const target = typeof link.target === 'object'
+        ? link.target
+        : nodes.find((candidate) => candidate.id === link.target);
+      if (!source || !target) continue;
+      if (source.id === nodeId) affectedIds.add(target.id);
+      if (target.id === nodeId) affectedIds.add(source.id);
     }
+
+    // A removed node must also leave the physics graph. Keeping an invisible
+    // dead node inside D3 would let it continue exerting forces.
+    node.state = 0;
+    for (let index = links.length - 1; index >= 0; index -= 1) {
+      const link = links[index];
+      const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+      const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+      if (sourceId === nodeId || targetId === nodeId) links.splice(index, 1);
+    }
+
+    const nodeIndex = nodes.indexOf(node);
+    if (nodeIndex >= 0) nodes.splice(nodeIndex, 1);
+
+    buildSimulation();
     simulation.alpha(0.5).restart();
     return affectedIds;
   }

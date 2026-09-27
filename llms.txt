@@ -38,7 +38,8 @@
 13. `external-storage` — External Memory & The Cloud
 14. `entropy` — Noise, Fidelity & Error Correction
 15. `productivity` — Productivity & Shared Knowledge
-16. `whats-next` — What's Next?
+16. `comparative-emergence` — Same Pattern, Different Substrate
+17. `whats-next` — What's Next?
 
 ## Browser-agent API
 

@@ -12,7 +12,7 @@ In this model, a node is a stylized approximation of a person. It keeps only the
 
 **Key insight:** A useful model is incomplete by design.
 
-## 02 — Node Limits
+## 02 — The Limits of a Node
 
 *No person has unlimited capacity.*
 
@@ -32,7 +32,7 @@ At that scale, the system becomes organism-like: many limited parts interact to 
 
 **Key insight:** Civilization is not inside any one person. It emerges from interaction.
 
-## 04 — Losing a Node
+## 04 — A Node Goes Dark
 
 *Most nodes barely affect the whole. Some become critical.*
 
@@ -42,7 +42,7 @@ But importance is not fixed. A node can become a hub, a bridge, a specialist, or
 
 **Key insight:** Most nodes are replaceable to the system. Structural importance can change.
 
-## 05 — Small Causes, Large Futures
+## 05 — A Tiny Difference
 
 *The system decides whether a tiny difference dies or explodes.*
 
@@ -52,7 +52,7 @@ In a stable regime, the same perturbation can shrink. The lesson is not that eve
 
 **Key insight:** A tiny perturbation can become macroscopic when the dynamics amplify it.
 
-## 06 — More Nodes
+## 06 — More Minds
 
 *Scale adds capacity and coordination costs.*
 
@@ -62,7 +62,7 @@ Scale helps only when the network can turn extra people into usable collective c
 
 **Key insight:** More nodes create potential. Organization determines how much becomes usable.
 
-## 07 — More Connections
+## 07 — Closing the Distance
 
 *Shorter paths change what the network can do.*
 
@@ -72,7 +72,7 @@ But possible connections can grow faster than a node’s finite communication an
 
 **Key insight:** Reachability can grow faster than usable attention or bandwidth.
 
-## 08 — Better Connections
+## 08 — When Information Fails
 
 *A perfect channel can still deliver bad information.*
 
@@ -82,7 +82,7 @@ Incentives are different again. They do not necessarily damage a connection; the
 
 **Key insight:** Good information flow depends on the channel, the source, the receiver, and the selection process.
 
-## 09 — Polarization
+## 09 — The Network Splits
 
 *Beliefs and connections can pull apart together.*
 
@@ -92,7 +92,7 @@ Bridges between groups can reopen exchange, but contact alone does not guarantee
 
 **Key insight:** A bridge creates contact. What happens next depends on the interaction.
 
-## 10 — Alignment
+## 10 — Moving Together
 
 *Moving together is different from moving well.*
 
@@ -102,7 +102,7 @@ But alignment is not automatically good. Diversity can improve exploration and e
 
 **Key insight:** Coordination increases coherence, not correctness.
 
-## 11 — Learning from Reality
+## 11 — Touching Reality
 
 *The network needs input from the world.*
 
@@ -112,7 +112,7 @@ Knowledge also grows by transforming what is already known through inference, re
 
 **Key insight:** Learning needs both evidence and inference.
 
-## 12 — Collective Memory
+## 12 — Memory Beyond the Individual
 
 *Ideas survive only if they have somewhere to go.*
 
@@ -122,7 +122,7 @@ Copies can spread, change, disappear, or become redundant enough to survive the 
 
 **Key insight:** Memory becomes collective when information outlives the person who first held it.
 
-## 13 — External Memory
+## 13 — Memory Outside the Brain
 
 *Writing changed what humanity could remember.*
 
@@ -132,7 +132,7 @@ External memory is still fragile. Records can decay, disappear, become unreadabl
 
 **Key insight:** External storage lets knowledge survive us, but not forever.
 
-## 14 — Noise and Error Correction
+## 14 — Against Noise
 
 *Information can be damaged—and repaired.*
 
@@ -142,7 +142,7 @@ Human communication adds another problem: a message can arrive perfectly and sti
 
 **Key insight:** Reliable communication depends on both the channel and the interpretation.
 
-## 15 — Collective Intelligence
+## 15 — More Than the Sum
 
 *The network can solve problems no individual can.*
 
@@ -152,7 +152,7 @@ Bottlenecks, duplicated work, bad incentives, misinformation, and coordination c
 
 **Key insight:** Collective capacity matters only when the network can use it.
 
-## 16 — Different Systems, Same Pattern
+## 16 — Same Pattern, Different Matter
 
 *Different systems can follow the same rule.*
 
@@ -164,7 +164,7 @@ The useful question is simple: where does the comparison work, and where does it
 
 **Key insight:** Same pattern does not mean same mechanism.
 
-## 17 — What Helps Humanity Thrive?
+## 17 — How Humanity Thrives
 
 *There is no single variable to maximize.*
 

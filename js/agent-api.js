@@ -64,6 +64,7 @@ function initializeAgentApi() {
     if (!section) return null;
     return {
       sectionId,
+      model: window.__EXPERIMENTS__?.get(sectionId)?.getSnapshot() ?? null,
       stats: section.querySelector('.viz-stats')?.textContent?.trim() || null,
       hint: section.querySelector('.viz-hint')?.textContent?.trim() || null,
       controls: getControls(sectionId),
@@ -112,7 +113,7 @@ function initializeAgentApi() {
   };
 
   window.emergentHumanity = Object.freeze({
-    version: '1.0.0',
+    version: '2.0.0',
     capabilities: Object.freeze([
       'list-chapters',
       'read-chapter-status',

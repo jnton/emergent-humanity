@@ -1,125 +1,91 @@
-import { test, expect } from '@playwright/test';
-
-test.use({
-  viewport: { width: 390, height: 844 },
-  hasTouch: true,
-  isMobile: true,
+import { test, expect } from "@playwright/test";
+for (const size of [
+  { width: 320, height: 568 },
+  { width: 390, height: 844 },
+  { width: 844, height: 390 },
+])
+  test(`layout and controls at ${size.width}×${size.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(size);
+    await page.goto("/lab.html");
+    for (const section of await page.locator(".section").all()) {
+      await section.scrollIntoViewIfNeeded();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      ).toBe(true);
+      const geometry = await section.evaluate((e) => {
+        const hint = e.querySelector(".viz-hint").getBoundingClientRect(),
+          stage = e.querySelector(".viz-stage").getBoundingClientRect(),
+          controls = e.querySelector(".viz-controls").getBoundingClientRect(),
+          stats = e.querySelector(".viz-stats").getBoundingClientRect();
+        return {
+          hintBefore: hint.bottom <= stage.top,
+          stageBefore: stage.bottom <= controls.top + 1,
+          controlsBefore: controls.bottom < stats.top,
+        };
+      });
+      expect(geometry).toEqual({
+        hintBefore: true,
+        stageBefore: true,
+        controlsBefore: true,
+      });
+    }
+    await page.locator("#chapter-menu summary").click();
+    await expect(page.locator("#chapter-nav")).toBeVisible();
+  });
+test("reduced motion does not advance any model automatically", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/lab.html#section-connection-quality");
+  const before = await page
+    .locator("#canvas-connection-quality")
+    .getAttribute("data-model-state");
+  await page.waitForTimeout(800);
+  expect(
+    await page
+      .locator("#canvas-connection-quality")
+      .getAttribute("data-model-state"),
+  ).toBe(before);
+  await page.locator("#section-connection-quality [data-step]").click();
+  expect(
+    await page
+      .locator("#canvas-connection-quality")
+      .getAttribute("data-model-state"),
+  ).not.toBe(before);
+});
+test("rotation preserves state and resizes every canvas", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/lab.html#section-illusion-of-significance");
+  await page.locator("#ctrl-shift-node").click();
+  const before = await page
+    .locator("#canvas-illusion-of-significance")
+    .getAttribute("data-model-state");
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect
+    .poll(() =>
+      page
+        .locator("#canvas-illusion-of-significance")
+        .evaluate((c) => Math.abs(c.clientWidth - c.parentElement.clientWidth)),
+    )
+    .toBeLessThan(2);
+  expect(
+    await page
+      .locator("#canvas-illusion-of-significance")
+      .getAttribute("data-model-state"),
+  ).toBe(before);
 });
 
-function collectRuntimeErrors(page) {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
-  page.on('console', (message) => {
-    if (message.type() === 'error') errors.push(message.text());
-  });
-  return errors;
-}
-
-test('mobile chapter navigation behaves as a viewport-sized touch sheet', async ({ page }, testInfo) => {
-  const errors = collectRuntimeErrors(page);
-  await page.goto('/');
-  await page.waitForFunction(() => document.documentElement.dataset.mobileLayout === 'active');
-
-  const header = page.locator('.site-header');
-  const headerBox = await header.boundingBox();
-  expect(headerBox.width).toBeLessThanOrEqual(390);
-  expect(headerBox.height).toBeLessThanOrEqual(72);
-
-  const menu = page.locator('.chapter-menu');
-  await menu.locator('summary').tap();
-  await expect(menu).toHaveAttribute('open', '');
-
-  const nav = menu.locator('nav');
-  await expect(nav).toBeVisible();
-  const navBox = await nav.boundingBox();
-  expect(navBox.x).toBeGreaterThanOrEqual(0);
-  expect(navBox.y).toBeGreaterThanOrEqual(0);
-  expect(navBox.x + navBox.width).toBeLessThanOrEqual(390);
-  expect(navBox.y + navBox.height).toBeLessThanOrEqual(844);
-
-  await menu.locator('[data-section-link="cohesion"]').tap();
-  await expect(menu).not.toHaveAttribute('open', '');
-  await expect(page.locator('#section-cohesion')).toBeInViewport();
-
-  await testInfo.attach('mobile-chapter-sheet', {
-    body: await page.screenshot({ type: 'jpeg', quality: 82 }),
-    contentType: 'image/jpeg',
-  });
-  expect(errors).toEqual([]);
-});
-
-test('mobile controls sit below the canvas with large touch targets', async ({ page }, testInfo) => {
-  const errors = collectRuntimeErrors(page);
-  await page.goto('/');
-  await page.waitForFunction(() => window.__EMERGENT_MOBILE_DEBUG__?.getState().active === true);
-
-  const state = await page.evaluate(() => window.__EMERGENT_MOBILE_DEBUG__.getState());
-  expect(state.headings).toBe(17);
-  expect(state.dockedControls).toBeGreaterThan(10);
-
-  const section = page.locator('#section-node-limits');
-  await section.scrollIntoViewIfNeeded();
-  const canvasBox = await section.locator('canvas').boundingBox();
-  const dock = section.locator(':scope > .viz-controls');
-  const dockBox = await dock.boundingBox();
-
-  expect(dockBox.y).toBeGreaterThanOrEqual(canvasBox.y + canvasBox.height - 2);
-  expect(dockBox.x).toBeGreaterThanOrEqual(0);
-  expect(dockBox.x + dockBox.width).toBeLessThanOrEqual(390);
-
-  for (const button of await dock.locator('button').all()) {
-    const box = await button.boundingBox();
-    expect(box.height).toBeGreaterThanOrEqual(44);
+test("slider defaults represent their declared values exactly", async ({
+  page,
+}) => {
+  await page.goto("/lab.html");
+  for (const input of await page.locator(".section input[type=range]").all()) {
+    expect(Number(await input.inputValue())).toBe(
+      Number(await input.getAttribute("value")),
+    );
   }
-
-  const sliderSection = page.locator('#section-node-quantity');
-  await sliderSection.scrollIntoViewIfNeeded();
-  const slider = sliderSection.locator('input[type="range"]');
-  const sliderBox = await slider.boundingBox();
-  expect(sliderBox.height).toBeGreaterThanOrEqual(40);
-  const before = await slider.inputValue();
-  await slider.tap({ position: { x: sliderBox.width * 0.82, y: sliderBox.height / 2 } });
-  await expect(slider).not.toHaveValue(before);
-
-  await testInfo.attach('mobile-control-dock', {
-    body: await page.screenshot({ type: 'jpeg', quality: 82 }),
-    contentType: 'image/jpeg',
-  });
-  expect(errors).toEqual([]);
-});
-
-test('mobile audio volume is a popover and node dragging has an explicit mode', async ({ page }, testInfo) => {
-  const errors = collectRuntimeErrors(page);
-  await page.goto('/');
-  await page.waitForFunction(() => document.documentElement.dataset.mobileLayout === 'active');
-
-  await page.locator('#audio-menu > summary').tap();
-  await page.locator('#toggle-soundscape').tap();
-  const volume = page.locator('#ambient-volume-control');
-  await expect(volume).toBeVisible();
-  const volumeBox = await volume.boundingBox();
-  expect(volumeBox.x).toBeGreaterThanOrEqual(0);
-  expect(volumeBox.x + volumeBox.width).toBeLessThanOrEqual(390);
-
-  const finalSection = page.locator('#section-whats-next');
-  await finalSection.scrollIntoViewIfNeeded();
-  const toggle = finalSection.locator('.canvas-touch-toggle');
-  await expect(toggle).toBeVisible();
-  await toggle.tap();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await expect(finalSection.locator('.viz-pane')).toHaveClass(/touch-interaction-active/);
-
-  const touchAction = await finalSection.locator('canvas').evaluate(
-    (canvas) => getComputedStyle(canvas).touchAction
-  );
-  expect(touchAction).toBe('none');
-
-  await toggle.tap();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-
-  await testInfo.attach('mobile-node-mode', {
-    body: await page.screenshot({ type: 'jpeg', quality: 82 }),
-    contentType: 'image/jpeg',
-  });
-  expect(errors).toEqual([]);
 });

@@ -1,0 +1,14 @@
+{
+  "changedInFlight": "p 4%/hop · 3 hops · 5× majority decode · Transmitting",
+  "chaosBefore": {
+    "backing": 390,
+    "css": 390
+  },
+  "chaosAfter": {
+    "backing": 390,
+    "css": 390,
+    "parent": 844
+  },
+  "reducedBefore": "edge reliability 80% · reached 2 · corrupted copies 0 · transmissions 1",
+  "reducedAfter": "edge reliability 80% · reached 10 · corrupted copies 6 · transmissions 10"
+}

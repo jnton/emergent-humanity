@@ -1,0 +1,546 @@
+[
+  {
+    "width": 390,
+    "id": "node-capacity",
+    "canvas": {
+      "x": 0,
+      "y": 133.09375,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "id": "node-limits",
+    "canvas": {
+      "x": 0,
+      "y": 133.28125,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "id": "intro",
+    "canvas": {
+      "x": 0,
+      "y": 132.953125,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "id": "emergent-organism",
+    "canvas": {
+      "x": 0,
+      "y": 132.75,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "60 nodes · largest component 100% · max degree 21",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "illusion-of-significance",
+    "canvas": {
+      "x": 0,
+      "y": 133.578125,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "sensitive nonlinear · step 5 · mean |Δ| 0.00e+0",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "node-quantity",
+    "canvas": {
+      "x": 0,
+      "y": 133.375,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "33 nodes · 61 active edges · E/N 1.8 · complete graph would need 528 edges",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "connection-quantity",
+    "canvas": {
+      "x": 0,
+      "y": 133.046875,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "117 edges · mean shortest path 4.39 hops · reachable pairs 100%",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "connection-quality",
+    "canvas": {
+      "x": 0,
+      "y": 132.90625,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "edge reliability 80% · reached 2 · corrupted copies 0 · transmissions 1",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "cohesion",
+    "canvas": {
+      "x": 0,
+      "y": 133.25,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "confidence ε 0.83 · opinion SD 0.55 · active cross-group edges 31/157",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "alignment",
+    "canvas": {
+      "x": 0,
+      "y": 133.109375,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "directional coherence R = 0.22 · coupling 0.04 · noise 0.28",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "environment",
+    "canvas": {
+      "x": 0,
+      "y": 132.78125,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "id": "collective-memory",
+    "canvas": {
+      "x": 0,
+      "y": 133.390625,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "No idea yet · spawn one, then click nodes to remove carriers",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "external-storage",
+    "canvas": {
+      "x": 0,
+      "y": 132.734375,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 390,
+    "id": "entropy",
+    "canvas": {
+      "x": 0,
+      "y": 132.59375,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "p 4%/hop · 0 hops · single copy · Ready",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "productivity",
+    "canvas": {
+      "x": 0,
+      "y": 133.171875,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "capacity proxy Σq 12 · largest component 100% · coordination load E/N 1.0",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "comparative-emergence",
+    "canvas": {
+      "x": 0,
+      "y": 132.375,
+      "w": 390,
+      "h": 464.1875
+    },
+    "backing": [
+      390,
+      464
+    ],
+    "stats": "same update rule · ants T₁/T₂ 0.62/0.39 · humans T₁/T₂ 0.56/0.37",
+    "overlap": true
+  },
+  {
+    "width": 390,
+    "id": "whats-next",
+    "canvas": {
+      "x": 0,
+      "y": 139.578125,
+      "w": 390,
+      "h": 463
+    },
+    "backing": [
+      390,
+      463
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "node-capacity",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "node-limits",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "intro",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "emergent-organism",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "60 nodes · largest component 100% · max degree 19",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "illusion-of-significance",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "sensitive nonlinear · step 5 · mean |Δ| 0.00e+0",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "node-quantity",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "33 nodes · 62 active edges · E/N 1.9 · complete graph would need 528 edges",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "connection-quantity",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "114 edges · mean shortest path 4.53 hops · reachable pairs 100%",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "connection-quality",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "edge reliability 80% · reached 2 · corrupted copies 1 · transmissions 1",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "cohesion",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "confidence ε 0.83 · opinion SD 0.55 · active cross-group edges 39/157",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "alignment",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "directional coherence R = 0.16 · coupling 0.04 · noise 0.28",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "environment",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "collective-memory",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "No idea yet · spawn one, then click nodes to remove carriers",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "external-storage",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "entropy",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "p 4%/hop · 0 hops · single copy · Ready",
+    "overlap": false
+  },
+  {
+    "width": 1440,
+    "id": "productivity",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "capacity proxy Σq 12 · largest component 83% · coordination load E/N 1.0",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "comparative-emergence",
+    "canvas": {
+      "x": 0,
+      "y": 65,
+      "w": 777.59375,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "same update rule · ants T₁/T₂ 0.62/0.38 · humans T₁/T₂ 0.56/0.37",
+    "overlap": true
+  },
+  {
+    "width": 1440,
+    "id": "whats-next",
+    "canvas": {
+      "x": -0.203125,
+      "y": 65.046875,
+      "w": 778,
+      "h": 900
+    },
+    "backing": [
+      778,
+      900
+    ],
+    "stats": "",
+    "overlap": false
+  }
+]

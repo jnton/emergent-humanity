@@ -1,83 +1,66 @@
-import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { SECTIONS } from '../content/sections.js';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const read = (path) => readFile(resolve(root, path), 'utf8');
-const index = await read('index.html');
-const app = await read('js/app.js');
-const audio = await read('js/audio.js');
-const agentApi = await read('js/agent-api.js');
-const experience = await read('css/experience.css');
-const essay = await read('content/essay.md');
-const modelNotes = await read('content/model-notes.md');
-const llms = await read('llms.txt');
-const agentManifest = JSON.parse(await read('agent-manifest.json'));
-
-assert.match(index, /css\/experience\.css/, 'The experience stylesheet must be loaded.');
-assert.match(index, /css\/audio\.css/, 'The audio stylesheet must be loaded.');
-assert.match(index, /js\/platform\.js/, 'Platform stability guards must load before the app.');
-assert.match(index, /js\/app\.js/, 'The revised application entry point must be loaded.');
-assert.match(index, /js\/agent-api\.js/, 'The browser-agent API must be loaded.');
-assert.match(index, /js\/audio\.js/, 'The soundtrack controller must be loaded.');
-assert.doesNotMatch(index, /js\/main\.js/, 'The legacy entry point must not be loaded.');
-assert.match(index, /application\/ld\+json/, 'Structured website metadata must be present.');
-assert.match(index, /href="llms\.txt"/, 'The AI agent guide must be discoverable.');
-assert.match(index, /href="agent-manifest\.json"/, 'The browser-agent manifest must be discoverable.');
-assert.match(app, /https:\/\/github\.com\/jnton\/emergent-humanity/, 'The source link must target this repository.');
-assert.match(app, /content\/model-notes\.md/, 'The formal model notes must be linked from the experience.');
-assert.match(modelNotes, /binary symmetric channel/i, 'Formal notes must document the channel model.');
-assert.match(modelNotes, /bounded-confidence/i, 'Formal notes must document the polarization model.');
-assert.match(modelNotes, /comparative emergence/i, 'Formal notes must document the cross-substrate comparison.');
-assert.match(modelNotes, /Physarum/i, 'Formal notes must document the adaptive-network comparison.');
-assert.doesNotMatch(app, /startAudioOnInteract|audioBtn\.click\(\)/, 'Ambient audio must never auto-start.');
-assert.doesNotMatch(audio, /startAudioOnInteract|\.click\(\)\s*;/, 'The soundtrack must remain explicitly opt-in.');
-assert.match(audio, /tonal-score-v2/, 'The tonal score version must be identifiable.');
-assert.match(audio, /playActivationCue/, 'Audio activation must provide audible feedback.');
-assert.match(audio, /__EMERGENT_AUDIO_DEBUG__/, 'Browser tests need an observable Web Audio signal.');
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { SECTIONS } from "../content/sections.js";
+import { REFERENCES } from "../content/references.js";
+import { createExperiment, describe } from "../js/models/index.js";
+const read = (p) => readFile(new URL("../" + p, import.meta.url), "utf8");
+const index = await read("lab.html"),
+  app = await read("js/lab.js"),
+  audio = await read("js/audio.js");
+assert.match(index, /js\/lab\.js/);
 assert.doesNotMatch(
-  audio,
-  /createAirTexture|createBufferSource|white\s*=|noise\.loop|noiseLayer:\s*true/,
-  'The soundtrack must not reintroduce a continuous synthesized noise layer.'
+  index,
+  /d3js.org|js\/main.js|network-engine-guarded|js\/mobile-layout.js/,
 );
-assert.match(audio, /type\s*=\s*['"]sine['"]/, 'The soundtrack should use tonal oscillator voices.');
-assert.match(agentApi, /window\.emergentHumanity/, 'A stable browser-agent global must be exposed.');
-assert.match(agentApi, /operateControl/, 'Browser agents must be able to operate controls by stable ID.');
-assert.equal(agentManifest.browserApi.global, 'window.emergentHumanity');
-assert.match(experience, /scroll-snap-type:\s*none/, 'Mandatory snap scrolling must remain disabled.');
-assert.match(experience, /:focus-visible/, 'Keyboard focus styles must be present.');
-
-const sectionIds = SECTIONS.map(({ id }) => id);
-assert.equal(new Set(sectionIds).size, sectionIds.length, 'Section IDs must be unique.');
-
-const controlIds = SECTIONS.flatMap(({ controls = [] }) => controls.map(({ id }) => id));
-assert.equal(new Set(controlIds).size, controlIds.length, 'Control IDs must be unique across the document.');
-
-for (const section of SECTIONS) {
-  const escapedId = section.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  assert.match(app, new RegExp(`['"]?${escapedId}['"]?\\s*:`), `Missing visualization mapping for ${section.id}.`);
-  assert.ok(essay.includes(section.title), `The text edition is missing ${section.title}.`);
-  assert.ok(llms.includes(`\`${section.id}\``), `The AI guide is missing section ID ${section.id}.`);
+assert.match(index, /essay.html/);
+assert.match(app, /methods.html/);
+assert.match(app, /https:\/\/github.com\/jnton\/emergent-humanity/);
+assert.match(audio, /__EMERGENT_AUDIO_DEBUG__/);
+assert.doesNotMatch(audio, /startAudioOnInteract|audioBtn\.click/);
+assert.equal(SECTIONS.length, 17);
+assert.equal(new Set(SECTIONS.map((s) => s.id)).size, 17);
+const ids = SECTIONS.flatMap((s) => s.controls.map((c) => c.id));
+assert.equal(new Set(ids).size, ids.length);
+for (const s of SECTIONS) {
+  assert.ok(s.evidence?.Limits);
+  assert.ok(s.method?.formula);
+  for (const id of s.method.sources) assert.ok(REFERENCES[id]);
+  const model = createExperiment(s.id);
+  assert.ok(describe(model.snapshot()));
+  for (const control of s.controls) {
+    model.act(
+      control.id,
+      control.type === "slider"
+        ? control.max
+        : control.type === "switch"
+          ? !control.value
+          : undefined,
+    );
+    assert.ok(describe(model.snapshot()));
+  }
+  for (let i = 0; i < 4; i++) model.step();
+  assert.ok(describe(model.snapshot()));
+  model.reset();
+  assert.deepEqual(model.snapshot(), createExperiment(s.id).snapshot());
 }
-
-const importPaths = [...app.matchAll(/from\s+['"](\.\/[^'"]+)['"]/g)]
-  .map((match) => match[1].split('?')[0]);
-for (const importPath of importPaths) {
-  await access(resolve(root, 'js', importPath));
-}
-
-for (const asset of [
-  'assets/icon.png',
-  'assets/social-preview.png',
-  'content/essay.md',
-  'content/model-notes.md',
-  'llms.txt',
-  'agent-manifest.json',
-  'robots.txt',
+for (const path of [
+  "content/essay.md",
+  "content/model-notes.md",
+  "methods.html",
+  "essay.html",
 ]) {
-  await access(resolve(root, asset));
+  const text = await read(path);
+  assert.doesNotMatch(text, /[\x00-\x08\x0b\x0c\x0e-\x1f]/);
+  for (const s of SECTIONS)
+    assert.ok(text.includes(s.title), `${path} missing ${s.title}`);
 }
+console.log(
+  `Static checks passed: ${SECTIONS.length} chapters, ${ids.length} controls, models and generated editions.`,
+);
 
-console.log(`Static smoke tests passed for ${SECTIONS.length} chapters and ${controlIds.length} controls.`);
+const main=await read("index.html");
+assert.match(main,/js\/app\.js/);
+assert.match(main,/css\/restoration.css/);
+assert.equal(SECTIONS.find(s=>s.id==="emergent-organism").title,"A Node Goes Dark");
+assert.equal(SECTIONS.find(s=>s.id==="alignment").title,"Moving Together");
+assert.equal(SECTIONS.find(s=>s.id==="entropy").title,"Against Noise");

@@ -7,7 +7,14 @@
     "textEdition": "content/essay.md",
     "structuredSource": "content/sections.js",
     "formalModelNotes": "content/model-notes.md",
-    "llmGuide": "llms.txt"
+    "llmGuide": "llms.txt",
+    "readableEdition": "essay.html",
+    "methods": "methods.html",
+    "claimRegistry": "content/claims.json",
+    "referenceRegistry": "content/references.js",
+    "animatedEssay": "index.html",
+    "quantitativeExperiments": "lab.html",
+    "illustrationSource": "content/illustrations.js"
   },
   "browserApi": {
     "global": "window.emergentHumanity",
@@ -19,7 +26,7 @@
       "getChapters": "Return chapter IDs, numbers, titles, subtitles, and insights.",
       "getCurrentChapter": "Return the active chapter ID.",
       "getControls": "Return machine-readable controls for a chapter ID.",
-      "getStatus": "Return visualization status, hint text, and controls for a chapter ID.",
+      "getStatus": "Return a model snapshot, readable status, hint text, and controls for a chapter ID.",
       "operateControl": "Click a button or set a slider/switch using its stable control ID.",
       "scrollToChapter": "Navigate to a chapter using its stable section ID."
     }
@@ -27,7 +34,8 @@
   "constraints": [
     "Visualizations are explicit toy models rather than empirical datasets or scientific proof.",
     "Ambient audio is optional and disabled by default.",
-    "Canvas pixels are supplementary; agents should use text, controls, and status output for interpretation."
+    "Canvas pixels are supplementary; agents should use text, controls, and status output for interpretation.",
+    "The main essay uses restored illustrative animations. Deterministic model snapshots are available in the separate quantitative lab, not in the main animation engine."
   ],
   "sourceRepository": "https://github.com/jnton/emergent-humanity"
 }

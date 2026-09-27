@@ -13,6 +13,7 @@ export function initExternalStorage(canvas, controls) {
   let epochFlashAlpha = 0;
   let epochFlashText = '';
   let nextInfoId = 1;
+  let active = false;
 
   const EPOCH_NAMES = [
     'Biological Memory',
@@ -55,11 +56,11 @@ export function initExternalStorage(canvas, controls) {
       ctx.save();
       ctx.textAlign = 'right';
       ctx.font = '12px Inter, sans-serif';
-      if (infoLost > 0) {
+      if (document.documentElement.dataset.measurements==='true' && infoLost > 0) {
         ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
         ctx.fillText(`☠ Lost: ${infoLost}`, W - 16, 24);
       }
-      if (infoSaved > 0) {
+      if (document.documentElement.dataset.measurements==='true' && infoSaved > 0) {
         ctx.fillStyle = 'rgba(34, 197, 94, 0.7)';
         ctx.fillText(`✦ External copies: ${infoSaved}`, W - 16, 40);
       }
@@ -602,11 +603,11 @@ export function initExternalStorage(canvas, controls) {
   // ── Button Wiring ──
 
   const BUTTON_LABELS = [
-    'Invent Writing & Monuments',
-    'Invent the Printing Press',
-    'Invent Recording Instruments',
-    'Build Networked Storage',
-    'Final Epoch Reached'
+    'Give memory a home',
+    'Make more copies',
+    'Record what happens',
+    'Connect the records',
+    'Records are connected'
   ];
 
   if (controls['invent']) {
@@ -645,6 +646,7 @@ export function initExternalStorage(canvas, controls) {
 
     // ── Main loop: spawn ideas, capture, kill ──
     engine.intervalId = setInterval(() => {
+      if(!active || document.hidden) return;
       const nodes = engine.getNodes();
       const alive = nodes.filter(n => n.state === 1 && !n.isArtifact && !n.isCloud);
       if (alive.length === 0) return;
@@ -751,6 +753,11 @@ export function initExternalStorage(canvas, controls) {
     }, 1200);
   };
 
+  const activate=engine.activate.bind(engine),deactivate=engine.deactivate.bind(engine),destroy=engine.destroy.bind(engine);
+  engine.activate=()=>{active=true;activate();};
+  engine.deactivate=()=>{active=false;deactivate();};
+  engine.destroy=()=>{active=false;clearInterval(engine.intervalId);destroy();};
+  controls['reset-storage']?.addEventListener('click',()=>engine.init());
   engine.init();
   return engine;
 }

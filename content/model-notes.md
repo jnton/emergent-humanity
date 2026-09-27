@@ -1,590 +1,259 @@
-# Emergent Humanity — Formal Model Notes
+# Emergent Humanity — Implemented model notes
 
-This note documents the mathematical ideas behind the interactive essay. It is deliberately separate from the main narrative so the interface can stay readable.
+These notes describe the quantitative experiments at lab.html. The main animated essay uses separate illustrative visualizations. Generated from the canonical chapter records. Model version 2.0.0. Mathematical results are conditional on assumptions. Independent specialist review remains pending.
 
-The visualizations are **toy models**. They are intended to make assumptions inspectable, not to reproduce empirical human society or prove the philosophical interpretation.
+## 01 — The Human Node
 
-## 1. Core representation
+Type: Illustration
 
-At time (t), represent the system as a temporal network
+Assumptions: A question selects a subset of properties. No claim of a full human state.
 
-[
-mathcal G_t=(V,E_t).
-]
+Parameters: Choose a lens; toggle person/node.
 
-A useful extension is a heterogeneous node set
+x = φ(person; question)
 
-[
-V = H cup S,
-]
+Limits: No biological or psychological quantities are estimated.
 
-where (H) contains humans and (S) contains external storage or institutional artifacts.
+Emergent Properties — Stanford Encyclopedia of Philosophy: https://plato.stanford.edu/entries/properties-emergent/
 
-A human node (i) has an internal state
+## 02 — The Great Organism
 
-[
-x_i(t)inmathbb R^d
-]
+Type: Dependency model + analogy
 
-and an activity variable
+Assumptions: Four distinct roles and their coordination are all necessary.
 
-[
-a_i(t)in{0,1}.
-]
+Parameters: Toggle connectivity and the verification role.
 
-The binary variable is only an availability state. It does **not** imply that a human is intrinsically one bit.
+success = connected AND all four roles available
 
-The node itself is a **coarse-graining** of a much richer person. Write
+Limits: Not a realistic engineering design, biological organism, or evidence of consciousness.
 
-\[
-x_i = \phi(h_i;Q),
-\]
+Queller & Strassmann (2009), Beyond society: the evolution of organismality: https://pmc.ncbi.nlm.nih.gov/articles/PMC2781869/
+Collective Intentionality — Stanford Encyclopedia of Philosophy: https://plato.stanford.edu/entries/collective-intentionality/
 
-where \(h_i\) is the high-dimensional human state and \(Q\) is the question the model is trying to answer. The map \(\phi\) keeps some variables and discards others. A different question can require a different node state. No fixed vector \(x_i\) is claimed to be a complete representation of a person.
+## 03 — The Limits of a Node
 
-Edges can carry multiple attributes:
+Type: Toy resource model
 
-[
-e_{ij}(t)=
-igl(
-w_{ij},
-q_{ij},
-b_{ij},
-	au_{ij},
-ell_{ij},
-dots
-igr),
-]
+Assumptions: One job consumes one unit; work occurs within a fixed interval.
 
-for influence or trust (w), transmission reliability (q), bandwidth (b), latency (	au), and relationship layer (ell).
+Parameters: Capacity b ∈ [1,24]; demand d ∈ [1,24].
 
-Human society is therefore better understood as a temporal, heterogeneous, multilayer network than as one static graph.
+completed = min(b,d); deferred = max(0,d−b)
 
-## 2. Node limits
+Limits: A bounded work budget does not imply a finite cardinality of human states.
 
-For a trait or task (k), performance can be represented schematically as
 
-[
-P_{ik}
-=
-F_k(G_i,E_i,D_i,T_i),
-]
 
-where (G_i) represents inherited biological variation, (E_i) environment and development, (D_i) current physiological state, and (T_i) tools or augmentation.
+## 04 — A Node Goes Dark
 
-The framework's claim is not that there is one scalar genetic maximum. It is that, for a fixed biological organism and current technology, the attainable state space is finite. Removing environmental constraints can move performance toward the biological envelope without making that envelope unbounded.
+Type: Graph intervention
 
-Genotype and environment can interact, so the boundary itself may depend on the environment.
+Assumptions: Two six-person cliques joined by node 12; node 2 alone supplies one of three required skills.
 
-## 3. Node loss and structural importance
+Parameters: Remove member 1, bridge 12, or specialist 2. Every intervention starts from the intact graph.
 
-For any network-level observable (M), define the consequence of removing node (v) as
+reach = reachable ordered pairs / (13 × 12)
 
-[
-Delta_v M
-=
-M(G)-M(G-v).
-]
+Limits: Chosen metrics do not measure moral worth. Denominators use the original 13 people.
 
-There is no universal node importance. The result depends on the chosen observable.
+Broido & Clauset (2019), Scale-free networks are rare: https://www.nature.com/articles/s41467-019-08746-5
 
-Examples include:
+## 05 — A Tiny Difference
 
-- giant-component size;
-- average path length;
-- global efficiency;
-- information throughput;
-- task coverage;
-- access to unique knowledge.
+Type: Discrete dynamical model
 
-Degree, betweenness, PageRank, articulation status, and functional specialization can be useful predictors of impact, but none is a universal definition of human importance.
+Assumptions: Twenty-four nodes on a ring; two identical initial states; one perturbation of 10⁻⁷.
 
-Chapter 04 makes the marginal-effect idea explicit with more than one observable. Its structural efficiency proxy is
+Parameters: Averaging weights .62/.38; nonlinear logistic parameter 3.9, coupling .08.
 
-\[
-E_G
-=
-\frac{1}{N(N-1)}
-\sum_{i\ne j}
-\frac{1}{d(i,j)},
-\]
+averaging: xᵢ′=.62xᵢ+.38 mean(neighbors)
+sensitive: f(x)=3.9x(1−x); xᵢ′=.92f(xᵢ)+.08 mean(f(neighbors))
+gₜ=log(maxᵢ|aᵢ−bᵢ|/10⁻⁷)/t
 
-with disconnected pairs contributing zero. It also displays largest-component size and a toy task-coverage variable. Ordinary low-degree removals are compared with a node that is deliberately allowed to acquire bridge links and one unique task. This demonstrates two separate points: most removals can have tiny marginal effects in a redundant network, and structural importance can change as a node's role changes.
+Limits: The averaging consensus mode preserves an offset; finite-time separation is not a maximal Lyapunov exponent.
 
-That is a statement about a selected **system observable**, not a statement about moral worth, subjective value, or a universal ranking of people.
+Eckmann & Ruelle (1985), Ergodic theory of chaos and strange attractors: https://doi.org/10.1103/RevModPhys.57.617
 
-The runtime network uses a stylized heterogeneous topology, not a claim that human society is exactly scale-free. Strongly scale-free structure is not empirically universal across real networks.
+## 06 — More Minds
 
-## 4. Perturbations, stability, and chaos
+Type: Task simulation
 
-Complexity does not imply chaos.
+Assumptions: Twenty-four identical unit jobs. Each worker completes at most one per round; assignments do not overlap.
 
-For a dynamical system
+Parameters: One to twelve workers; serial mode limits progress to one job per round.
 
-[
-x_{t+1}=F(x_t),
-]
+parallel progress per round = min(workers, remaining jobs)
+serial progress per round = min(1, remaining jobs)
 
-a perturbation (delta x_0) may shrink, remain bounded, or grow.
+Limits: No claim about population, demographic policy, or real production functions.
 
-A positive maximal Lyapunov exponent is commonly used as evidence of exponential sensitivity to initial conditions:
 
-[
-lambda_{max}
-=
-limsup_{t	oinfty}
-rac{1}{t}
-log
-rac{|delta x_t|}{|delta x_0|}.
-]
 
-The Chapter 05 visualization therefore compares two deliberately different regimes:
+## 07 — Closing the Distance
 
-1. a contracting consensus process where perturbations decay;
-2. a sensitive nonlinear process where nearby trajectories tend to diverge.
+Type: Graph + budget model
 
-For the one injected perturbation, the interface reports the finite-time growth rate
+Assumptions: Twelve-node undirected ring; unique chords added in a fixed long-range-first order; one demand unit at each incident endpoint.
 
-\[
-\hat\lambda_t
-=
-\frac{1}{t}
-\log
-\frac{\lVert\delta x_t\rVert}
-     {\lVert\delta x_0\rVert}.
-\]
+Parameters: Per-node processing budget b from 1 to 12.
 
-This is a transparent finite-time divergence diagnostic for the toy trajectories, **not** a rigorous computation of the system's maximal Lyapunov exponent. A positive maximal Lyapunov exponent is a standard signature of exponential instability, but chaos requires more than merely observing one unstable point or one transient positive estimate.
+mean path = sum of finite distances / reachable ordered pairs
+serviced fraction = Σ min(kᵢ,b) / Σ kᵢ
 
-The chapter does not claim that all emergent systems are chaotic.
+Limits: Demand is stipulated. Path length and usable communication are different observables.
 
-## 5. Node quantity and coordination cost
+Watts & Strogatz (1998), Collective dynamics of small-world networks: https://doi.org/10.1038/30918
 
-More nodes can increase potential parallel capacity:
+## 08 — When Information Fails
 
-[
-C_{mathrm{potential}}
-propto
-sum_i c_i,
-]
+Type: Layered toy experiment
 
-where (c_i) is a task-relevant capacity.
+Assumptions: Binary world state is fixed at 1. Source truth, channel fidelity and interpretation are separate.
 
-But realized performance need not rise monotonically with (N). Coordination cost depends on architecture and task structure.
+Parameters: Bernoulli channel fidelity; optional inversion; adversarial selection repeats only errors.
 
-A fully connected communication pattern has
+source → channel flip with probability 1−q → optional interpretation inversion → selection
 
-[
-|E|=rac{N(N-1)}{2},
-]
+Limits: Real semantics, trust, and incentives are not binary switches; trial totals mix settings if controls change.
 
-but real scalable systems usually avoid all-to-all communication through modularity, hierarchy, specialization, routing, institutions, and external memory.
+Shannon (1948), A Mathematical Theory of Communication: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
 
-The project therefore treats node count as **potential capacity**, not guaranteed output.
+## 09 — The Network Splits
 
-Chapter 06 also displays deliberately simple potential-capacity descriptors: node count as a parallel-work upper bound, six stylized specialty labels, and one observation channel per node. These do not assert that real people contribute independently or equally; they make visible why population can expand the space of possible parallel work and specialization while the edge structure still creates coordination load.
+Type: Bounded-confidence toy model
 
-## 6. Connection quantity
+Assumptions: Forty seeded opinions, uniform over [−1,1]. Random pair encounters use simultaneous symmetric updates.
 
-Useful structural observables include:
+Parameters: μ=.12; ε=1.85−1.7×selectivity. Trusted mode waives ε for three agents.
 
-[
-langle kangle=rac{2|E|}{|V|}
-]
+if |oᵢ−oⱼ|≤ε: oᵢ′=oᵢ+.12(oⱼ−oᵢ); oⱼ′=oⱼ−.12(oⱼ−oᵢ)
 
-for mean degree and shortest-path distance (d(i,j)).
+Limits: The histogram concerns opinions, not hostility or all mechanisms of political polarization.
 
-Long-range links can sharply improve reachability and reduce mean path length without making the network complete.
+Deffuant et al. (2000), Mixing beliefs among interacting agents: https://doi.org/10.1142/S0219525900000078
+Bail et al. (2018), Exposure to opposing views on social media can increase political polarization: https://doi.org/10.1073/pnas.1804840115
 
-The revised visualization adds a deliberately generic finite per-node processing budget \(b\). If node \(i\) has degree \(k_i\), the fraction of directed connection demand that can be serviced in one toy time window is
+## 10 — Moving Together
 
-\[
-U
-=
-\frac{\sum_i \min(k_i,b)}
-     {\sum_i k_i}.
-\]
+Type: Circular-order model
 
-As degree rises beyond \(b\), potential reachability can continue improving while this usable fraction falls. The budget is not an empirical estimate of human attention; it represents the more general fact that nodes can have finite communication or processing capacity.
+Assumptions: Twenty-four headings; global mean-direction coupling. The externally stipulated target is rightward.
 
-## 7. Connection quality
+Parameters: Coupling and noise vary independently. Presets set all headings toward/away or randomize them.
 
-"Quality" is multidimensional. It may include:
+R = |Σ exp(iθᵢ)|/N
+Q = Σ cos(θᵢ−0)/N
 
-- physical transmission fidelity;
-- semantic or interpretive fidelity;
-- relevance;
-- trust calibration;
-- source reliability;
-- timeliness;
-- incentive compatibility;
-- usefulness for the receiver's task.
+Limits: No externally given compass resolves moral disagreement; global alignment is not original local-neighbor flocking.
 
-These must not be collapsed into Shannon noise.
+Vicsek et al. (1995), Novel type of phase transition in a system of self-driven particles: https://doi.org/10.1103/PhysRevLett.75.1226
+Lorenz et al. (2011), How social influence can undermine the wisdom of crowd effect: https://pmc.ncbi.nlm.nih.gov/articles/PMC3107299/
+Becker et al. (2017), Network dynamics of social influence in the wisdom of crowds: https://pmc.ncbi.nlm.nih.gov/articles/PMC5495222/
 
-Chapter 08 now separates several layers in one toy cascade. Let \(z\in\{0,1\}\) denote the underlying truth value of a claim.
+## 11 — Touching Reality
 
-- The source emits the correct value with probability \(s\).
-- The channel flips the transmitted value with probability \(1-q\).
-- Interpretation flips the received value with probability \(1-r\).
-- A receiver's accept/reject assessment is correct with probability \(t\).
-- A separate selection parameter changes the probability that accepted messages are repeated.
+Type: Estimation model
 
-The fifth layer is intentionally not called a transmission failure. Selection pressure changes **which messages propagate** rather than whether a physical connection works.
+Assumptions: Target 50; independent uniform measurement noise over [−15,15]; optional +15 bias.
 
-The implementation's "amplification bias" slider is a deliberately adversarial toy case in which inaccurate accepted messages become increasingly likely to be repeated. It does **not** claim that real incentives universally favor false information.
+Parameters: Take a new measurement or repeat the previous value.
 
-## 8. Polarization
+estimate = arithmetic mean of displayed observations
+absolute error = |estimate−50|
 
-Separate node state from graph structure.
+Limits: Repeated samples reweight the arithmetic mean; no confidence interval falsely treats them as independent.
 
-Let opinion be
+Shannon (1948), A Mathematical Theory of Communication: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
 
-[
-o_i(t)in[-1,1].
-]
+## 12 — Memory Beyond the Individual
 
-One standard toy rule is bounded-confidence interaction. For an interacting pair (i,j), if
+Type: Replication model
 
-[
-|o_i-o_j|learepsilon,
-]
+Assumptions: Twelve-node ring. Each carrier copies to at most one available neighboring recipient per step.
 
-then
+Parameters: Mutation off by default; if on, 8% chance of incrementing a variant at each copy (illustrative).
 
-[
-o_i' = o_i+mu(o_j-o_i),
-]
+lineage survives if live copy count > 0
+exact fidelity counts variant 0 only
 
-[
-o_j' = o_j+mu(o_i-o_j),
-]
+Limits: Copying is instantaneous at logical steps; no forgetting or in-flight storage is modeled. Exact copying does not establish truth.
 
-with (0<mule 1/2).
 
-When confidence bounds are narrow, multiple persistent opinion clusters can form.
 
-The visualization uses this family of dynamics plus a structural display of cross-group ties. "Bridge" nodes are modeled as trusted cross-group interactions with a wider confidence bound.
+## 13 — Memory Outside the Brain
 
-That is a **specific mechanism**, not a theorem that exposure to disagreement always depolarizes people.
+Type: Carrier failure model
 
-## 9. Alignment
+Assumptions: One person and two records; original variant 0, altered variant 1.
 
-Give each node a direction
+Parameters: Copy, loss, alteration, shared failure, and access toggles are explicit interventions.
 
-[
-	heta_iin[0,2pi).
-]
+usable originals = original person copy + accessible original records
 
-Directional coherence is measured by the circular order parameter
+Limits: Records are not permanent or self-interpreting; loss events are not calibrated failure rates.
 
-[
-R
-=
-left|
-rac{1}{N}
-sum_{i=1}^{N} e^{i	heta_i}
-ight|,
-]
 
-with
 
-[
-0le Rle1.
-]
+## 14 — Against Noise
 
-(R=1) means perfect directional alignment.
+Type: Binary symmetric channel
 
-(Rapprox0) means the directions largely cancel, but exact zero requires exact cancellation.
+Assumptions: Three identical independent hops; twelve bits; one or five copies; per-run settings frozen.
 
-The visualization uses local angular consensus on a graph. It is inspired by consensus, Vicsek, and Kuramoto-style models but is not presented as an exact implementation of any one of them.
+Parameters: Bit-flip p in [0,.15]. Shared-error mode uses the same flip mask across all copies per hop.
 
-High (R) is coordination, not correctness or welfare.
+pₕ = [1−(1−2p)ʰ]/2
+P₅ = 10pₕ³(1−pₕ)² + 5pₕ⁴(1−pₕ) + pₕ⁵
 
-The visualization therefore also defines an external reference direction \(\theta^*=0\) and reports both mean-direction agreement
+Limits: Majority benefit assumes independent copies. Expected bit error is not whole-message error or semantic correctness.
 
-\[
-A_{\mathrm{target}}
-=
-\frac{1+\cos(\bar\theta-\theta^*)}{2}
-\]
+Shannon (1948), A Mathematical Theory of Communication: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
 
-and the fraction of nodes lying within \(\pi/6\) of that target. This makes it possible for a group to have high coherence while pointing away from the reference target, and for a more diverse state to retain some target-near alternatives. The external target is a toy benchmark, not a claim that real social goals have an objectively given direction.
+## 15 — More Than the Sum
 
-## 10. Environmental information
+Type: Task simulation
 
-Information can enter through observations and measurements, but inference can create new propositions without a fresh observation at every step.
+Assumptions: Six equal workers, 24 unit jobs, fixed seed. Independent selection is with replacement; shared queue avoids duplicates.
 
-A fuller epistemic model would distinguish:
+Parameters: One coordination message per assigned shared-queue job; optional wrong-plan condition.
 
-[
-	ext{measurement}
-ightarrow
-	ext{representation}
-ightarrow
-	ext{inference}
-ightarrow
-	ext{communication}
-ightarrow
-	ext{verification}.
-]
+correct output = number of distinct correctly completed jobs
+duplicates = attempts at jobs already completed
 
-The current visualization models only the first acquisition step.
+Limits: These observables do not define a general intelligence score or establish a universally optimal institution.
 
-## 11. Collective memory
+Woolley et al. (2010), Evidence for a collective intelligence factor in the performance of human groups: https://pubmed.ncbi.nlm.nih.gov/20929725/
+Ostrom (2010), Beyond Markets and States: Polycentric Governance of Complex Economic Systems: https://www.aeaweb.org/articles?id=10.1257%2Faer.100.3.641
 
-For one information item (m), let
+## 16 — Same Pattern, Different Matter
 
-[
-c_i^{(m)}(t)in{0,1}
-]
+Type: Structural analogy
 
-indicate whether carrier (i) currently contains a usable copy.
+Assumptions: Separate generic recurrence, global heading consensus, and ring-graph failure example.
 
-The number of live copies is
+Parameters: Trace traffic fixed at 3 and 2; transport damage removes incident edges of node 0.
 
-[
-C_m(t)=sum_i a_i(t)c_i^{(m)}(t).
-]
+T′ = .93T + .055F
+R = |Σ exp(iθᵢ)|/N
+efficiency = Σᵢ≠ⱼ 1/d(i,j) / [N(N−1)] (unreachable terms 0)
 
-An item survives while
+Limits: No inference of shared physiology, incentives, consciousness, or biological optimization.
 
-[
-C_m(t)>0.
-]
+Vicsek et al. (1995), Novel type of phase transition in a system of self-driven particles: https://doi.org/10.1103/PhysRevLett.75.1226
+Tero et al. (2010), Rules for biologically inspired adaptive network design: https://pubmed.ncbi.nlm.nih.gov/20093467/
 
-Transmission increases copy count; forgetting, mutation, corruption, or node loss can change or decrease the surviving information.
+## 17 — How Humanity Thrives
 
-Chapter 12 implements replication rather than teleportation. Each copied item carries a discrete variant label, and each transmission mutates that label with a fixed toy probability
+Type: Constrained graph comparison + normative reflection
 
-\[
-p_{\mathrm{mut}}=0.08.
-\]
+Assumptions: Twelve-node ring, eight candidate chords, budget 20 links. Eleven requests from node 0; deadline three hops.
 
-The value is illustrative, not an empirical estimate of cultural mutation. It exists so the animation makes a basic point visible: persistence of an information lineage does not imply exact preservation of its content. If every live carrier disappears, the lineage disappears from the toy system.
+Parameters: Choose zero to eight extra links; optionally remove node 5 and incident edges.
 
-## 12. External memory
+cost = installed links; service = delivered requests / 11
+A dominates B if costA≤costB and serviceA≥serviceB, with at least one strict inequality
 
-External media add carrier classes with different failure rates, capacities, access costs, and fidelities.
+Limits: Frontier is among nine sampled designs for these two objectives. It does not establish fairness or the full Pareto frontier.
 
-For storage medium (s), useful variables include
-
-[
-(	au_s,f_s,r_s,c_s,b_s),
-]
-
-for expected lifetime, fidelity, replication, retrieval cost, and bandwidth.
-
-External storage can greatly increase persistence without making information permanent or perfectly objective.
-
-Chapter 13 therefore allows an external record to fail in two distinct ways: **loss** removes a stored item, while **alteration** replaces it with a visibly marked variant. Redundant copies may preserve the original elsewhere. These are explicit toy failure events rather than calibrated physical decay rates.
-
-## 13. Noisy transmission and error correction
-
-Chapter 14 uses a binary symmetric channel as a deliberately simple communication model.
-
-At each hop, each bit flips independently with probability (p).
-
-For (h) identical independent hops, the effective probability that a bit has flipped an odd number of times is
-
-[
-p_h
-=
-rac{1-(1-2p)^h}{2}.
-]
-
-This is a real mathematical channel model, unlike an arbitrary "distortion += constant" rule.
-
-With five independently transmitted copies and bitwise majority decoding, the probability that the majority is wrong is
-
-[
-P_{mathrm{maj}}
-=
-sum_{k=3}^{5}
-{5choose k}
-p_h^k(1-p_h)^{5-k}.
-]
-
-The repetition code spends more bandwidth to gain reliability.
-
-This illustrates a central information-theoretic point: noisy transmission does not imply unavoidable accumulating corruption. Appropriate coding can make error probabilities very small when operating within channel constraints.
-
-Shannon entropy, semantic drift, and thermodynamic entropy remain distinct concepts.
-
-The revised interface adds a second, explicitly non-Shannon layer after physical decoding. With toy probability \(p_{\mathrm{int}}\), a physically correct decoded message can still be marked as semantically misinterpreted. This independent Bernoulli step is not a model of human semantics; it exists to demonstrate that channel fidelity and interpretation are logically distinct failure modes.
-
-## 14. Collective intelligence and productivity
-
-The project does not define a universal scalar "humanity score."
-
-Instead, the Chapter 15 display reports transparent proxies such as:
-
-[
-C=sum_i q_i
-]
-
-for aggregate node-capacity proxy,
-
-[
-R_G=rac{|G_{max}|}{|V|}
-]
-
-for the fraction of active nodes in the largest connected component, and
-
-[
-L=rac{|E|}{|V|}
-]
-
-for a simple coordination-load proxy.
-
-These are descriptors, not an empirical production function.
-
-The Chapter 15 visualization also exposes several categorical/proportional toy descriptors rather than hiding them inside one output score: role coverage as a specialization proxy, the fraction of nodes carrying shared memory, duplicate-work flags, inaccurate-information flags, and incentive-mismatch flags. The "Build Scalable Network" interaction improves modular structure, role coverage, memory replication, and duplicated work in the toy network; it deliberately leaves bad-information and incentive-mismatch rates present so topology is not presented as a universal cure.
-
-Real collective performance also depends on task decomposition, incentives, resource distribution, institutions, diversity, conflict, verification, and the external environment.
-
-Collective intelligence does not imply collective phenomenal consciousness.
-
-## 15. Comparative emergence across substrates
-
-Chapter 16 asks whether the same **abstract mathematical structure** can recur in systems with very different physical implementations.
-
-This is a comparison of models, not an assertion that ants, flocks, slime molds, and human civilization are the same kind of entity.
-
-### 15.1 Reinforcing environmental traces
-
-A generic reinforcement-with-decay rule is
-
-[
-T_e(t+1)
-=
-(1-\rho)T_e(t)+\alpha F_e(t),
-]
-
-where \(T_e\) is a persistent trace associated with option or path \(e\), \(F_e\) is recent traffic or deposition, \(\rho\) is decay, and \(\alpha\) is reinforcement.
-
-Ant pheromone trails provide a biological example of local environmental traces participating in self-organized path formation. In the human panel, the same equation is used only as a **toy abstraction** for an external signal strengthened by repeated use and weakened by decay. It is not a claim that human institutions, media, or culture literally operate through pheromone dynamics.
-
-### 15.2 Directional order
-
-For agents carrying directions \(\theta_i\), the chapter reuses the circular order parameter
-
-[
-R
-=
-\left|
-\frac{1}{N}
-\sum_{i=1}^{N} e^{i\theta_i}
-\right|.
-]
-
-In a flocking model, \(\theta_i\) can represent physical heading. In the human toy model, it represents an abstract direction of effort or goal. The same observable can therefore quantify coherence while the meaning of the state variable changes.
-
-### 15.3 Adaptive transport networks
-
-Transport systems can be compared using common graph observables such as efficiency, material or maintenance cost, and robustness.
-
-The visualization combines them into a deliberately project-defined toy score
-
-[
-J(G)=E(G)-\lambda C(G)+\mu B(G),
-]
-
-where \(E\) is an efficiency proxy, \(C\) is normalized network cost, and \(B\) is a connectivity-based robustness proxy.
-
-This equation is **not** a biological law of *Physarum* and is not an empirical production function for human infrastructure. It is a shared measuring frame for comparing two adaptive-network pictures. Experimental work on *Physarum polycephalum* motivates the broader idea that decentralized growth can produce networks balancing transport efficiency, construction cost, and fault tolerance.
-
-### 15.4 Transfer rule
-
-The comparative chapter follows a strict inference rule:
-
-[
-\boxed{
-\text{same equation or observable}
-\not\Rightarrow
-\text{same mechanism, meaning, or ontology}
-}
-]
-
-A repeated mathematical form is evidence of a useful structural analogy. Establishing a shared causal mechanism requires additional empirical evidence.
-
-## 16. Multi-objective thriving
-
-Chapter 17 does not define a scalar objective called "human flourishing" or "humanity score."
-
-Instead let the controllable toy state be
-
-\[
-u =
-(c,k,q,m,r,a,d,f),
-\]
-
-for node capability \(c\), connectivity \(k\), information fidelity \(q\), memory \(m\), redundancy \(r\), alignment \(a\), diversity \(d\), and feedback from the external environment \(f\).
-
-The visualization maps that state to several **separate** project-defined objective proxies,
-
-\[
-Y(u)
-=
-(L,C,R,A,-K,-Z),
-\]
-
-where \(L\) is learning, \(C\) coordination, \(R\) resilience, \(A\) adaptability, \(K\) resource cost, and \(Z\) error lock-in risk.
-
-The formulas are deliberately transparent toy functions chosen to encode the chapter's stated trade-offs:
-
-- high connectivity improves reach but can create overload under finite node capacity;
-- alignment improves immediate directional coordination but can reduce the exploration component of adaptability;
-- redundancy and memory improve persistence while consuming resources;
-- memory combined with poor fidelity and weak external correction can preserve error;
-- diversity can support exploration and resilience while imposing a toy short-run coordination cost.
-
-No empirical claim is made that these functional forms or weights describe real civilization.
-
-This is naturally a **multi-objective optimization** problem. For objective vector \(Y\), a feasible state \(u_1\) dominates \(u_2\) only if it is at least as good on every objective and strictly better on at least one. Non-dominated states form a Pareto set/front rather than one automatically preferred optimum.
-
-The interface shows all objectives separately and includes a two-objective slice obtained by sweeping alignment while holding the other controls fixed. It deliberately refuses to aggregate them into one score because the weights of such an aggregation would encode value judgments that the mathematics itself cannot choose.
-
-## 17. What "organism" means here
-
-"Organism" is a modeling analogy.
-
-Evolutionary biology contains stronger concepts such as organismality and superorganisms, often associated with very high cooperation, low internal conflict, functional integration, and adaptation at the collective level.
-
-Human civilization satisfies some organism-like analogies and violates others. This project therefore uses **networked collective** as the literal description and **emergent organism** as the exploratory metaphor.
-
-## Selected references
-
-- Albert R, Jeong H, Barabási A-L. *Error and attack tolerance of complex networks*. Nature (2000). https://doi.org/10.1038/35019019
-- Eckmann J-P, Ruelle D. *Ergodic theory of chaos and strange attractors*. Reviews of Modern Physics (1985). https://doi.org/10.1103/RevModPhys.57.617
-- Deb K, Pratap A, Agarwal S, Meyarivan T. *A fast and elitist multiobjective genetic algorithm: NSGA-II*. IEEE Transactions on Evolutionary Computation (2002). https://doi.org/10.1109/4235.996017
-- Broido AD, Clauset A. *Scale-free networks are rare*. Nature Communications (2019). https://doi.org/10.1038/s41467-019-08746-5
-- Watts DJ, Strogatz SH. *Collective dynamics of small-world networks*. Nature (1998). https://doi.org/10.1038/30918
-- Deffuant G et al. *Mixing beliefs among interacting agents*. Advances in Complex Systems (2000). https://doi.org/10.1142/S0219525900000078
-- Vicsek T et al. *Novel type of phase transition in a system of self-driven particles*. Physical Review Letters (1995). https://doi.org/10.1103/PhysRevLett.75.1226
-- Shannon CE. *A Mathematical Theory of Communication*. Bell System Technical Journal (1948). https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
-- Queller DC, Strassmann JE. *Beyond society: the evolution of organismality*. Philosophical Transactions B (2009). https://doi.org/10.1098/rstb.2009.0095
-- Bonabeau E, Theraulaz G, Deneubourg J-L, Aron S, Camazine S. *Self-organization in social insects*. Trends in Ecology & Evolution (1997). https://doi.org/10.1016/S0169-5347(97)01048-3
-- Deneubourg J-L, Aron S, Goss S, Pasteels JM. *The self-organizing exploratory pattern of the Argentine ant*. Journal of Insect Behavior (1990). https://doi.org/10.1007/BF01417909
-- Tero A et al. *Rules for biologically inspired adaptive network design*. Science (2010). https://doi.org/10.1126/science.1177894
-- Muthukrishna M, Henrich J. *Innovation in the collective brain*. Philosophical Transactions B (2016). https://doi.org/10.1098/rstb.2015.0192
-- Woolley AW et al. *Evidence for a collective intelligence factor in the performance of human groups*. Science (2010). https://doi.org/10.1126/science.1193147
-- Vosoughi S, Roy D, Aral S. *The spread of true and false news online*. Science (2018). https://doi.org/10.1126/science.aap9559
-
-## Interpretation rule
-
-For every chapter, keep four layers separate:
-
-[
-oxed{
-	ext{metaphor}
-ightarrow
-	ext{toy model}
-ightarrow
-	ext{empirical claim}
-ightarrow
-	ext{philosophical interpretation}
-}
-]
-
-A successful visualization can demonstrate the behavior of its toy model. It cannot, by itself, establish that the same mechanism dominates real human civilization.
+Ostrom (2010), Beyond Markets and States: Polycentric Governance of Complex Economic Systems: https://www.aeaweb.org/articles?id=10.1257%2Faer.100.3.641

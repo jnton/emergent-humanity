@@ -4,11 +4,16 @@
 
 ## Primary resources
 
+- [Readable essay](essay.html): Complete no-JavaScript reading edition.
+- [Models and evidence](methods.html): Implemented rules, limitations, and source review status.
+- [Claim registry](content/claims.json): Principal chapter claims with model version and evidence scope.
 - [Machine-readable text edition](content/essay.md): Complete chapter text and key insights without requiring JavaScript or canvas rendering.
-- [Structured content source](content/sections.js): Canonical section IDs, titles, subtitles, body copy, insights, visualization hints, and controls.
+- [Structured content source](content/sections.js): Shared section IDs and titles plus quantitative experiment text, controls, and evidence. The main essay overlays content/illustrations.js.
 - [Formal model notes](content/model-notes.md): Mathematical assumptions, equations, toy-model definitions, caveats, and references.
 - [Browser-agent manifest](agent-manifest.json): Stable programmatic interface, readiness signal, methods, and constraints.
-- [Interactive experience](./): Browser-based visualizations and controls.
+- [Animated essay](./): Original network visualizations and evocative chapter titles.
+- [Quantitative lab](lab.html): Optional deterministic experiments accessible from the footer and model notes.
+- [Illustration source](content/illustrations.js): Reader-facing prose and controls for the main animations.
 - [Source repository](https://github.com/jnton/emergent-humanity): Implementation, history, tests, and license.
 - [License](LICENSE): Repository license terms.
 
@@ -24,8 +29,8 @@
 ## Chapter map
 
 1. `node-capacity` — The Human Node
-2. `node-limits` — The Limits of a Node
-3. `intro` — The Great Organism
+2. `intro` — The Great Organism
+3. `node-limits` — The Limits of a Node
 4. `emergent-organism` — A Node Goes Dark
 5. `illusion-of-significance` — A Tiny Difference
 6. `node-quantity` — More Minds

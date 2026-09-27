@@ -111,13 +111,13 @@ export function initAlignment(canvas, controls) {
 
   controls['align-goals']?.addEventListener('click', () => {
     coupling = 0.22;
-    noise = 0.025;
+    // Keep noise fixed: this intervention changes coupling only.
     engine.getSimulation()?.alpha(0.5).restart();
   });
 
   controls['scramble-goals']?.addEventListener('click', () => {
     coupling = 0.035;
-    noise = 0.32;
+    noise = 0.28;
     randomizeDirections();
     engine.getSimulation()?.alpha(0.5).restart();
   });

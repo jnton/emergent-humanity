@@ -200,13 +200,14 @@ export function initIllusionOfSignificance(canvas, controls) {
 
     if (stats) {
       const d = divergence();
-      stats.textContent = `${regime === 'stable' ? 'contracting consensus' : 'sensitive nonlinear'} · step ${stepCount} · mean |Δ| ${d.toExponential(2)}`;
+      stats.textContent = `${regime === 'stable' ? 'averaging: residual may persist' : 'sensitive nonlinear'} · step ${stepCount} · mean |Δ| ${d.toExponential(2)}`;
     }
   }
 
   function loop() {
-    animationFrame = requestAnimationFrame(loop);
+    animationFrame = null;
     if (!isActive) return;
+    animationFrame = requestAnimationFrame(loop);
 
     frame += 1;
     if (frame % 5 === 0) advance();
@@ -239,18 +240,24 @@ export function initIllusionOfSignificance(canvas, controls) {
     resize();
     buildTopology();
     seedStates();
-    if (!animationFrame) loop();
+    draw();
   }
 
   init();
 
   return {
     init,
+    renderStatic:draw,
+    resize(){resize();draw();},
+    destroy(){isActive=false;if(animationFrame)cancelAnimationFrame(animationFrame);animationFrame=null;},
     activate() {
       isActive = true;
+      if (!animationFrame) loop();
     },
     deactivate() {
       isActive = false;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = null;
     }
   };
 }

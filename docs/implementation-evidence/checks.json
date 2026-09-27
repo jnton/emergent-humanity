@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-27",
+  "scope": "Local working tree; not deployed",
+  "static": {"command": "npm run test:static", "result": "passed", "chapters": 17, "chapterControls": 57},
+  "models": {"command": "npm run test:models", "passed": 18, "failed": 0},
+  "browser": {"command": "npx playwright test --workers=2", "engine": "Chromium", "passed": 17, "failed": 0},
+  "crossEngine": {"command": "node scripts/visual-smoke.mjs", "details": "browser-matrix.json"},
+  "diffCheck": "passed",
+  "notPerformed": ["physical iOS/Android device testing", "independent specialist review", "reader comprehension study", "screen-reader sessions", "subjective audio listening assessment"]
+}

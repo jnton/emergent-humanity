@@ -1,0 +1,131 @@
+{
+  "errors": [],
+  "results": [
+    {
+      "id": "node-capacity",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "node-limits",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "intro",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "emergent-organism",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "illusion-of-significance",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "node-quantity",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "connection-quantity",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "connection-quality",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "cohesion",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "alignment",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "environment",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "collective-memory",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "external-storage",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "entropy",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "productivity",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "comparative-emergence",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    },
+    {
+      "id": "whats-next",
+      "hintBefore": true,
+      "statsAfter": true,
+      "ink": true,
+      "overflow": false
+    }
+  ],
+  "verification": {
+    "modelTestsPassed": 18,
+    "browserTestsPassed": 23,
+    "browserTestsFailed": 0,
+    "staticChecks": "passed",
+    "diffCheck": "passed"
+  }
+}

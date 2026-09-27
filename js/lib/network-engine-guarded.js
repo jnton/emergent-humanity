@@ -17,8 +17,8 @@ function getSafeBounds(canvas) {
   const height = Math.max(1, canvas.clientHeight);
   const mobile = width <= MOBILE_BREAKPOINT;
   const side = mobile ? 18 : 28;
-  const top = mobile ? 104 : 58;
-  const bottom = mobile ? 22 : 76;
+  const top = canvas.parentElement.classList.contains('animation-stage') ? 24 : (mobile ? 104 : 58);
+  const bottom = canvas.parentElement.classList.contains('animation-stage') ? 24 : (mobile ? 22 : 76);
 
   return {
     width,

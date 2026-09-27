@@ -1,0 +1,255 @@
+[
+  {
+    "id": "node-capacity-principal",
+    "chapter": "node-capacity",
+    "exactText": "A useful model is incomplete by design. Ask what its omissions cost.",
+    "kind": "Illustration",
+    "modelVersion": "2.0.0",
+    "assumptions": "A question selects a subset of properties. No claim of a full human state.",
+    "observable": "x = φ(person; question)",
+    "sourceIds": [
+      "emergence"
+    ],
+    "limitations": "No biological or psychological quantities are estimated.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "intro-principal",
+    "chapter": "intro",
+    "exactText": "No person contains the system. The relationships make a difference.",
+    "kind": "Dependency model + analogy",
+    "modelVersion": "2.0.0",
+    "assumptions": "Four distinct roles and their coordination are all necessary.",
+    "observable": "success = connected AND all four roles available",
+    "sourceIds": [
+      "organismality",
+      "intentionality"
+    ],
+    "limitations": "Not a realistic engineering design, biological organism, or evidence of consciousness.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "node-limits-principal",
+    "chapter": "node-limits",
+    "exactText": "Changing the task, tools, or environment changes what your limits mean.",
+    "kind": "Toy resource model",
+    "modelVersion": "2.0.0",
+    "assumptions": "One job consumes one unit; work occurs within a fixed interval.",
+    "observable": "completed = min(b,d); deferred = max(0,d−b)",
+    "sourceIds": [],
+    "limitations": "A bounded work budget does not imply a finite cardinality of human states.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "emergent-organism-principal",
+    "chapter": "emergent-organism",
+    "exactText": "Importance is a relationship between a person, a function, and a moment.",
+    "kind": "Graph intervention",
+    "modelVersion": "2.0.0",
+    "assumptions": "Two six-person cliques joined by node 12; node 2 alone supplies one of three required skills.",
+    "observable": "reach = reachable ordered pairs / (13 × 12)",
+    "sourceIds": [
+      "networks"
+    ],
+    "limitations": "Chosen metrics do not measure moral worth. Denominators use the original 13 people.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "illusion-of-significance-principal",
+    "chapter": "illusion-of-significance",
+    "exactText": "The rules determine what a perturbation becomes.",
+    "kind": "Discrete dynamical model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twenty-four nodes on a ring; two identical initial states; one perturbation of 10⁻⁷.",
+    "observable": "averaging: xᵢ′=.62xᵢ+.38 mean(neighbors)\nsensitive: f(x)=3.9x(1−x); xᵢ′=.92f(xᵢ)+.08 mean(f(neighbors))\ngₜ=log(maxᵢ|aᵢ−bᵢ|/10⁻⁷)/t",
+    "sourceIds": [
+      "chaos"
+    ],
+    "limitations": "The averaging consensus mode preserves an offset; finite-time separation is not a maximal Lyapunov exponent.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "node-quantity-principal",
+    "chapter": "node-quantity",
+    "exactText": "More people create potential. The organization and task determine what becomes usable.",
+    "kind": "Task simulation",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twenty-four identical unit jobs. Each worker completes at most one per round; assignments do not overlap.",
+    "observable": "parallel progress per round = min(workers, remaining jobs)\nserial progress per round = min(1, remaining jobs)",
+    "sourceIds": [],
+    "limitations": "No claim about population, demographic policy, or real production functions.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "connection-quantity-principal",
+    "chapter": "connection-quantity",
+    "exactText": "A shorter path helps a message travel. It does not create time to understand it.",
+    "kind": "Graph + budget model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twelve-node undirected ring; unique chords added in a fixed long-range-first order; one demand unit at each incident endpoint.",
+    "observable": "mean path = sum of finite distances / reachable ordered pairs\nserviced fraction = Σ min(kᵢ,b) / Σ kᵢ",
+    "sourceIds": [
+      "smallworld"
+    ],
+    "limitations": "Demand is stipulated. Path length and usable communication are different observables.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "connection-quality-principal",
+    "chapter": "connection-quality",
+    "exactText": "Ask where a claim came from, how it traveled, and how it was checked.",
+    "kind": "Layered toy experiment",
+    "modelVersion": "2.0.0",
+    "assumptions": "Binary world state is fixed at 1. Source truth, channel fidelity and interpretation are separate.",
+    "observable": "source → channel flip with probability 1−q → optional interpretation inversion → selection",
+    "sourceIds": [
+      "shannon"
+    ],
+    "limitations": "Real semantics, trust, and incentives are not binary switches; trial totals mix settings if controls change.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "cohesion-principal",
+    "chapter": "cohesion",
+    "exactText": "A bridge creates contact. Trust and the rules of interaction still matter.",
+    "kind": "Bounded-confidence toy model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Forty seeded opinions, uniform over [−1,1]. Random pair encounters use simultaneous symmetric updates.",
+    "observable": "if |oᵢ−oⱼ|≤ε: oᵢ′=oᵢ+.12(oⱼ−oᵢ); oⱼ′=oⱼ−.12(oⱼ−oᵢ)",
+    "sourceIds": [
+      "deffuant",
+      "bail"
+    ],
+    "limitations": "The histogram concerns opinions, not hostility or all mechanisms of political polarization.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "alignment-principal",
+    "chapter": "alignment",
+    "exactText": "We can agree completely and still be wrong.",
+    "kind": "Circular-order model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twenty-four headings; global mean-direction coupling. The externally stipulated target is rightward.",
+    "observable": "R = |Σ exp(iθᵢ)|/N\nQ = Σ cos(θᵢ−0)/N",
+    "sourceIds": [
+      "vicsek",
+      "lorenz",
+      "becker"
+    ],
+    "limitations": "No externally given compass resolves moral disagreement; global alignment is not original local-neighbor flocking.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "environment-principal",
+    "chapter": "environment",
+    "exactText": "Learning requires contact with reality—and scrutiny of how that contact works.",
+    "kind": "Estimation model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Target 50; independent uniform measurement noise over [−15,15]; optional +15 bias.",
+    "observable": "estimate = arithmetic mean of displayed observations\nabsolute error = |estimate−50|",
+    "sourceIds": [
+      "shannon"
+    ],
+    "limitations": "Repeated samples reweight the arithmetic mean; no confidence interval falsely treats them as independent.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "collective-memory-principal",
+    "chapter": "collective-memory",
+    "exactText": "An idea can outlive its author without surviving unchanged.",
+    "kind": "Replication model",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twelve-node ring. Each carrier copies to at most one available neighboring recipient per step.",
+    "observable": "lineage survives if live copy count > 0\nexact fidelity counts variant 0 only",
+    "sourceIds": [],
+    "limitations": "Copying is instantaneous at logical steps; no forgetting or in-flight storage is modeled. Exact copying does not establish truth.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "external-storage-principal",
+    "chapter": "external-storage",
+    "exactText": "Someone still has to preserve, access, and understand the record.",
+    "kind": "Carrier failure model",
+    "modelVersion": "2.0.0",
+    "assumptions": "One person and two records; original variant 0, altered variant 1.",
+    "observable": "usable originals = original person copy + accessible original records",
+    "sourceIds": [],
+    "limitations": "Records are not permanent or self-interpreting; loss events are not calibrated failure rates.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "entropy-principal",
+    "chapter": "entropy",
+    "exactText": "Reliability has a cost—and assumptions.",
+    "kind": "Binary symmetric channel",
+    "modelVersion": "2.0.0",
+    "assumptions": "Three identical independent hops; twelve bits; one or five copies; per-run settings frozen.",
+    "observable": "pₕ = [1−(1−2p)ʰ]/2\nP₅ = 10pₕ³(1−pₕ)² + 5pₕ⁴(1−pₕ) + pₕ⁵",
+    "sourceIds": [
+      "shannon"
+    ],
+    "limitations": "Majority benefit assumes independent copies. Expected bit error is not whole-message error or semantic correctness.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "productivity-principal",
+    "chapter": "productivity",
+    "exactText": "Collective intelligence is an achievement on a task, not a property of every crowd.",
+    "kind": "Task simulation",
+    "modelVersion": "2.0.0",
+    "assumptions": "Six equal workers, 24 unit jobs, fixed seed. Independent selection is with replacement; shared queue avoids duplicates.",
+    "observable": "correct output = number of distinct correctly completed jobs\nduplicates = attempts at jobs already completed",
+    "sourceIds": [
+      "woolley",
+      "ostrom"
+    ],
+    "limitations": "These observables do not define a general intelligence score or establish a universally optimal institution.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "comparative-emergence-principal",
+    "chapter": "comparative-emergence",
+    "exactText": "Same pattern does not mean same mechanism.",
+    "kind": "Structural analogy",
+    "modelVersion": "2.0.0",
+    "assumptions": "Separate generic recurrence, global heading consensus, and ring-graph failure example.",
+    "observable": "T′ = .93T + .055F\nR = |Σ exp(iθᵢ)|/N\nefficiency = Σᵢ≠ⱼ 1/d(i,j) / [N(N−1)] (unreachable terms 0)",
+    "sourceIds": [
+      "vicsek",
+      "tero"
+    ],
+    "limitations": "No inference of shared physiology, incentives, consciousness, or biological optimization.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "whats-next-principal",
+    "chapter": "whats-next",
+    "exactText": "What is being measured? What is missing? What would change your mind?",
+    "kind": "Constrained graph comparison + normative reflection",
+    "modelVersion": "2.0.0",
+    "assumptions": "Twelve-node ring, eight candidate chords, budget 20 links. Eleven requests from node 0; deadline three hops.",
+    "observable": "cost = installed links; service = delivered requests / 11\nA dominates B if costA≤costB and serviceA≥serviceB, with at least one strict inequality",
+    "sourceIds": [
+      "ostrom"
+    ],
+    "limitations": "Frontier is among nine sampled designs for these two objectives. It does not establish fairness or the full Pareto frontier.",
+    "reviewStatus": "Implementation checked locally; independent specialist review pending.",
+    "reviewedAt": "2026-09-27"
+  }
+]

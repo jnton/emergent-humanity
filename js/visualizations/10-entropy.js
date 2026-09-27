@@ -3,6 +3,7 @@ import { createNetworkEngine } from '../lib/network-engine.js';
 export function initEntropy(canvas, controls) {
   let channelNoise = Number.parseFloat(controls['channel-noise']?.value ?? '0.04');
   let redundancyActive = Boolean(controls['toggle-redundancy']?.checked);
+  let run = null;
   let packets = [];
   let originalBits = [];
   let receivedCopies = [];
@@ -79,7 +80,7 @@ export function initEntropy(canvas, controls) {
   }
 
   function transmitHop(bits) {
-    return bits.map((bit) => (Math.random() < channelNoise ? 1 - bit : bit));
+    return bits.map((bit) => (Math.random() < (run?.noise ?? channelNoise) ? 1 - bit : bit));
   }
 
   function hammingErrors(a, b) {
@@ -122,7 +123,8 @@ export function initEntropy(canvas, controls) {
       return;
     }
 
-    const copies = redundancyActive ? 5 : 1;
+    run = Object.freeze({noise:channelNoise,redundancy:redundancyActive,copies:redundancyActive ? 5 : 1});
+    const copies = run.copies;
     for (let i = 0; i < copies; i += 1) {
       packets.push({
         path: [...path],
@@ -142,17 +144,17 @@ export function initEntropy(canvas, controls) {
   }
 
   function finishIfReady() {
-    const expectedCopies = redundancyActive ? 5 : 1;
+    const expectedCopies = run?.copies ?? 0;
     if (receivedCopies.length !== expectedCopies) return;
 
-    const decoded = redundancyActive
+    const decoded = run.redundancy
       ? majorityDecode(receivedCopies)
       : receivedCopies[0];
 
     const errors = hammingErrors(originalBits, decoded);
     const hops = Math.max(0, path.length - 1);
-    const pEff = effectiveHopError(channelNoise, hops);
-    const expected = redundancyActive ? majorityError5(pEff) : pEff;
+    const pEff = effectiveHopError(run.noise, hops);
+    const expected = run.redundancy ? majorityError5(pEff) : pEff;
 
     resultText = `decoded errors ${errors}/${bitCount} · expected bit error ≈ ${(expected * 100).toFixed(1)}%`;
 
@@ -208,7 +210,7 @@ export function initEntropy(canvas, controls) {
   function updateStats() {
     if (!stats) return;
     const hops = path.length > 1 ? path.length - 1 : 0;
-    stats.textContent = `p ${(channelNoise * 100).toFixed(0)}%/hop · ${hops} hops · ${redundancyActive ? '5× majority decode' : 'single copy'} · ${resultText}`;
+    stats.textContent = `p ${((run?.noise ?? channelNoise) * 100).toFixed(0)}%/hop · ${hops} hops · ${(run?.redundancy ?? redundancyActive) ? '5× majority decode' : 'single copy'} · ${resultText} · settings apply to the next message`;
   }
 
   controls['channel-noise']?.addEventListener('input', (event) => {
@@ -231,6 +233,7 @@ export function initEntropy(canvas, controls) {
     path = [];
     originalBits = [];
     resultText = 'Ready';
+    run = null;
 
     for (const node of engine.getNodes()) {
       node.signal = 0;

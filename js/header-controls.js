@@ -36,11 +36,4 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-let scrollFrame = 0;
-window.addEventListener('scroll', () => {
-  if (scrollFrame) return;
-  scrollFrame = requestAnimationFrame(() => {
-    scrollFrame = 0;
-    menus.forEach((menu) => closeMenu(menu));
-  });
-}, { passive: true });
+// Keep menus open during scrolling. Pending scroll events must not close a newly opened menu.

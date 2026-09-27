@@ -1,0 +1,9 @@
+{
+  "method": "Independent recurrence using the exact 54-node topology and stable coefficients in chapter 05; propagate the difference directly to avoid cancellation.",
+  "iterations": 5000,
+  "initialPerturbation": 1e-07,
+  "stationaryResidualExpected": 2.1367521367521366e-09,
+  "minimumResidualObserved": 2.1367521367521288e-09,
+  "maximumResidualObserved": 2.1367521367521424e-09,
+  "conclusion": "Disagreement contracts; a positive common offset remains."
+}

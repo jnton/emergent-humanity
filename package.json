@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "preview": "python3 -m http.server 4173 --bind 0.0.0.0",
-    "test": "npm run test:static",
-    "test:static": "find js content -name '*.js' -print0 | xargs -0 -n1 node --check && node tests/static-smoke.mjs",
+    "preview": "python3 -m http.server 4173 --bind 127.0.0.1",
+    "test": "npm run test:static && npm run test:models",
+    "test:static": "find js content -name '*.js' -print0 | xargs -0 -n1 node --check && node scripts/generate-content.mjs --check && node tests/static-smoke.mjs",
     "test:browser": "playwright test",
-    "test:lighthouse": "lhci autorun --config=lighthouserc.json"
+    "test:lighthouse": "lhci autorun --config=lighthouserc.json",
+    "generate": "node scripts/generate-content.mjs",
+    "test:models": "node --test tests/models.test.mjs"
   },
   "devDependencies": {
     "@lhci/cli": "0.15.1",

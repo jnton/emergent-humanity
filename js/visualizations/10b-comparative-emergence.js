@@ -15,6 +15,7 @@ export function initComparativeEmergence(canvas, controls) {
   let alignmentSystems = [];
   let networkSystems = [];
 
+  const showMeasurements=()=>document.documentElement.dataset.measurements==='true';
   const MODES = {
     trace: {
       title: 'REINFORCEMENT + DECAY',
@@ -35,7 +36,7 @@ export function initComparativeEmergence(canvas, controls) {
       formula: 'J = E − λC + μB',
       left: 'PHYSARUM-LIKE NETWORK',
       right: 'HUMAN INFRASTRUCTURE',
-      note: 'same toy comparison score'
+      note: 'B: connected fraction; J: chosen toy score'
     }
   };
 
@@ -352,7 +353,7 @@ export function initComparativeEmergence(canvas, controls) {
       }
       largest = Math.max(largest, count);
     }
-    const robustness = largest / system.nodes.length;
+    const robustness = largest / system.nodes.length; // Thresholded connectivity; not a failure-resilience measurement.
     const score = efficiency - 0.22 * cost + 0.18 * robustness;
     return { cost, efficiency, robustness, score };
   }
@@ -379,11 +380,12 @@ export function initComparativeEmergence(canvas, controls) {
 
     ctx.fillStyle = '#e8ecf4';
     ctx.font = '600 17px SFMono-Regular, Consolas, monospace';
-    ctx.fillText(meta.formula, width / 2, 55);
+    if(showMeasurements())ctx.fillText(meta.formula, width / 2, 55);
+    else{ctx.font='500 14px system-ui';ctx.fillText({trace:'A path becomes easier to follow.',alignment:'Neighbours begin to move together.',network:'Some routes grow stronger than others.'}[mode],width/2,55);}
 
     ctx.fillStyle = 'rgba(79, 156, 247, 0.9)';
     ctx.font = '11px SFMono-Regular, Consolas, monospace';
-    ctx.fillText(meta.note, width / 2, 78);
+    ctx.fillText(showMeasurements()?meta.note:'A shared pattern, different underlying systems.',width / 2, 78);
 
     const left = panelBounds(0);
     const right = panelBounds(1);
@@ -429,7 +431,7 @@ export function initComparativeEmergence(canvas, controls) {
       ctx.fillStyle = 'rgba(164, 171, 188, 0.58)';
       ctx.font = '10px SFMono-Regular, Consolas, monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('T' + (route + 1) + ' ' + system.traces[route].toFixed(2), (x0 + x1) / 2, cy + (route === 0 ? -11 : 17));
+      if(showMeasurements())ctx.fillText('T' + (route + 1) + ' ' + system.traces[route].toFixed(2), (x0 + x1) / 2, cy + (route === 0 ? -11 : 17));
     }
 
     for (const agent of system.agents) {
@@ -519,7 +521,7 @@ export function initComparativeEmergence(canvas, controls) {
     ctx.fillStyle = '#e8ecf4';
     ctx.font = '600 12px SFMono-Regular, Consolas, monospace';
     ctx.textAlign = 'left';
-    ctx.fillText('R = ' + order.toFixed(2), bounds.x + 12, bounds.y + 18);
+    if(showMeasurements())ctx.fillText('R = ' + order.toFixed(2), bounds.x + 12, bounds.y + 18);
   }
 
   function drawNetworkSystem(system, bounds, human) {
@@ -556,10 +558,10 @@ export function initComparativeEmergence(canvas, controls) {
     ctx.fillStyle = 'rgba(226, 232, 240, 0.82)';
     ctx.font = '11px SFMono-Regular, Consolas, monospace';
     ctx.textAlign = 'left';
-    ctx.fillText('E ' + metrics.efficiency.toFixed(2), bounds.x + 10, bounds.y + 16);
-    ctx.fillText('C ' + metrics.cost.toFixed(2), bounds.x + 10, bounds.y + 31);
-    ctx.fillText('B ' + metrics.robustness.toFixed(2), bounds.x + 10, bounds.y + 46);
-    ctx.fillText('J ' + metrics.score.toFixed(2), bounds.x + 10, bounds.y + 61);
+    if(showMeasurements())ctx.fillText('E ' + metrics.efficiency.toFixed(2), bounds.x + 10, bounds.y + 16);
+    if(showMeasurements())ctx.fillText('C ' + metrics.cost.toFixed(2), bounds.x + 10, bounds.y + 31);
+    if(showMeasurements())ctx.fillText('B ' + metrics.robustness.toFixed(2), bounds.x + 10, bounds.y + 46);
+    if(showMeasurements())ctx.fillText('J ' + metrics.score.toFixed(2), bounds.x + 10, bounds.y + 61);
   }
 
   function drawStats() {
@@ -628,8 +630,9 @@ export function initComparativeEmergence(canvas, controls) {
   controls['pattern-network']?.addEventListener('click', () => setMode('network'));
 
   function loop(now) {
-    animationFrame = requestAnimationFrame(loop);
+    animationFrame = null;
     if (!isActive) return;
+    animationFrame = requestAnimationFrame(loop);
 
     const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
     lastTime = now;
@@ -642,20 +645,25 @@ export function initComparativeEmergence(canvas, controls) {
     resetStates();
     resize();
     setMode('trace');
-    if (!animationFrame) animationFrame = requestAnimationFrame(loop);
+    draw();
   }
 
+  document.addEventListener('measurements-change',draw);
   init();
 
   return {
     init,
     resize,
+    renderStatic:draw,
+    destroy(){isActive=false;if(animationFrame)cancelAnimationFrame(animationFrame);document.removeEventListener('measurements-change',draw);},
     activate() {
       isActive = true;
       lastTime = performance.now();
+      if(!animationFrame)animationFrame=requestAnimationFrame(loop);
     },
     deactivate() {
       isActive = false;
+      if(animationFrame)cancelAnimationFrame(animationFrame);animationFrame=null;
     }
   };
 }

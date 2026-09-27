@@ -1,8 +1,7 @@
-import { createNetworkEngine } from '../lib/network-engine.js';
+import { createNetworkEngine } from "../lib/network-engine.js";
 
 export function initConnectionQuantity(canvas, controls) {
-  let deployInterval = null;
-  const stats = document.getElementById('stats-connection-quantity');
+  const stats = document.getElementById("stats-connection-quantity");
 
   const engine = createNetworkEngine(canvas, {
     nodeCount: 60,
@@ -11,14 +10,16 @@ export function initConnectionQuantity(canvas, controls) {
   });
 
   function endpointId(endpoint) {
-    return typeof endpoint === 'object' ? endpoint.id : endpoint;
+    return typeof endpoint === "object" ? endpoint.id : endpoint;
   }
 
   function linkExists(a, b) {
     return engine.getLinks().some((link) => {
       const sourceId = endpointId(link.source);
       const targetId = endpointId(link.target);
-      return (sourceId === a && targetId === b) || (sourceId === b && targetId === a);
+      return (
+        (sourceId === a && targetId === b) || (sourceId === b && targetId === a)
+      );
     });
   }
 
@@ -39,7 +40,7 @@ export function initConnectionQuantity(canvas, controls) {
         community: Math.floor(i / 10),
         degree: 0,
         x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 180,
-        y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 180
+        y: canvas.clientHeight / 2 + (Math.random() - 0.5) * 180,
       });
     }
 
@@ -47,18 +48,44 @@ export function initConnectionQuantity(canvas, controls) {
     for (let i = 0; i < 60; i += 1) {
       for (let j = i + 1; j < 60; j += 1) {
         if (nodes[i].community === nodes[j].community && Math.random() < 0.42) {
-          links.push({ source: nodes[i], target: nodes[j], type: 'strong', weight: 0.9, active: true });
+          links.push({
+            source: nodes[i],
+            target: nodes[j],
+            type: "strong",
+            weight: 0.9,
+            active: true,
+          });
         }
       }
+    }
+
+    for (let i = 0; i < 60; i += 1) {
+      const next = Math.floor(i / 10) * 10 + ((i + 1) % 10);
+      if (!linkExists(i, next))
+        links.push({
+          source: nodes[i],
+          target: nodes[next],
+          type: "strong",
+          weight: 0.9,
+          active: true,
+        });
     }
 
     // A sparse backbone keeps the initial graph reachable but path-heavy.
     for (let community = 0; community < 6; community += 1) {
       const a = nodes[community * 10];
       const b = nodes[((community + 1) % 6) * 10];
-      links.push({ source: a, target: b, type: 'weak', weight: 0.25, active: true });
+      links.push({
+        source: a,
+        target: b,
+        type: "weak",
+        weight: 0.25,
+        active: true,
+      });
     }
 
+    if (controls["deploy-internet"])
+      controls["deploy-internet"].disabled = false;
     engine.rebuildSimulation();
     updateStats();
   }
@@ -81,7 +108,7 @@ export function initConnectionQuantity(canvas, controls) {
 
     let distanceSum = 0;
     let reachablePairs = 0;
-    const totalPairs = ids.length * (ids.length - 1) / 2;
+    const totalPairs = (ids.length * (ids.length - 1)) / 2;
 
     for (let index = 0; index < ids.length; index += 1) {
       const start = ids[index];
@@ -107,75 +134,64 @@ export function initConnectionQuantity(canvas, controls) {
 
     return {
       mean: reachablePairs ? distanceSum / reachablePairs : Infinity,
-      reachableFraction: totalPairs ? reachablePairs / totalPairs : 1
+      reachableFraction: totalPairs ? reachablePairs / totalPairs : 1,
     };
   }
 
   function updateStats() {
     if (!stats) return;
     const paths = meanShortestPath();
-    const meanText = Number.isFinite(paths.mean) ? paths.mean.toFixed(2) : '∞';
+    const meanText = Number.isFinite(paths.mean) ? paths.mean.toFixed(2) : "∞";
     stats.textContent = `${engine.getLinks().length} edges · mean shortest path ${meanText} hops · reachable pairs ${Math.round(paths.reachableFraction * 100)}%`;
   }
 
   function addLongRangeLinks() {
-    if (deployInterval) clearInterval(deployInterval);
-
     const nodes = engine.getNodes();
-    let added = 0;
-    const target = 120;
-
-    deployInterval = setInterval(() => {
-      let batch = 0;
-      let attempts = 0;
-
-      while (batch < 4 && added < target && attempts < 80) {
-        attempts += 1;
-        const a = nodes[Math.floor(Math.random() * nodes.length)];
-        const b = nodes[Math.floor(Math.random() * nodes.length)];
-
-        if (a === b || a.community === b.community || linkExists(a.id, b.id)) continue;
-
-        engine.getLinks().push({
+    const candidates = [];
+    for (let i = 0; i < nodes.length; i += 1) {
+      for (let j = i + 1; j < nodes.length; j += 1) {
+        if (
+          nodes[i].community !== nodes[j].community &&
+          !linkExists(nodes[i].id, nodes[j].id)
+        ) {
+          candidates.push([nodes[i], nodes[j]]);
+        }
+      }
+    }
+    // Each tap makes one bounded change, including when every possible bridge exists.
+    const count = Math.min(24, candidates.length);
+    for (let i = 0; i < count; i += 1) {
+      const pick = i + Math.floor(Math.random() * (candidates.length - i));
+      [candidates[i], candidates[pick]] = [candidates[pick], candidates[i]];
+      const [a, b] = candidates[i];
+      engine
+        .getLinks()
+        .push({
           source: a,
           target: b,
-          type: 'bridge',
+          type: "bridge",
           weight: 0.55,
-          active: true
+          active: true,
         });
-        a.signal = 1;
-        a.signalType = 'signal';
-        b.signal = 1;
-        b.signalType = 'signal';
-        added += 1;
-        batch += 1;
-      }
-
-      engine.rebuildSimulation();
-
-      if (added % 20 === 0 || added >= target) updateStats();
-
-      if (added >= target) {
-        clearInterval(deployInterval);
-        deployInterval = null;
-        updateStats();
-      }
-    }, 70);
+      a.signal = b.signal = 1;
+      a.signalType = b.signalType = "signal";
+    }
+    if (controls["deploy-internet"])
+      controls["deploy-internet"].disabled = count === candidates.length;
+    engine.rebuildSimulation();
+    updateStats();
+    engine.renderStatic?.();
   }
 
-  controls['deploy-internet']?.addEventListener('click', addLongRangeLinks);
+  controls["deploy-internet"]?.addEventListener("click", addLongRangeLinks);
 
-  controls['reset-connections']?.addEventListener('click', () => {
-    if (deployInterval) clearInterval(deployInterval);
-    deployInterval = null;
+  controls["reset-connections"]?.addEventListener("click", () => {
     buildLocalNetwork();
   });
 
   const defaultInit = engine.init.bind(engine);
   engine.init = function init() {
     defaultInit();
-    if (deployInterval) clearInterval(deployInterval);
-    deployInterval = null;
     buildLocalNetwork();
     return engine;
   };

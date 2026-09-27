@@ -1,4 +1,7 @@
-import { SECTIONS } from '../content/sections.js';
+import { SECTIONS as MODEL_SECTIONS } from '../content/sections.js';
+import { readerFeedback } from './reader-feedback.js';
+import { ILLUSTRATIONS } from '../content/illustrations.js';
+const SECTIONS = MODEL_SECTIONS.map(s => ({...s, ...ILLUSTRATIONS[s.id]}));
 import { initIntro } from './visualizations/00-intro.js';
 import { initEmergentOrganism } from './visualizations/01-emergent-organism.js';
 import { initNodeLimits } from './visualizations/02-node-limits.js';
@@ -39,8 +42,11 @@ const VIZ_INIT = {
 };
 
 const vizInstances = new Map();
+const stageObservers = new Set();
+const feedbackObservers = new Set();
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let activeSectionId = null;
+let motionPaused = reduceMotion.matches;
 let scrollFrame = null;
 let heroController = null;
 
@@ -93,7 +99,9 @@ function buildHero() {
       menu.querySelector('summary')?.focus();
     }
   });
-  actions.append(start, overview);
+  const reading = createElement('a', 'hero-secondary-action', 'Read without animation');
+  reading.href = 'essay.html';
+  actions.append(start, overview, reading);
 
   const scrollHint = createElement('div', 'scroll-indicator');
   scrollHint.setAttribute('aria-hidden', 'true');
@@ -121,16 +129,28 @@ function buildSection(section, index) {
 
   const stats = createElement('div', 'viz-stats');
   stats.id = `stats-${section.id}`;
-  stats.setAttribute('aria-live', 'polite');
+  // Continuously changing visual statistics must not interrupt screen-reader navigation.
   stats.setAttribute('aria-atomic', 'true');
 
-  vizPane.append(canvas, stats);
+  const stage = createElement('div', 'animation-stage');
+  stage.append(canvas);
+  const feedback = createElement('p', 'viz-feedback');
+  feedback.id = `feedback-${section.id}`;
+  const syncFeedback = () => {
+    const message = readerFeedback(section.id, stats.textContent);
+    if(feedback.textContent !== message) feedback.textContent = message;
+  };
+  const observer = new MutationObserver(syncFeedback);
+  observer.observe(stats, {childList:true,subtree:true,characterData:true});
+  feedbackObservers.add(observer);syncFeedback();
+  canvas.setAttribute('aria-describedby',feedback.id);
+  vizPane.append(stage, feedback, stats);
 
   if (section.vizHint) {
     const hint = createElement('div', 'viz-hint', section.vizHint);
     hint.id = `hint-${section.id}`;
     vizPane.appendChild(hint);
-    canvas.setAttribute('aria-describedby', hint.id);
+    canvas.setAttribute('aria-describedby', `${hint.id} ${feedback.id}`);
   }
 
   if (section.controls?.length) {
@@ -166,6 +186,9 @@ function buildSection(section, index) {
     textContent.appendChild(terms);
   }
 
+  const sources = createElement('a', 'chapter-sources', 'Sources & further reading');
+  sources.href = `methods.html#${section.id}`;
+  textContent.append(sources);
   textPane.appendChild(textContent);
   wrapper.append(vizPane, textPane);
   return wrapper;
@@ -229,7 +252,13 @@ function updateSliderOutput(input, output) {
   const min = Number(input.min);
   const max = Number(input.max);
   const isNormalized = Number.isFinite(min) && Number.isFinite(max) && min >= 0 && max <= 1;
-  const display = isNormalized ? `${Math.round(value * 100)}%` : String(value);
+  const descriptions={
+    'ctrl-population-slider':value<.4?'Few':value<.8?'More':'Many',
+    'ctrl-polarize-slider':value<.3?'Open':value<.7?'Selective':'Very selective',
+    'ctrl-fidelity-slider':value<.3?'Low':value<.7?'Mixed':'High',
+    'ctrl-channel-noise':value===0?'None':value<.06?'Low':value<.11?'Medium':'High'
+  };
+  const display=descriptions[input.id] ?? (isNormalized ? `${Math.round(value * 100)}%` : String(value));
   output.value = display;
   output.textContent = display;
   input.setAttribute('aria-valuetext', display);
@@ -237,15 +266,16 @@ function updateSliderOutput(input, output) {
 
 function buildFooter() {
   const footer = createElement('footer', 'footer');
-  const text = createElement('span', '', 'Toy models make the assumptions visible. ');
-  const model = createElement('a', '', 'Read the formal model notes');
-  model.href = 'content/model-notes.md';
+  const text = createElement('span', '', 'Keep questioning the picture. ');
+  const model = createElement('a', '', 'Sources & explanations');
+  model.href = 'methods.html';
   const separator = document.createTextNode(' · ');
   const source = createElement('a', '', 'View the source on GitHub');
   source.href = 'https://github.com/jnton/emergent-humanity';
   source.target = '_blank';
   source.rel = 'noopener noreferrer';
-  footer.append(text, model, separator, source);
+  const experiments=createElement('a','','Try the experiments');experiments.href='lab.html';
+  footer.append(text, model, document.createTextNode(' · '), experiments, separator, source);
   return footer;
 }
 
@@ -293,6 +323,15 @@ function ensureVisualization(sectionId) {
     if (!instance || typeof instance.activate !== 'function') {
       throw new TypeError(`Visualization "${sectionId}" did not return a valid lifecycle object.`);
     }
+    instance.deactivate?.();
+    if (motionPaused) instance.renderStatic?.();
+    const resizeObserver = new ResizeObserver(() => {
+      if (instance.resize) instance.resize();
+      else instance.engine?.resize?.();
+      if (motionPaused) {instance.deactivate?.();instance.renderStatic?.();}
+    });
+    resizeObserver.observe(canvas.parentElement);
+    stageObservers.add(resizeObserver);
     vizInstances.set(sectionId, instance);
     return instance;
   } catch (error) {
@@ -314,7 +353,8 @@ function activateSection(sectionId) {
 
   activeSectionId = sectionId;
   const instance = sectionId ? ensureVisualization(sectionId) : null;
-  instance?.activate?.();
+  if (!motionPaused && !document.hidden) instance?.activate?.();
+  else instance?.renderStatic?.();
   updateChapterStatus(sectionId);
 }
 
@@ -365,7 +405,8 @@ function setupScrollTracking() {
 
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect();
-      const distance = Math.abs((rect.top + Math.min(rect.height, window.innerHeight) / 2) - viewportCenter);
+      const containsCenter = rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+      const distance = containsCenter ? 0 : Math.abs((rect.top + Math.min(rect.height, window.innerHeight) / 2) - viewportCenter);
       if (distance < selectedDistance) {
         selectedDistance = distance;
         selectedId = section.dataset.sectionId;
@@ -489,7 +530,7 @@ function setupHeroCanvas() {
 
   const loop = () => {
     frame = null;
-    if (!active || reduceMotion.matches || document.hidden) return;
+    if (!active || motionPaused || document.hidden) return;
     nodes.forEach((node) => {
       node.x += node.vx;
       node.y += node.vy;
@@ -501,7 +542,7 @@ function setupHeroCanvas() {
   };
 
   const start = () => {
-    if (frame === null && active && !reduceMotion.matches && !document.hidden) {
+    if (frame === null && active && !motionPaused && !document.hidden) {
       frame = requestAnimationFrame(loop);
     }
   };
@@ -529,7 +570,7 @@ function setupHeroCanvas() {
 
   resize();
   start();
-  heroController = { stop, resize };
+  heroController = { stop, resize, start };
 }
 
 function setupAudio() {
@@ -635,9 +676,26 @@ function setupGlobalInteractionPolish() {
   });
 }
 
+function setupMotionControls() {
+  const button=createElement('button','audio-btn','Pause animations');
+  button.type='button';button.id='animation-motion-toggle';
+  const sync=()=>{document.documentElement.dataset.motionPaused=String(motionPaused);button.textContent=motionPaused?'Resume animations':'Pause animations';button.setAttribute('aria-pressed',String(motionPaused));};
+  const apply=()=>{sync();if(motionPaused){heroController?.stop();vizInstances.forEach(v=>v.deactivate?.());}else{heroController?.start();vizInstances.get(activeSectionId)?.activate?.();}};
+  button.addEventListener('click',()=>{motionPaused=!motionPaused;apply();});
+  const measurements=createElement('button','audio-btn','Show measurements');
+  measurements.type='button';measurements.id='toggle-measurements';measurements.setAttribute('aria-pressed','false');
+  measurements.addEventListener('click',()=>{const show=document.documentElement.dataset.measurements!=='true';document.documentElement.dataset.measurements=String(show);measurements.textContent=show?'Hide measurements':'Show measurements';measurements.setAttribute('aria-pressed',String(show));document.dispatchEvent(new Event('measurements-change'));});
+  document.querySelector('.audio-menu-panel')?.append(button,measurements);sync();
+  reduceMotion.addEventListener('change',()=>{motionPaused=reduceMotion.matches;apply();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){vizInstances.forEach(v=>v.deactivate?.());}else if(!motionPaused){vizInstances.get(activeSectionId)?.activate?.();}});
+  const refresh=event=>{if(!motionPaused||!event.target.closest('.viz-controls'))return;requestAnimationFrame(()=>{const v=vizInstances.get(activeSectionId);v?.deactivate?.();v?.renderStatic?.();});};
+  document.addEventListener('click',refresh);document.addEventListener('input',refresh);
+}
+
 function init() {
   buildPage();
   setupHeroCanvas();
+  setupMotionControls();
   setupVisualizationPreloading();
   setupScrollTracking();
   setupResizeHandling();
@@ -648,5 +706,7 @@ function init() {
 document.addEventListener('DOMContentLoaded', init, { once: true });
 window.addEventListener('pagehide', () => {
   heroController?.stop?.();
+  stageObservers.forEach(observer=>observer.disconnect());
+  feedbackObservers.forEach(observer=>observer.disconnect());
   vizInstances.forEach((instance) => instance.destroy?.());
 }, { once: true });

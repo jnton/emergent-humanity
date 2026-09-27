@@ -2,7 +2,8 @@ import { createNetworkEngine } from '../lib/network-engine.js';
 
 export function initNodeLimits(canvas, controls) {
   let isOptimizing = false;
-  let optimizationLevel = 0; // 0 to 1
+  let optimizationLevel = 0; // An illustrative scalar, not measured human potential.
+  const stats = canvas.closest('.section').querySelector('.viz-stats');
 
   const engine = createNetworkEngine(canvas, {
     nodeCount: 1, // Strictly ONE node to match the narrative
@@ -19,10 +20,9 @@ export function initNodeLimits(canvas, controls) {
       if (isOptimizing) {
         // Increase optimization level up to a hard cap
         optimizationLevel = Math.min(1.0, optimizationLevel + 0.01);
-      } else {
-        // Degrade back to baseline
-        optimizationLevel = Math.max(0.0, optimizationLevel - 0.02);
       }
+      if(stats)stats.textContent=optimizationLevel>=1?'Better conditions helped. This model still has a limit.':isOptimizing?'The conditions are improving. Watch what changes.':'Start with the same person. Change their conditions.';
+      if(optimizationLevel>=1&&controls['optimize-nodes'])controls['optimize-nodes'].textContent='Conditions improved';
 
       // Base radius is 4. Max radius is 15.
       centralNode.radius = 4 + (11 * optimizationLevel);
@@ -47,7 +47,7 @@ export function initNodeLimits(canvas, controls) {
         ctx.fillStyle = 'rgba(255, 100, 100, 0.8)';
         ctx.font = '10px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('BIOLOGICAL ENVELOPE', centralNode.x, centralNode.y - 35);
+        ctx.fillText('ILLUSTRATIVE CEILING', centralNode.x, centralNode.y - 35);
       } else {
         // Cage is faint and blue
         ctx.strokeStyle = 'rgba(79, 156, 247, 0.2)';
@@ -73,33 +73,12 @@ export function initNodeLimits(canvas, controls) {
     optimizationLevel = 0;
     isOptimizing = false;
 
-    // Automatically trigger optimization animation after 1.5 seconds
-    setTimeout(() => {
-      isOptimizing = true;
-    }, 1500);
-
-    if (controls['optimize-nodes']) {
-      // Allow manual toggle to pause/resume
-      controls['optimize-nodes'].addEventListener('mousedown', () => isOptimizing = true);
-      controls['optimize-nodes'].addEventListener('mouseup', () => isOptimizing = false);
-      controls['optimize-nodes'].addEventListener('mouseleave', () => isOptimizing = false);
-      
-      // Touch support
-      controls['optimize-nodes'].addEventListener('touchstart', (e) => { e.preventDefault(); isOptimizing = true; });
-      controls['optimize-nodes'].addEventListener('touchend', (e) => { e.preventDefault(); isOptimizing = false; });
-      
-      controls['optimize-nodes'].textContent = 'Hold to Optimize';
-    }
-
-    if (controls['reset-limits']) {
-      controls['reset-limits'].addEventListener('click', () => {
-        isOptimizing = false;
-        optimizationLevel = 0;
-      });
-    }
+    if(controls['optimize-nodes']){controls['optimize-nodes'].disabled=false;controls['optimize-nodes'].textContent='Improve conditions';}
 
   };
 
+  controls['optimize-nodes']?.addEventListener('click',()=>{isOptimizing=true;controls['optimize-nodes'].disabled=true;if(matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.dataset.motionPaused==='true')optimizationLevel=1;});
+  controls['reset-limits']?.addEventListener('click',()=>{isOptimizing=false;optimizationLevel=0;controls['optimize-nodes'].disabled=false;controls['optimize-nodes'].textContent='Improve conditions';});
   engine.init();
   return engine;
 }

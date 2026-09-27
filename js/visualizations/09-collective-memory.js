@@ -139,6 +139,7 @@ export function initCollectiveMemory(canvas, controls) {
   }
 
   function updateStats() {
+    if(controls['remove-origin'])controls['remove-origin'].disabled=!idea||!nodeById(idea.originId);
     if (!stats) return;
 
     if (!idea) {
@@ -177,8 +178,12 @@ export function initCollectiveMemory(canvas, controls) {
     );
     if (!clicked) return;
 
-    const removedId = clicked.id;
-    engine.removeNode(clicked);
+    removeCarrier(clicked);
+  });
+
+  function removeCarrier(node){
+    const removedId = node.id;
+    engine.removeNode(node);
 
     packets = packets.filter(
       (packet) => packet.sourceId !== removedId && packet.targetId !== removedId
@@ -191,7 +196,9 @@ export function initCollectiveMemory(canvas, controls) {
 
     updateStats();
     canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
-  });
+  }
+  controls['remove-origin']?.addEventListener('click',()=>{const node=idea&&nodeById(idea.originId);if(node)removeCarrier(node);});
+  controls['reset-memory']?.addEventListener('click',()=>engine.init());
 
   controls['spawn-idea']?.addEventListener('click', spawnIdea);
 

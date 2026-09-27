@@ -1,56 +1,66 @@
 # Emergent Humanity
 
-> Humanity as an emergent network, from small communities to civilization. The visualizations are explicit toy models: they show what follows from their assumptions, not proof that real societies use the same mechanism.
+Generated from content/sections.js. Illustrative models show consequences of assumptions, not a universal theory of civilization.
 
 ## 01 — The Human Node
 
-*A stylized approximation of one person.*
+*Start with a person.*
 
-Each person is a complex biological system with changing memories, skills, goals, and internal states.
+A person has a life: memories, needs, intentions, relationships. No dot can contain all of that.
 
-In this model, a node is a stylized approximation of a person. It keeps only the properties relevant to the question and deliberately discards the rest.
+But to see how people connect, we can simplify the picture. Keep the person in mind. Change the view.
 
-**Key insight:** A useful model is incomplete by design.
+**Key insight:** The person has not become less. The picture has become simpler.
 
-## 02 — The Limits of a Node
+**Limit:** No biological or psychological quantities are estimated.
+
+## 02 — The Great Organism
+
+*You were never outside it.*
+
+From where you stand, you are at the centre. Pull back: your life is one among many, shaped by relationships that reach beyond what you can see. Together, these lives form a connected whole.
+
+Here, “organism” is a metaphor for that interdependence. People remain distinct, with different and sometimes conflicting goals. The whole does not have a single mind or will.
+
+**Key insight:** You are not looking at humanity from the outside.
+
+**Limit:** Not a realistic engineering design, biological organism, or evidence of consciousness.
+
+## 03 — The Limits of a Node
 
 *No person has unlimited capacity.*
 
 Attention, memory, time, energy, and information processing are finite. Health, education, practice, tools, and environment can push performance much higher, but they do not make a fixed human unlimited.
 
-There is no single maximum potential. Different traits have different limits, and those limits depend partly on environment.
+This picture uses a stipulated ceiling to illustrate a finite resource. It does not measure a person’s potential. Different capacities have different limits, and tools and environment can change what a task requires.
 
 **Key insight:** Environment can move the limit. It does not remove it.
 
-## 03 — The Great Organism
-
-*The whole can acquire capabilities no part has alone.*
-
-A single person cannot build a civilization. Communities can divide work, preserve knowledge, coordinate, create institutions, and accumulate science and culture across generations.
-
-At that scale, the system becomes organism-like: many limited parts interact to produce capabilities that exist only at the collective level. The analogy is structural, not literal; a human community is not one biological organism.
-
-**Key insight:** Civilization is not inside any one person. It emerges from interaction.
+**Limit:** A bounded work budget does not imply a finite cardinality of human states.
 
 ## 04 — A Node Goes Dark
 
-*Most nodes barely affect the whole. Some become critical.*
+*Importance depends on the function and the scale.*
 
-In a large, redundant network, removing most individual nodes has almost no effect on global structure or performance. In that narrow systems sense, most of us are probably not special to humanity as a whole.
+A network can continue after some members disappear. Removing a bridge, a hub, or the only carrier of a needed skill can have a very different effect. Redundancy for one function does not imply redundancy for another.
 
-But importance is not fixed. A node can become a hub, a bridge, a specialist, or the unique carrier of useful information. What matters is marginal effect on a chosen system function—not human worth.
+The animation compares structural roles in a toy network. It does not estimate anyone’s total contribution, replaceability, or human worth. The quantitative model lets you distinguish connectivity from skill coverage.
 
-**Key insight:** Most nodes are replaceable to the system. Structural importance can change.
+**Key insight:** What survives depends on what was connected—and what you needed it to do.
+
+**Limit:** Chosen metrics do not measure moral worth. Denominators use the original 13 people.
 
 ## 05 — A Tiny Difference
 
-*The system decides whether a tiny difference dies or explodes.*
+*A small difference can fade, persist, or grow.*
 
-In a chaotic regime, two nearly identical states can separate exponentially. A common diagnostic is the largest Lyapunov exponent: positive values indicate local exponential instability.
+Start two copies of the same state. Change one value by one ten-millionth and apply the same rule to both.
 
-In a stable regime, the same perturbation can shrink. The lesson is not that every tiny event changes history. It is that the size of a cause and the size of its eventual effect can be radically different.
+Averaging disperses this difference but retains a small common offset. The coupled nonlinear map can amplify it. Finite-time separation is a diagnostic of these trajectories, not proof that civilization is chaotic.
 
-**Key insight:** A tiny perturbation can become macroscopic when the dynamics amplify it.
+**Key insight:** The dynamics determine what becomes of a tiny difference.
+
+**Limit:** The averaging consensus mode preserves an offset; finite-time separation is not a maximal Lyapunov exponent.
 
 ## 06 — More Minds
 
@@ -62,6 +72,8 @@ Scale helps only when the network can turn extra people into usable collective c
 
 **Key insight:** More nodes create potential. Organization determines how much becomes usable.
 
+**Limit:** No claim about population, demographic policy, or real production functions.
+
 ## 07 — Closing the Distance
 
 *Shorter paths change what the network can do.*
@@ -71,6 +83,8 @@ Adding links can reduce shortest-path distance and make more of a network reacha
 But possible connections can grow faster than a node’s finite communication and processing capacity. More connectivity changes the bottleneck; it does not abolish bottlenecks.
 
 **Key insight:** Reachability can grow faster than usable attention or bandwidth.
+
+**Limit:** Demand is stipulated. Path length and usable communication are different observables.
 
 ## 08 — When Information Fails
 
@@ -82,15 +96,19 @@ Incentives are different again. They do not necessarily damage a connection; the
 
 **Key insight:** Good information flow depends on the channel, the source, the receiver, and the selection process.
 
+**Limit:** Real semantics, trust, and incentives are not binary switches; trial totals mix settings if controls change.
+
 ## 09 — The Network Splits
 
 *Beliefs and connections can pull apart together.*
 
-People tend to interact with people they already understand or trust. That can create clusters where opinions and network structure reinforce each other.
+Who interacts with whom can affect how opinions cluster. In this bounded-confidence model, sufficiently similar opinions influence each other; the outcome depends on the interaction rule.
 
-Bridges between groups can reopen exchange, but contact alone does not guarantee convergence. Trust, incentives, and the rules of interaction still matter.
+The cross-group contact control changes an assumption. It is not a demonstrated cure for political conflict, and low opinion dispersion is not the same as understanding or low hostility.
 
 **Key insight:** A bridge creates contact. What happens next depends on the interaction.
+
+**Limit:** The histogram concerns opinions, not hostility or all mechanisms of political polarization.
 
 ## 10 — Moving Together
 
@@ -102,6 +120,8 @@ But alignment is not automatically good. Diversity can improve exploration and e
 
 **Key insight:** Coordination increases coherence, not correctness.
 
+**Limit:** No externally given compass resolves moral disagreement; global alignment is not original local-neighbor flocking.
+
 ## 11 — Touching Reality
 
 *The network needs input from the world.*
@@ -111,6 +131,8 @@ Observation, measurement, experiments, and feedback give the network new informa
 Knowledge also grows by transforming what is already known through inference, recombination, computation, and simulation.
 
 **Key insight:** Learning needs both evidence and inference.
+
+**Limit:** Repeated samples reweight the arithmetic mean; no confidence interval falsely treats them as independent.
 
 ## 12 — Memory Beyond the Individual
 
@@ -122,6 +144,8 @@ Copies can spread, change, disappear, or become redundant enough to survive the 
 
 **Key insight:** Memory becomes collective when information outlives the person who first held it.
 
+**Limit:** Copying is instantaneous at logical steps; no forgetting or in-flight storage is modeled. Exact copying does not establish truth.
+
 ## 13 — Memory Outside the Brain
 
 *Writing changed what humanity could remember.*
@@ -131,6 +155,8 @@ Writing, printing, photography, databases, and networked storage moved memory ou
 External memory is still fragile. Records can decay, disappear, become unreadable, or be altered.
 
 **Key insight:** External storage lets knowledge survive us, but not forever.
+
+**Limit:** Records are not permanent or self-interpreting; loss events are not calibrated failure rates.
 
 ## 14 — Against Noise
 
@@ -142,6 +168,8 @@ Human communication adds another problem: a message can arrive perfectly and sti
 
 **Key insight:** Reliable communication depends on both the channel and the interpretation.
 
+**Limit:** Majority benefit assumes independent copies. Expected bit error is not whole-message error or semantic correctness.
+
 ## 15 — More Than the Sum
 
 *The network can solve problems no individual can.*
@@ -151,6 +179,8 @@ Specialization, shared memory, parallel search, and coordination let groups solv
 Bottlenecks, duplicated work, bad incentives, misinformation, and coordination costs can waste that capacity. Collective intelligence appears when the network turns distributed ability into useful work.
 
 **Key insight:** Collective capacity matters only when the network can use it.
+
+**Limit:** These observables do not define a general intelligence score or establish a universally optimal institution.
 
 ## 16 — Same Pattern, Different Matter
 
@@ -164,14 +194,18 @@ The useful question is simple: where does the comparison work, and where does it
 
 **Key insight:** Same pattern does not mean same mechanism.
 
+**Limit:** No inference of shared physiology, incentives, consciousness, or biological optimization.
+
 ## 17 — How Humanity Thrives
 
 *There is no single variable to maximize.*
 
 If the goals include learning, coordination, resilience, adaptation, and preserving useful knowledge, several properties matter at once: human capability, connectivity, information quality, memory, redundancy, diversity, alignment, and feedback from reality.
 
-These objectives can conflict. More alignment can reduce exploration. More redundancy costs resources. More connectivity can increase coordination load. Strong memory can preserve errors as well as knowledge. This is a multi-objective problem: improvement can move along a Pareto frontier rather than toward one universal optimum.
+These goals can conflict. More agreement can leave less room for exploration. Extra copies cost resources. More connections can add coordination work. And memory can preserve mistakes as well as knowledge.
 
 Mathematics can expose the trade-offs. It cannot decide what humanity should value. The practical task is to build systems that learn, coordinate, remember, adapt, correct errors, and recover—without silently sacrificing the properties that make those abilities possible.
 
 **Key insight:** Improve humanity by improving the system—but measure what every improvement costs elsewhere.
+
+**Limit:** Frontier is among nine sampled designs for these two objectives. It does not establish fairness or the full Pareto frontier.

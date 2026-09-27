@@ -83,7 +83,8 @@ export function createNetworkEngine(canvas, opts = {}) {
 
     if (simulation) {
       simulation.force('center', d3.forceCenter(width / 2, height / 2));
-      simulation.alpha(0.3).restart();
+      if (isActive) simulation.alpha(0.3).restart();
+      else simulation.stop();
     }
   }
 
@@ -579,6 +580,13 @@ export function createNetworkEngine(canvas, opts = {}) {
 
   const engine = {
     init,
+    renderStatic(){
+      const wasActive=isActive;
+      isActive=true;
+      if(simulation){simulation.stop();simulation.tick(60);}
+      render();
+      isActive=wasActive;
+    },
     resize,
     activate,
     deactivate,

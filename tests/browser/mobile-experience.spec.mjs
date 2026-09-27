@@ -54,7 +54,7 @@ test('mobile controls sit below the canvas with large touch targets', async ({ p
   await page.waitForFunction(() => window.__EMERGENT_MOBILE_DEBUG__?.getState().active === true);
 
   const state = await page.evaluate(() => window.__EMERGENT_MOBILE_DEBUG__.getState());
-  expect(state.headings).toBe(16);
+  expect(state.headings).toBe(17);
   expect(state.dockedControls).toBeGreaterThan(10);
 
   const section = page.locator('#section-node-limits');

@@ -13,7 +13,7 @@ export const SECTIONS = [
       'In this model, a node is a stylized approximation of a person. It keeps only the properties relevant to the question and deliberately discards the rest.'
     ],
     insight: 'A useful model is incomplete by design.',
-    vizHint: 'Watch a high-dimensional person become a lower-dimensional model state—and see what gets discarded.',
+    vizHint: 'Watch a high-dimensional human representation collapse into a single model node.',
     controls: []
   },
   {
@@ -26,7 +26,7 @@ export const SECTIONS = [
       'There is no single maximum potential. Different traits have different limits, and those limits depend partly on environment.'
     ],
     insight: 'Environment can move the limit. It does not remove it.',
-    vizHint: 'Improve the environment and watch performance approach a finite limit.',
+    vizHint: 'The circle is a toy capacity variable: optimization approaches a finite biological envelope.',
     controls: [
       { id: 'optimize-nodes', type: 'button', label: 'Optimize Environment' },
       { id: 'reset-limits', type: 'button', label: 'Reset', variant: 'outline' }
@@ -42,7 +42,7 @@ export const SECTIONS = [
       'At that scale, the system becomes organism-like: many limited parts interact to produce capabilities that exist only at the collective level. The analogy is structural, not literal; a human community is not one biological organism.'
     ],
     insight: 'Civilization is not inside any one person. It emerges from interaction.',
-    vizHint: 'Watch isolated people connect, differentiate, share information, and acquire collective capabilities.',
+    vizHint: 'The network is the object of study; “organism” is the guiding analogy.',
     controls: []
   },
   {
@@ -55,12 +55,11 @@ export const SECTIONS = [
       'But importance is not fixed. A node can become a hub, a bridge, a specialist, or the unique carrier of useful information. What matters is marginal effect on a chosen system function—not human worth.'
     ],
     insight: 'Most nodes are replaceable to the system. Structural importance can change.',
-    vizHint: 'Remove ordinary nodes, then let one develop a critical role and compare its marginal effect.',
+    vizHint: 'Reveal structural weight, then compare removing an ordinary node with removing a hub.',
     controls: [
       { id: 'show-centrality', type: 'switch', label: 'Show Structural Weight', value: false },
       { id: 'remove-node', type: 'button', label: 'Remove Ordinary Node' },
-      { id: 'develop-node', type: 'button', label: 'Develop a Critical Role' },
-      { id: 'remove-hub', type: 'button', label: 'Remove Critical Node' },
+      { id: 'remove-hub', type: 'button', label: 'Remove Hub' },
       { id: 'reset-network', type: 'button', label: 'Reset', variant: 'outline' }
     ]
   },
@@ -74,7 +73,7 @@ export const SECTIONS = [
       'In a stable regime, the same perturbation can shrink. The lesson is not that every tiny event changes history. It is that the size of a cause and the size of its eventual effect can be radically different.'
     ],
     insight: 'A tiny perturbation can become macroscopic when the dynamics amplify it.',
-    vizHint: 'Apply the same ε perturbation in contracting and sensitive regimes; watch divergence and the finite-time Lyapunov estimate.',
+    vizHint: 'Apply the same tiny perturbation in a stable regime and a sensitive regime.',
     controls: [
       { id: 'stable-regime', type: 'button', label: 'Stable Regime', variant: 'outline' },
       { id: 'sensitive-regime', type: 'button', label: 'Sensitive Regime' },
@@ -91,7 +90,7 @@ export const SECTIONS = [
       'Scale helps only when the network can turn extra people into usable collective capacity.'
     ],
     insight: 'More nodes create potential. Organization determines how much becomes usable.',
-    vizHint: 'Increase the population and watch capacity and coordination load grow together.',
+    vizHint: 'Scale the population. Node count rises together with the structure that must coordinate it.',
     controls: [
       { id: 'population-slider', type: 'slider', label: 'Population Scale', min: '0.1', max: '1', step: '0.1', value: '0.3' }
     ]
@@ -106,7 +105,7 @@ export const SECTIONS = [
       'But possible connections can grow faster than a node’s finite communication and processing capacity. More connectivity changes the bottleneck; it does not abolish bottlenecks.'
     ],
     insight: 'Reachability can grow faster than usable attention or bandwidth.',
-    vizHint: 'Add long-range links: path length falls while finite per-node processing budgets begin to saturate.',
+    vizHint: 'Add long-range links and watch formerly local clusters become globally reachable.',
     controls: [
       { id: 'deploy-internet', type: 'button', label: 'Add Long-Range Links' },
       { id: 'reset-connections', type: 'button', label: 'Reset', variant: 'outline' }
@@ -122,13 +121,9 @@ export const SECTIONS = [
       'Incentives are different again. They do not necessarily damage a connection; they change what gets produced, selected, repeated, and amplified. None of these should be collapsed into one idea of “noise.”'
     ],
     insight: 'Good information flow depends on the channel, the source, the receiver, and the selection process.',
-    vizHint: 'Change each layer separately and watch accurate, false, rejected, and amplified messages propagate differently.',
+    vizHint: 'This toy model isolates one dimension of quality: edge transmission reliability.',
     controls: [
-      { id: 'fidelity-slider', type: 'slider', label: 'Channel Fidelity', min: '0', max: '1', step: '0.05', value: '0.9' },
-      { id: 'source-accuracy', type: 'slider', label: 'Source Accuracy', min: '0', max: '1', step: '0.05', value: '0.8' },
-      { id: 'interpretation-fidelity', type: 'slider', label: 'Interpretation Fidelity', min: '0', max: '1', step: '0.05', value: '0.85' },
-      { id: 'trust-calibration', type: 'slider', label: 'Trust Calibration', min: '0', max: '1', step: '0.05', value: '0.75' },
-      { id: 'selection-pressure', type: 'slider', label: 'Amplification Bias', min: '0', max: '1', step: '0.05', value: '0.25' }
+      { id: 'fidelity-slider', type: 'slider', label: 'Edge Reliability', min: '0', max: '1', step: '0.1', value: '0.8' }
     ]
   },
   {
@@ -157,10 +152,10 @@ export const SECTIONS = [
       'But alignment is not automatically good. Diversity can improve exploration and error correction, and a perfectly coordinated group can still pursue a bad objective.'
     ],
     insight: 'Coordination increases coherence, not correctness.',
-    vizHint: 'Watch coherence, directional coverage, and agreement with an external target separately. High R can still point the wrong way.',
+    vizHint: 'The displayed order parameter measures directional coherence from 0 to 1.',
     controls: [
       { id: 'align-goals', type: 'button', label: 'Increase Coupling' },
-      { id: 'scramble-goals', type: 'button', label: 'Restore Diversity', variant: 'outline' }
+      { id: 'scramble-goals', type: 'button', label: 'Scramble', variant: 'outline' }
     ]
   },
   {
@@ -173,10 +168,9 @@ export const SECTIONS = [
       'Knowledge also grows by transforming what is already known through inference, recombination, computation, and simulation.'
     ],
     insight: 'Learning needs both evidence and inference.',
-    vizHint: 'Release observations from outside the network, then combine stored observations to create an inferred proposition.',
+    vizHint: 'Release observations into the environment and watch local nodes acquire them.',
     controls: [
-      { id: 'release-info', type: 'button', label: 'Release Observations' },
-      { id: 'infer-knowledge', type: 'button', label: 'Run Inference', variant: 'outline' }
+      { id: 'release-info', type: 'button', label: 'Release Information' }
     ]
   },
   {
@@ -189,7 +183,7 @@ export const SECTIONS = [
       'Copies can spread, change, disappear, or become redundant enough to survive the loss of the original carrier.'
     ],
     insight: 'Memory becomes collective when information outlives the person who first held it.',
-    vizHint: 'Create one idea. Copies spread, sometimes mutate, and can survive—or disappear with—their carriers.',
+    vizHint: 'Spawn one idea, let it replicate, then kill carriers—including its originator.',
     controls: [
       { id: 'spawn-idea', type: 'button', label: 'Spawn Idea' }
     ]
@@ -204,10 +198,9 @@ export const SECTIONS = [
       'External memory is still fragile. Records can decay, disappear, become unreadable, or be altered.'
     ],
     insight: 'External storage lets knowledge survive us, but not forever.',
-    vizHint: 'Move through storage technologies, then damage a record. External copies improve persistence without becoming permanent.',
+    vizHint: 'Move through storage epochs and watch information gain non-biological carriers.',
     controls: [
-      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' },
-      { id: 'stress-storage', type: 'button', label: 'Damage a Record', variant: 'outline' }
+      { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' }
     ]
   },
   {
@@ -220,11 +213,10 @@ export const SECTIONS = [
       'Human communication adds another problem: a message can arrive perfectly and still be misunderstood. Physical fidelity and meaning are different layers.'
     ],
     insight: 'Reliable communication depends on both the channel and the interpretation.',
-    vizHint: 'Separate physical transmission from interpretation: coding can repair bit errors, while meaning can still be misread afterward.',
+    vizHint: 'Send a bit string through noisy hops; enable five-copy majority decoding to correct errors.',
     controls: [
       { id: 'channel-noise', type: 'slider', label: 'Per-Hop Bit Flip', min: '0', max: '0.15', step: '0.01', value: '0.04' },
       { id: 'toggle-redundancy', type: 'switch', label: '5× Repetition Code' },
-      { id: 'interpretation-error', type: 'slider', label: 'Interpretation Error', min: '0', max: '0.5', step: '0.05', value: '0.1' },
       { id: 'send-message', type: 'button', label: 'Send Message' }
     ]
   },
@@ -238,7 +230,7 @@ export const SECTIONS = [
       'Bottlenecks, duplicated work, bad incentives, misinformation, and coordination costs can waste that capacity. Collective intelligence appears when the network turns distributed ability into useful work.'
     ],
     insight: 'Collective capacity matters only when the network can use it.',
-    vizHint: 'Compare capacity, reachability, specialization, shared memory, duplicate work, bad information, incentive mismatch, and coordination load.',
+    vizHint: 'The metrics are transparent proxies for capacity, reachability, and coordination load—not empirical productivity.',
     controls: [
       { id: 'optimize-all', type: 'button', label: 'Build Scalable Network' },
       { id: 'reset-productivity', type: 'button', label: 'Reset', variant: 'outline' }
@@ -273,16 +265,7 @@ export const SECTIONS = [
       'Mathematics can expose the trade-offs. It cannot decide what humanity should value. The practical task is to build systems that learn, coordinate, remember, adapt, correct errors, and recover—without silently sacrificing the properties that make those abilities possible.'
     ],
     insight: 'Improve humanity by improving the system—but measure what every improvement costs elsewhere.',
-    vizHint: 'Move the system variables. The dashboard reports several objectives separately; no hidden “humanity score” decides for you.',
-    controls: [
-      { id: 'thrive-capability', type: 'slider', label: 'Node Capability', min: '0', max: '1', step: '0.05', value: '0.65' },
-      { id: 'thrive-connectivity', type: 'slider', label: 'Connectivity', min: '0', max: '1', step: '0.05', value: '0.55' },
-      { id: 'thrive-fidelity', type: 'slider', label: 'Information Fidelity', min: '0', max: '1', step: '0.05', value: '0.7' },
-      { id: 'thrive-memory', type: 'slider', label: 'Memory', min: '0', max: '1', step: '0.05', value: '0.6' },
-      { id: 'thrive-redundancy', type: 'slider', label: 'Redundancy', min: '0', max: '1', step: '0.05', value: '0.5' },
-      { id: 'thrive-alignment', type: 'slider', label: 'Alignment', min: '0', max: '1', step: '0.05', value: '0.55' },
-      { id: 'thrive-diversity', type: 'slider', label: 'Diversity', min: '0', max: '1', step: '0.05', value: '0.6' },
-      { id: 'thrive-feedback', type: 'slider', label: 'Reality Feedback', min: '0', max: '1', step: '0.05', value: '0.7' }
-    ]
+    vizHint: 'The network stays open: reshape it and treat every representation as provisional.',
+    controls: []
   }
 ];

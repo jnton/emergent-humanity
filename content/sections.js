@@ -144,7 +144,7 @@ export const SECTIONS = [
     vizHint: 'Change interaction selectivity and watch opinion clusters form or reconnect.',
     controls: [
       { id: 'polarize-slider', type: 'slider', label: 'Interaction Selectivity', min: '0', max: '1', step: '0.1', value: '0.6' },
-      { id: 'deploy-bridges', type: 'button', label: 'Add Cross-Group Bridges' }
+      { id: 'deploy-bridges', type: 'button', label: 'Add Trusted Bridges' }
     ]
   },
   {
@@ -189,7 +189,7 @@ export const SECTIONS = [
       'Copies can spread, change, disappear, or become redundant enough to survive the loss of the original carrier.'
     ],
     insight: 'Memory becomes collective when information outlives the person who first held it.',
-    vizHint: 'Create one idea, let it spread, then remove its carriers.',
+    vizHint: 'Create one idea. Copies spread, sometimes mutate, and can survive—or disappear with—their carriers.',
     controls: [
       { id: 'spawn-idea', type: 'button', label: 'Spawn Idea' }
     ]
@@ -204,7 +204,7 @@ export const SECTIONS = [
       'External memory is still fragile. Records can decay, disappear, become unreadable, or be altered.'
     ],
     insight: 'External storage lets knowledge survive us, but not forever.',
-    vizHint: 'Move through storage technologies and watch information gain new carriers.',
+    vizHint: 'Move through storage technologies, then damage a record. External copies improve persistence without becoming permanent.',
     controls: [
       { id: 'invent', type: 'button', label: 'Invent Writing & Monuments' },
       { id: 'stress-storage', type: 'button', label: 'Damage a Record', variant: 'outline' }
@@ -237,7 +237,7 @@ export const SECTIONS = [
       'Bottlenecks, duplicated work, bad incentives, misinformation, and coordination costs can waste that capacity. Collective intelligence appears when the network turns distributed ability into useful work.'
     ],
     insight: 'Collective capacity matters only when the network can use it.',
-    vizHint: 'Compare capacity, reachability, and coordination load.',
+    vizHint: 'Compare capacity, reachability, specialization, shared memory, duplicate work, bad information, incentive mismatch, and coordination load.',
     controls: [
       { id: 'optimize-all', type: 'button', label: 'Build Scalable Network' },
       { id: 'reset-productivity', type: 'button', label: 'Reset', variant: 'outline' }

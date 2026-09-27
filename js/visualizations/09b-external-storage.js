@@ -19,14 +19,14 @@ export function initExternalStorage(canvas, controls) {
     'Monuments & Writing',
     'The Printing Press',
     'Recording Instruments',
-    'The Internet & Cloud'
+    'Networked Storage'
   ];
   const EPOCH_SUBS = [
-    'Information lives and dies with the node',
-    'Information outlasts its creator',
+    'Memory depends on living carriers',
+    'External artifacts can outlast their creator',
     'Copies add redundancy and persistence',
     'Devices record through sensors and encodings',
-    'Everything connects. Everyone has access.'
+    'Replication and retrieval become much easier'
   ];
 
   // ── Engine ──
@@ -61,7 +61,7 @@ export function initExternalStorage(canvas, controls) {
       }
       if (infoSaved > 0) {
         ctx.fillStyle = 'rgba(34, 197, 94, 0.7)';
-        ctx.fillText(`✦ Preserved: ${infoSaved}`, W - 16, 40);
+        ctx.fillText(`✦ External copies: ${infoSaved}`, W - 16, 40);
       }
       ctx.restore();
 
@@ -595,7 +595,7 @@ export function initExternalStorage(canvas, controls) {
     'Invent Writing & Monuments',
     'Invent the Printing Press',
     'Invent Recording Instruments',
-    'Build the Internet & Cloud',
+    'Build Networked Storage',
     'Final Epoch Reached'
   ];
 

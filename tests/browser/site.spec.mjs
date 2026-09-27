@@ -70,7 +70,7 @@ test('all chapter visualizations initialize and paint a frame', async ({ page })
   await page.waitForFunction(() => typeof window.d3 !== 'undefined');
 
   const sections = page.locator('.section');
-  await expect(sections).toHaveCount(16);
+  await expect(sections).toHaveCount(17);
 
   for (let index = 0; index < await sections.count(); index += 1) {
     const section = sections.nth(index);
@@ -128,7 +128,7 @@ test('browser-agent API exposes chapters and safely operates controls', async ({
   await page.waitForFunction(() => document.documentElement.dataset.agentReady === 'true');
 
   const chapterCount = await page.evaluate(() => window.emergentHumanity.getChapters().length);
-  expect(chapterCount).toBe(16);
+  expect(chapterCount).toBe(17);
 
   const controls = await page.evaluate(() => window.emergentHumanity.getControls('node-quantity'));
   expect(controls).toEqual(expect.arrayContaining([

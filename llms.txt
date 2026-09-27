@@ -24,22 +24,22 @@
 ## Chapter map
 
 1. `node-capacity` — The Human Node
-2. `node-limits` — Node Limits
+2. `node-limits` — The Limits of a Node
 3. `intro` — The Great Organism
-4. `emergent-organism` — Losing a Node
-5. `illusion-of-significance` — Small Causes, Large Futures
-6. `node-quantity` — More Nodes
-7. `connection-quantity` — More Connections
-8. `connection-quality` — Better Connections
-9. `cohesion` — Polarization
-10. `alignment` — Alignment
-11. `environment` — Learning from Reality
-12. `collective-memory` — Collective Memory
-13. `external-storage` — External Memory
-14. `entropy` — Noise and Error Correction
-15. `productivity` — Collective Intelligence
-16. `comparative-emergence` — Different Systems, Same Pattern
-17. `whats-next` — What Helps Humanity Thrive?
+4. `emergent-organism` — A Node Goes Dark
+5. `illusion-of-significance` — A Tiny Difference
+6. `node-quantity` — More Minds
+7. `connection-quantity` — Closing the Distance
+8. `connection-quality` — When Information Fails
+9. `cohesion` — The Network Splits
+10. `alignment` — Moving Together
+11. `environment` — Touching Reality
+12. `collective-memory` — Memory Beyond the Individual
+13. `external-storage` — Memory Outside the Brain
+14. `entropy` — Against Noise
+15. `productivity` — More Than the Sum
+16. `comparative-emergence` — Same Pattern, Different Matter
+17. `whats-next` — How Humanity Thrives
 
 ## Browser-agent API
 

@@ -28,13 +28,13 @@ export function initNodeLimits(canvas, controls) {
       centralNode.radius = 4 + (11 * optimizationLevel);
       centralNode.quality = 0.2 + (0.8 * optimizationLevel);
 
-      // Draw the "Genetic Limit" bounding box / cage
+      // Draw the current biological performance envelope
       ctx.save();
       ctx.beginPath();
       ctx.arc(centralNode.x, centralNode.y, 25, 0, Math.PI * 2);
       
       if (optimizationLevel >= 1.0) {
-        // Limit reached: cage glows red/orange to signify a hard physical constraint
+        // Envelope reached: the toy scalar cannot increase further
         ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
@@ -43,11 +43,11 @@ export function initNodeLimits(canvas, controls) {
         centralNode.x += (Math.random() - 0.5) * 1.5;
         centralNode.y += (Math.random() - 0.5) * 1.5;
 
-        // Draw text "GENETIC LIMIT REACHED"
+        // Draw the boundary label
         ctx.fillStyle = 'rgba(255, 100, 100, 0.8)';
         ctx.font = '10px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('GENETIC LIMIT REACHED', centralNode.x, centralNode.y - 35);
+        ctx.fillText('BIOLOGICAL ENVELOPE', centralNode.x, centralNode.y - 35);
       } else {
         // Cage is faint and blue
         ctx.strokeStyle = 'rgba(79, 156, 247, 0.2)';

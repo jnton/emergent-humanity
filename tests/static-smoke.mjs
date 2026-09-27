@@ -12,6 +12,7 @@ const audio = await read('js/audio.js');
 const agentApi = await read('js/agent-api.js');
 const experience = await read('css/experience.css');
 const essay = await read('content/essay.md');
+const modelNotes = await read('content/model-notes.md');
 const llms = await read('llms.txt');
 const agentManifest = JSON.parse(await read('agent-manifest.json'));
 
@@ -26,6 +27,9 @@ assert.match(index, /application\/ld\+json/, 'Structured website metadata must b
 assert.match(index, /href="llms\.txt"/, 'The AI agent guide must be discoverable.');
 assert.match(index, /href="agent-manifest\.json"/, 'The browser-agent manifest must be discoverable.');
 assert.match(app, /https:\/\/github\.com\/jnton\/emergent-humanity/, 'The source link must target this repository.');
+assert.match(app, /content\/model-notes\.md/, 'The formal model notes must be linked from the experience.');
+assert.match(modelNotes, /binary symmetric channel/i, 'Formal notes must document the channel model.');
+assert.match(modelNotes, /bounded-confidence/i, 'Formal notes must document the polarization model.');
 assert.doesNotMatch(app, /startAudioOnInteract|audioBtn\.click\(\)/, 'Ambient audio must never auto-start.');
 assert.doesNotMatch(audio, /startAudioOnInteract|\.click\(\)\s*;/, 'The soundtrack must remain explicitly opt-in.');
 assert.match(audio, /tonal-score-v2/, 'The tonal score version must be identifiable.');
@@ -66,6 +70,7 @@ for (const asset of [
   'assets/icon.png',
   'assets/social-preview.png',
   'content/essay.md',
+  'content/model-notes.md',
   'llms.txt',
   'agent-manifest.json',
   'robots.txt',

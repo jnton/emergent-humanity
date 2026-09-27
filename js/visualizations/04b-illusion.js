@@ -10,8 +10,10 @@ export function initIllusionOfSignificance(canvas, controls) {
   let stepCount = 0;
   let regime = 'sensitive';
   let perturbed = false;
+  let initialDistance = 0;
 
   const nodeCount = 54;
+  const epsilon = 1e-7;
   let layout = [];
   let adjacency = [];
   let stateA = [];
@@ -21,7 +23,7 @@ export function initIllusionOfSignificance(canvas, controls) {
     const container = canvas.parentElement;
     width = container.clientWidth;
     height = container.clientHeight;
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     canvas.style.width = width + 'px';
@@ -33,15 +35,11 @@ export function initIllusionOfSignificance(canvas, controls) {
     layout = [];
     adjacency = Array.from({ length: nodeCount }, () => new Set());
 
-    const rings = 3;
     for (let i = 0; i < nodeCount; i += 1) {
-      const ring = i % rings;
-      const angle = (i / nodeCount) * Math.PI * 2 * 3 + ring * 0.35;
+      const ring = i % 3;
+      const angle = (i / nodeCount) * Math.PI * 6 + ring * 0.35;
       const radius = 38 + ring * 32 + ((i * 17) % 13);
-      layout.push({
-        x: Math.cos(angle) * radius,
-        y: Math.sin(angle) * radius
-      });
+      layout.push({ x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
     }
 
     const connect = (a, b) => {
@@ -66,6 +64,7 @@ export function initIllusionOfSignificance(canvas, controls) {
       stateB.push(value);
     }
     perturbed = false;
+    initialDistance = 0;
     stepCount = 0;
     frame = 0;
 
@@ -75,7 +74,7 @@ export function initIllusionOfSignificance(canvas, controls) {
     }
   }
 
-  function circularAverage(values, indices) {
+  function mean(values, indices) {
     if (indices.size === 0) return 0;
     let total = 0;
     for (const index of indices) total += values[index];
@@ -85,7 +84,7 @@ export function initIllusionOfSignificance(canvas, controls) {
   function stableStep(values) {
     const next = new Array(values.length);
     for (let i = 0; i < values.length; i += 1) {
-      const neighborMean = circularAverage(values, adjacency[i]);
+      const neighborMean = mean(values, adjacency[i]);
       next[i] = 0.62 * values[i] + 0.38 * neighborMean;
     }
     return next;
@@ -95,16 +94,30 @@ export function initIllusionOfSignificance(canvas, controls) {
     const transformed = values.map((value) => 3.9 * value * (1 - value));
     const next = new Array(values.length);
     for (let i = 0; i < values.length; i += 1) {
-      const neighborMean = circularAverage(transformed, adjacency[i]);
+      const neighborMean = mean(transformed, adjacency[i]);
       next[i] = Math.min(1, Math.max(0, 0.92 * transformed[i] + 0.08 * neighborMean));
     }
     return next;
   }
 
-  function advance() {
-    if (!perturbed) {
-      stateB = [...stateA];
+  function distance() {
+    if (!perturbed) return 0;
+    let sumSq = 0;
+    for (let i = 0; i < nodeCount; i += 1) {
+      const d = stateA[i] - stateB[i];
+      sumSq += d * d;
     }
+    return Math.sqrt(sumSq);
+  }
+
+  function finiteTimeRate() {
+    const d = distance();
+    if (!perturbed || stepCount < 1 || d <= 0 || initialDistance <= 0) return null;
+    return Math.log(d / initialDistance) / stepCount;
+  }
+
+  function advance() {
+    if (!perturbed) stateB = [...stateA];
 
     if (regime === 'stable') {
       stateA = stableStep(stateA);
@@ -117,19 +130,9 @@ export function initIllusionOfSignificance(canvas, controls) {
     stepCount += 1;
   }
 
-  function divergence() {
-    if (!perturbed) return 0;
-    let total = 0;
-    for (let i = 0; i < nodeCount; i += 1) {
-      total += Math.abs(stateA[i] - stateB[i]);
-    }
-    return total / nodeCount;
-  }
-
-  function drawTimeline(values, reference, centerX, label) {
-    const scale = Math.min(1.15, Math.max(0.62, width / 1050));
+  function drawTimeline(values, reference, centerX, centerY, label, scale = 1) {
     ctx.save();
-    ctx.translate(centerX, height * 0.52);
+    ctx.translate(centerX, centerY);
     ctx.scale(scale, scale);
 
     ctx.beginPath();
@@ -140,7 +143,7 @@ export function initIllusionOfSignificance(canvas, controls) {
         ctx.lineTo(layout[j].x, layout[j].y);
       }
     }
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+    ctx.strokeStyle = 'rgba(148,163,184,0.14)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -154,69 +157,59 @@ export function initIllusionOfSignificance(canvas, controls) {
       ctx.fillStyle = `hsl(${hue} 78% 58%)`;
       ctx.fill();
 
-      if (reference && perturbed && diff > 0.02) {
+      if (reference && perturbed && diff > 0.005) {
         ctx.beginPath();
         ctx.arc(layout[i].x, layout[i].y, 6.5, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(239, 68, 68, ${Math.min(1, diff * 4)})`;
+        ctx.strokeStyle = `rgba(239,68,68,${Math.min(1, diff * 5)})`;
         ctx.lineWidth = 1.5;
         ctx.stroke();
       }
     }
 
-    ctx.beginPath();
-    ctx.arc(layout[0].x, layout[0].y, 8, 0, Math.PI * 2);
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
     ctx.restore();
-
-    ctx.fillStyle = 'rgba(226, 232, 240, 0.7)';
-    ctx.font = '13px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(226,232,240,0.72)';
+    ctx.font = '12px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(label, centerX, height - 34);
+    ctx.fillText(label, centerX, centerY + 135 * scale);
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
 
-    const split = width <= 700;
-    if (split) {
-      const scaleY = 0.74;
-      ctx.save();
-      ctx.translate(0, -height * 0.13);
-      drawTimeline(stateA, null, width / 2, 'Timeline A');
-      ctx.restore();
+    ctx.fillStyle = 'rgba(226,232,240,0.78)';
+    ctx.font = '600 12px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('||δxₜ|| ≈ ||δx₀|| e^(λt)', width / 2, 25);
 
-      ctx.save();
-      ctx.translate(0, height * 0.28);
-      ctx.scale(1, scaleY);
-      drawTimeline(stateB, stateA, width / 2, 'Timeline B');
-      ctx.restore();
+    if (width <= 700) {
+      const scale = Math.min(0.7, width / 420);
+      drawTimeline(stateA, null, width / 2, height * 0.32, 'Timeline A', scale);
+      drawTimeline(stateB, stateA, width / 2, height * 0.72, 'Timeline B', scale);
     } else {
-      drawTimeline(stateA, null, width * 0.27, 'Timeline A');
-      drawTimeline(stateB, stateA, width * 0.73, 'Timeline B');
+      const scale = Math.min(1.05, width / 1050);
+      drawTimeline(stateA, null, width * 0.27, height * 0.52, 'Timeline A', scale);
+      drawTimeline(stateB, stateA, width * 0.73, height * 0.52, 'Timeline B', scale);
     }
 
     if (stats) {
-      const d = divergence();
-      stats.textContent = `${regime === 'stable' ? 'contracting consensus' : 'sensitive nonlinear'} · step ${stepCount} · mean |Δ| ${d.toExponential(2)}`;
+      const d = distance();
+      const lambda = finiteTimeRate();
+      const rate = lambda === null ? '—' : lambda.toFixed(3);
+      stats.textContent = `${regime === 'stable' ? 'contracting regime' : 'sensitive nonlinear regime'} · ε ${epsilon.toExponential(0)} · step ${stepCount} · ||δx|| ${d.toExponential(2)} · finite-time λ̂ ${rate}/step`;
     }
   }
 
   function loop() {
     animationFrame = requestAnimationFrame(loop);
     if (!isActive) return;
-
     frame += 1;
-    if (frame % 5 === 0) advance();
+    if (frame % 6 === 0) advance();
     draw();
   }
 
   function setRegime(nextRegime) {
     regime = nextRegime;
     seedStates();
-
     controls['stable-regime']?.classList.toggle('active', regime === 'stable');
     controls['sensitive-regime']?.classList.toggle('active', regime === 'sensitive');
   }
@@ -226,13 +219,10 @@ export function initIllusionOfSignificance(canvas, controls) {
   controls['shift-node']?.addEventListener('click', () => {
     if (perturbed) return;
     perturbed = true;
-
-    // Deliberately tiny state perturbation: the two trajectories remain
-    // identical except for this one value at t = 0.
-    stateB[0] = Math.min(0.999999, stateB[0] + 1e-7);
-
+    stateB[0] = Math.min(0.999999, stateB[0] + epsilon);
+    initialDistance = distance();
     controls['shift-node'].disabled = true;
-    controls['shift-node'].textContent = 'Perturbation Applied';
+    controls['shift-node'].textContent = 'ε Applied';
   });
 
   function init() {
@@ -246,11 +236,8 @@ export function initIllusionOfSignificance(canvas, controls) {
 
   return {
     init,
-    activate() {
-      isActive = true;
-    },
-    deactivate() {
-      isActive = false;
-    }
+    activate() { isActive = true; },
+    deactivate() { isActive = false; },
+    resize
   };
 }

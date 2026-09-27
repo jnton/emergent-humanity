@@ -501,12 +501,33 @@ function setupHeroCanvas() {
     ctx.lineWidth = 0.8;
     ctx.stroke();
 
-    ctx.fillStyle = 'rgba(121, 183, 255, 0.62)';
-    for (let i = 0; i < count; i += 1) {
-      const node = nodes[i];
+    if (count === 1) {
+      const node = nodes[0];
+      const pulse = 11 + Math.sin(performance.now() * 0.006) * 2.5;
+
       ctx.beginPath();
-      ctx.arc(node.x, node.y, i === 0 && count === 1 ? 2.4 : 1.5, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, pulse, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(79,156,247,0.08)';
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, pulse + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(121,183,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(121,183,255,0.82)';
+      ctx.fill();
+    } else {
+      ctx.fillStyle = 'rgba(121, 183, 255, 0.62)';
+      for (let i = 0; i < count; i += 1) {
+        const node = nodes[i];
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   };
 

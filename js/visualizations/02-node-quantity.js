@@ -11,14 +11,11 @@ export function initNodeQuantity(canvas, controls) {
 
   function updateStats() {
     if (!stats) return;
-    const nodes = engine.getNodes();
-    const n = nodes.length;
+    const n = engine.getNodes().length;
     const e = engine.getLinks().length;
     const complete = n * (n - 1) / 2;
     const edgeLoad = n > 0 ? e / n : 0;
-    const specialties = new Set(nodes.map((node) => node.specialty)).size;
-    const parallelCapacity = nodes.reduce((sum, node) => sum + (node.quality ?? 1), 0);
-    stats.textContent = `${n} potential parallel workers · specialties ${specialties}/6 · observation channels ${n} · capacity proxy Σq ${parallelCapacity.toFixed(0)} · E/N ${edgeLoad.toFixed(1)} · all-to-all would need ${Math.round(complete).toLocaleString()} edges`;
+    stats.textContent = `${n} nodes · ${e} active edges · E/N ${edgeLoad.toFixed(1)} · complete graph would need ${Math.round(complete).toLocaleString()} edges`;
   }
 
   function nextNodeId() {
@@ -34,12 +31,6 @@ export function initNodeQuantity(canvas, controls) {
     const nodes = engine.getNodes();
     const links = engine.getLinks();
 
-    nodes.forEach((node, index) => {
-      node.specialty = index % 6;
-      node.community = node.specialty;
-      node.quality = node.quality ?? 1;
-    });
-
     if (targetNodes > nodes.length) {
       const diff = targetNodes - nodes.length;
       let id = nextNodeId();
@@ -51,8 +42,7 @@ export function initNodeQuantity(canvas, controls) {
           quality: 1,
           signal: 0,
           radius: mobile ? 4 : 5,
-          community: id % 6,
-          specialty: id % 6,
+          community: 0,
           degree: 0,
           x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 80,
           y: canvas.clientHeight * 0.58 + (Math.random() - 0.5) * 80,

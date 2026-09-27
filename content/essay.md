@@ -1,6 +1,6 @@
 # Emergent Humanity
 
-> A model of humanity as a network. The visualizations are simplified thought experiments, not evidence that society literally works this way.
+> Humanity as an emergent network, from small communities to civilization. The visualizations are explicit toy models: they show what follows from their assumptions, not proof that real societies use the same mechanism.
 
 ## 01 — The Human Node
 

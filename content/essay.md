@@ -168,7 +168,19 @@ Shared knowledge can support collective intelligence. That does not establish a 
 
 **Key insight:** Collective intelligence emerges when distributed capacity is organized well enough to become usable.
 
-## 16 — What's Next?
+## 16 — Same Pattern, Different Substrate
+
+*Emergence can rhyme without being identical.*
+
+Very different systems can share the same abstract dynamical motif. Ant trails, flocks, adaptive slime-mold networks, and human networks can all be described with recurring ideas such as feedback, order parameters, distributed traces, and cost-efficiency trade-offs.
+
+That does not make the systems equivalent. Reusing an equation or observable means that one structural relationship is shared; the underlying biology, cognition, scale, and causal mechanism may still be radically different.
+
+The useful question is therefore not “is humanity literally an ant colony?” but “which mathematical patterns transfer across substrates, and exactly where does the analogy break?”
+
+**Key insight:** Shared mathematics can reveal a recurring structure without erasing the differences between systems.
+
+## 17 — What's Next?
 
 *An open model.*
 

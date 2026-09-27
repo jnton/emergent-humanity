@@ -1,105 +1,134 @@
-import { createNetworkEngine } from '../lib/network-engine.js';
-
 export function initNodeLimits(canvas, controls) {
-  let isOptimizing = false;
-  let optimizationLevel = 0; // 0 to 1
+  const ctx = canvas.getContext('2d');
+  const stats = document.getElementById('stats-node-limits');
+  let active = false;
+  let frameId = null;
+  let width = 0;
+  let height = 0;
+  let optimizing = false;
+  let environment = 0;
 
-  const engine = createNetworkEngine(canvas, {
-    nodeCount: 1, // Strictly ONE node to match the narrative
-    linkDistance: 60,
-    chargeStrength: -50,
-    onTick: () => {
-      const ctx = canvas.getContext('2d');
-      const nodes = engine.getNodes();
-      
-      if (nodes.length === 0) return;
+  const traits = [
+    { name: 'attention', baseline: 0.33, cap0: 0.72, envShift: 0.10, value: 0.33 },
+    { name: 'memory', baseline: 0.28, cap0: 0.80, envShift: 0.05, value: 0.28 },
+    { name: 'endurance', baseline: 0.42, cap0: 0.68, envShift: 0.16, value: 0.42 },
+    { name: 'skill', baseline: 0.24, cap0: 0.88, envShift: 0.07, value: 0.24 }
+  ];
 
-      const centralNode = nodes[0];
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    width = Math.max(1, rect.width);
+    height = Math.max(1, rect.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
 
-      if (isOptimizing) {
-        // Increase optimization level up to a hard cap
-        optimizationLevel = Math.min(1.0, optimizationLevel + 0.01);
-      } else {
-        // Degrade back to baseline
-        optimizationLevel = Math.max(0.0, optimizationLevel - 0.02);
-      }
+  function cap(trait) {
+    return Math.min(1, trait.cap0 + trait.envShift * environment);
+  }
 
-      // Base radius is 4. Max radius is 15.
-      centralNode.radius = 4 + (11 * optimizationLevel);
-      centralNode.quality = 0.2 + (0.8 * optimizationLevel);
+  function update() {
+    environment += optimizing ? 0.008 : -0.004;
+    environment = Math.max(0, Math.min(1, environment));
 
-      // Draw the current biological performance envelope
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(centralNode.x, centralNode.y, 25, 0, Math.PI * 2);
-      
-      if (optimizationLevel >= 1.0) {
-        // Envelope reached: the toy scalar cannot increase further
-        ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        
-        // Slight vibration when hitting the cap
-        centralNode.x += (Math.random() - 0.5) * 1.5;
-        centralNode.y += (Math.random() - 0.5) * 1.5;
-
-        // Draw the boundary label
-        ctx.fillStyle = 'rgba(255, 100, 100, 0.8)';
-        ctx.font = '10px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText('BIOLOGICAL ENVELOPE', centralNode.x, centralNode.y - 35);
-      } else {
-        // Cage is faint and blue
-        ctx.strokeStyle = 'rgba(79, 156, 247, 0.2)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([2, 4]);
-      }
-      ctx.stroke();
-      ctx.restore();
+    for (const trait of traits) {
+      const target = optimizing ? cap(trait) : trait.baseline;
+      trait.value += (target - trait.value) * 0.035;
     }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    const left = Math.max(72, width * 0.18);
+    const right = width - Math.max(28, width * 0.08);
+    const barW = Math.max(80, right - left);
+    const startY = height * 0.27;
+    const gap = Math.min(66, height * 0.14);
+
+    ctx.fillStyle = 'rgba(226,232,240,0.72)';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('MULTIDIMENSIONAL PERFORMANCE ENVELOPE', width / 2, 28);
+    ctx.fillText('environment can move some boundaries; no single universal maximum exists', width / 2, 46);
+
+    traits.forEach((trait, i) => {
+      const y = startY + i * gap;
+      const c = cap(trait);
+
+      ctx.fillStyle = 'rgba(148,163,184,0.13)';
+      ctx.fillRect(left, y, barW, 10);
+
+      ctx.fillStyle = 'rgba(56,189,248,0.72)';
+      ctx.fillRect(left, y, barW * trait.value, 10);
+
+      ctx.beginPath();
+      ctx.moveTo(left + barW * c, y - 7);
+      ctx.lineTo(left + barW * c, y + 17);
+      ctx.strokeStyle = 'rgba(239,68,68,0.82)';
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = 'rgba(226,232,240,0.78)';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(trait.name, left - 10, y + 9);
+
+      ctx.textAlign = 'left';
+      ctx.fillText(`current ${Math.round(trait.value * 100)} · envelope ${Math.round(c * 100)}`, left + 6, y - 8);
+    });
+
+    if (stats) {
+      stats.textContent = `environment optimization ${Math.round(environment * 100)}% · four different trait envelopes · no scalar “maximum potential”`;
+    }
+  }
+
+  function loop() {
+    frameId = null;
+    if (!active) return;
+    update();
+    draw();
+    frameId = requestAnimationFrame(loop);
+  }
+
+  controls['optimize-nodes']?.addEventListener('mousedown', () => { optimizing = true; });
+  controls['optimize-nodes']?.addEventListener('mouseup', () => { optimizing = false; });
+  controls['optimize-nodes']?.addEventListener('mouseleave', () => { optimizing = false; });
+  controls['optimize-nodes']?.addEventListener('touchstart', (e) => { e.preventDefault(); optimizing = true; }, { passive: false });
+  controls['optimize-nodes']?.addEventListener('touchend', (e) => { e.preventDefault(); optimizing = false; }, { passive: false });
+  if (controls['optimize-nodes']) controls['optimize-nodes'].textContent = 'Hold to Improve Environment';
+
+  controls['reset-limits']?.addEventListener('click', () => {
+    optimizing = false;
+    environment = 0;
+    for (const trait of traits) trait.value = trait.baseline;
+    draw();
   });
 
-  const defaultInit = engine.init.bind(engine);
-  engine.init = function() {
-    defaultInit();
+  const observer = new ResizeObserver(resize);
+  observer.observe(canvas.parentElement);
+  resize();
 
-    const nodes = engine.getNodes();
-    nodes.length = 1;
-    nodes[0].x = canvas.clientWidth / 2;
-    nodes[0].y = canvas.clientHeight / 2;
-    nodes[0].radius = 4;
-    nodes[0].quality = 0.2;
-    
-    optimizationLevel = 0;
-    isOptimizing = false;
-
-    // Automatically trigger optimization animation after 1.5 seconds
-    setTimeout(() => {
-      isOptimizing = true;
-    }, 1500);
-
-    if (controls['optimize-nodes']) {
-      // Allow manual toggle to pause/resume
-      controls['optimize-nodes'].addEventListener('mousedown', () => isOptimizing = true);
-      controls['optimize-nodes'].addEventListener('mouseup', () => isOptimizing = false);
-      controls['optimize-nodes'].addEventListener('mouseleave', () => isOptimizing = false);
-      
-      // Touch support
-      controls['optimize-nodes'].addEventListener('touchstart', (e) => { e.preventDefault(); isOptimizing = true; });
-      controls['optimize-nodes'].addEventListener('touchend', (e) => { e.preventDefault(); isOptimizing = false; });
-      
-      controls['optimize-nodes'].textContent = 'Hold to Optimize';
+  return {
+    activate() {
+      active = true;
+      if (frameId === null) frameId = requestAnimationFrame(loop);
+    },
+    deactivate() {
+      active = false;
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = null;
+    },
+    resize,
+    destroy() {
+      this.deactivate();
+      observer.disconnect();
     }
-
-    if (controls['reset-limits']) {
-      controls['reset-limits'].addEventListener('click', () => {
-        isOptimizing = false;
-        optimizationLevel = 0;
-      });
-    }
-
   };
-
-  engine.init();
-  return engine;
 }

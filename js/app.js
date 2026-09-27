@@ -503,15 +503,15 @@ function setupHeroCanvas() {
 
     if (count === 1) {
       const node = nodes[0];
-      const pulse = 11 + Math.sin(performance.now() * 0.006) * 2.5;
+      const pulse = 24 + Math.sin(performance.now() * 0.006) * 4;
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, pulse, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(79,156,247,0.08)';
+      ctx.fillStyle = 'rgba(79,156,247,0.13)';
       ctx.fill();
 
       ctx.beginPath();
-      ctx.arc(node.x, node.y, pulse + 5, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, pulse + 8, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(121,183,255,0.18)';
       ctx.lineWidth = 1;
       ctx.stroke();

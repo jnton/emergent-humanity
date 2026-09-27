@@ -367,7 +367,70 @@ Real collective performance also depends on task decomposition, incentives, reso
 
 Collective intelligence does not imply collective phenomenal consciousness.
 
-## 15. What "organism" means here
+## 15. Comparative emergence across substrates
+
+Chapter 16 asks whether the same **abstract mathematical structure** can recur in systems with very different physical implementations.
+
+This is a comparison of models, not an assertion that ants, flocks, slime molds, and human civilization are the same kind of entity.
+
+### 15.1 Reinforcing environmental traces
+
+A generic reinforcement-with-decay rule is
+
+[
+T_e(t+1)
+=
+(1-\rho)T_e(t)+\alpha F_e(t),
+]
+
+where \(T_e\) is a persistent trace associated with option or path \(e\), \(F_e\) is recent traffic or deposition, \(\rho\) is decay, and \(\alpha\) is reinforcement.
+
+Ant pheromone trails provide a biological example of local environmental traces participating in self-organized path formation. In the human panel, the same equation is used only as a **toy abstraction** for an external signal strengthened by repeated use and weakened by decay. It is not a claim that human institutions, media, or culture literally operate through pheromone dynamics.
+
+### 15.2 Directional order
+
+For agents carrying directions \(\theta_i\), the chapter reuses the circular order parameter
+
+[
+R
+=
+\left|
+\frac{1}{N}
+\sum_{i=1}^{N} e^{i\theta_i}
+\right|.
+]
+
+In a flocking model, \(\theta_i\) can represent physical heading. In the human toy model, it represents an abstract direction of effort or goal. The same observable can therefore quantify coherence while the meaning of the state variable changes.
+
+### 15.3 Adaptive transport networks
+
+Transport systems can be compared using common graph observables such as efficiency, material or maintenance cost, and robustness.
+
+The visualization combines them into a deliberately project-defined toy score
+
+[
+J(G)=E(G)-\lambda C(G)+\mu B(G),
+]
+
+where \(E\) is an efficiency proxy, \(C\) is normalized network cost, and \(B\) is a connectivity-based robustness proxy.
+
+This equation is **not** a biological law of *Physarum* and is not an empirical production function for human infrastructure. It is a shared measuring frame for comparing two adaptive-network pictures. Experimental work on *Physarum polycephalum* motivates the broader idea that decentralized growth can produce networks balancing transport efficiency, construction cost, and fault tolerance.
+
+### 15.4 Transfer rule
+
+The comparative chapter follows a strict inference rule:
+
+[
+\boxed{
+\text{same equation or observable}
+\not\Rightarrow
+\text{same mechanism, meaning, or ontology}
+}
+]
+
+A repeated mathematical form is evidence of a useful structural analogy. Establishing a shared causal mechanism requires additional empirical evidence.
+
+## 16. What "organism" means here
 
 "Organism" is a modeling analogy.
 
@@ -384,6 +447,9 @@ Human civilization satisfies some organism-like analogies and violates others. T
 - Vicsek T et al. *Novel type of phase transition in a system of self-driven particles*. Physical Review Letters (1995). https://doi.org/10.1103/PhysRevLett.75.1226
 - Shannon CE. *A Mathematical Theory of Communication*. Bell System Technical Journal (1948). https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
 - Queller DC, Strassmann JE. *Beyond society: the evolution of organismality*. Philosophical Transactions B (2009). https://doi.org/10.1098/rstb.2009.0095
+- Bonabeau E, Theraulaz G, Deneubourg J-L, Aron S, Camazine S. *Self-organization in social insects*. Trends in Ecology & Evolution (1997). https://doi.org/10.1016/S0169-5347(97)01048-3
+- Deneubourg J-L, Aron S, Goss S, Pasteels JM. *The self-organizing exploratory pattern of the Argentine ant*. Journal of Insect Behavior (1990). https://doi.org/10.1007/BF01417909
+- Tero A et al. *Rules for biologically inspired adaptive network design*. Science (2010). https://doi.org/10.1126/science.1177894
 - Muthukrishna M, Henrich J. *Innovation in the collective brain*. Philosophical Transactions B (2016). https://doi.org/10.1098/rstb.2015.0192
 - Woolley AW et al. *Evidence for a collective intelligence factor in the performance of human groups*. Science (2010). https://doi.org/10.1126/science.1193147
 - Vosoughi S, Roy D, Aral S. *The spread of true and false news online*. Science (2018). https://doi.org/10.1126/science.aap9559

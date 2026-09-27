@@ -18,62 +18,65 @@ export function initNodeQuantity(canvas, controls) {
   };
 
   if (controls['population-slider']) {
-    controls['population-slider'].addEventListener('input', (e) => {
-      const value = parseFloat(e.target.value); // 0.1 to 1.0
-      
-      const label = e.target.parentElement?.querySelector('.slider-value');
+    controls['population-slider'].addEventListener('input', (event) => {
+      const value = Number.parseFloat(event.target.value); // 0.1 to 1.0
+      const mobile = canvas.clientWidth <= 900;
+
+      const label = event.target.parentElement?.querySelector('.slider-value');
       if (label) label.textContent = `${Math.round(value * 100)}%`;
 
-      const targetNodes = Math.floor(value * 200); // Max 200 nodes
-      
+      // Preserve the meaning of a dramatic population increase without drawing
+      // 200 overlapping touch-sized nodes into a phone-width rectangle.
+      const maximumNodes = mobile ? 110 : 200;
+      const targetNodes = Math.max(12, Math.floor(value * maximumNodes));
+
       const nodes = engine.getNodes();
       const links = engine.getLinks();
 
-      // Add nodes if target is higher
       if (targetNodes > nodes.length) {
         const diff = targetNodes - nodes.length;
-        for (let i = 0; i < diff; i++) {
+        for (let index = 0; index < diff; index += 1) {
           const newNode = {
-            id: Date.now() + i, state: 1, quality: 1.0, signal: 0,
-            radius: 5, community: 0, degree: 0,
-            x: canvas.clientWidth/2 + (Math.random()-0.5)*100,
-            y: canvas.clientHeight/2 + (Math.random()-0.5)*100
+            id: Date.now() + index,
+            state: 1,
+            quality: 1,
+            signal: 0,
+            radius: mobile ? 4 : 5,
+            community: 0,
+            degree: 0,
+            x: canvas.clientWidth / 2 + (Math.random() - 0.5) * 80,
+            y: canvas.clientHeight * 0.58 + (Math.random() - 0.5) * 80,
           };
           nodes.push(newNode);
 
-          // preferential attachment
           if (nodes.length > 1) {
             const numEdges = 1 + Math.floor(Math.random() * 2);
-            for (let e = 0; e < numEdges; e++) {
+            for (let edge = 0; edge < numEdges; edge += 1) {
               const target = nodes[Math.floor(Math.random() * (nodes.length - 1))];
-              links.push({ source: newNode.id, target: target.id, type: 'default', weight: 1.0, active: true });
-              newNode.degree++;
-              target.degree++;
+              links.push({ source: newNode.id, target: target.id, type: 'default', weight: 1, active: true });
+              newNode.degree += 1;
+              target.degree += 1;
             }
           }
         }
-      } 
-      // Remove nodes if target is lower
-      else if (targetNodes < nodes.length) {
+      } else if (targetNodes < nodes.length) {
         const diff = nodes.length - targetNodes;
         nodes.splice(-diff, diff);
-        // Cleanup links
-        const validIds = new Set(nodes.map(n => n.id));
-        for (let i = links.length - 1; i >= 0; i--) {
-          const sId = typeof links[i].source === 'object' ? links[i].source.id : links[i].source;
-          const tId = typeof links[i].target === 'object' ? links[i].target.id : links[i].target;
-          if (!validIds.has(sId) || !validIds.has(tId)) {
-            links.splice(i, 1);
-          }
+        const validIds = new Set(nodes.map((node) => node.id));
+        for (let index = links.length - 1; index >= 0; index -= 1) {
+          const sourceId = typeof links[index].source === 'object' ? links[index].source.id : links[index].source;
+          const targetId = typeof links[index].target === 'object' ? links[index].target.id : links[index].target;
+          if (!validIds.has(sourceId) || !validIds.has(targetId)) links.splice(index, 1);
         }
       }
 
-      const sim = engine.getSimulation();
-      sim.force('charge').strength(-100 + (value * 50));
-      
-      sim.nodes(nodes);
-      sim.force('link').links(links);
-      sim.alpha(0.3).restart();
+      const simulation = engine.getSimulation();
+      simulation.force('charge').strength(mobile ? (-38 + value * 16) : (-100 + value * 50));
+      simulation.force('link').distance(mobile ? 24 : 50);
+      simulation.nodes(nodes);
+      simulation.force('link').links(links);
+      simulation.alpha(0.55).restart();
+      canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
     });
   }
 

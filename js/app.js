@@ -72,7 +72,7 @@ function buildHero() {
   canvas.id = 'hero-canvas';
   canvas.setAttribute('aria-hidden', 'true');
 
-  const eyebrow = createElement('p', 'hero-eyebrow', 'An interactive network essay');
+  const eyebrow = createElement('p', 'hero-eyebrow', 'Interactive essay + simulations');
   const title = createElement('h1', 'hero-title', 'Emergent Humanity');
   title.id = 'hero-title';
   const subtitle = createElement(
@@ -82,7 +82,7 @@ function buildHero() {
   );
 
   const actions = createElement('div', 'hero-actions');
-  const start = createElement('a', 'hero-primary-action', 'Begin the exploration');
+  const start = createElement('a', 'hero-primary-action', 'Start reading');
   start.href = `#section-${SECTIONS[0]?.id ?? 'node-capacity'}`;
   const overview = createElement('button', 'hero-secondary-action', 'Browse chapters');
   overview.type = 'button';
@@ -98,7 +98,7 @@ function buildHero() {
   const scrollHint = createElement('div', 'scroll-indicator');
   scrollHint.setAttribute('aria-hidden', 'true');
   scrollHint.append(
-    createElement('span', 'scroll-indicator-text', 'Scroll to explore'),
+    createElement('span', 'scroll-indicator-text', 'Scroll to start'),
     createElement('div', 'scroll-indicator-arrow')
   );
 
@@ -237,7 +237,7 @@ function updateSliderOutput(input, output) {
 
 function buildFooter() {
   const footer = createElement('footer', 'footer');
-  const text = createElement('span', '', 'Emergent Humanity is an open, evolving exploration. ');
+  const text = createElement('span', '', 'Toy models make the assumptions visible. ');
   const model = createElement('a', '', 'Read the formal model notes');
   model.href = 'content/model-notes.md';
   const separator = document.createTextNode(' · ');

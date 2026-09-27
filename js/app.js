@@ -236,11 +236,14 @@ function updateSliderOutput(input, output) {
 function buildFooter() {
   const footer = createElement('footer', 'footer');
   const text = createElement('span', '', 'Emergent Humanity is an open, evolving exploration. ');
+  const model = createElement('a', '', 'Read the formal model notes');
+  model.href = 'content/model-notes.md';
+  const separator = document.createTextNode(' · ');
   const source = createElement('a', '', 'View the source on GitHub');
   source.href = 'https://github.com/jnton/emergent-humanity';
   source.target = '_blank';
   source.rel = 'noopener noreferrer';
-  footer.append(text, source);
+  footer.append(text, model, separator, source);
   return footer;
 }
 

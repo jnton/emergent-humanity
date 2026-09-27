@@ -1,215 +1,208 @@
 import { createNetworkEngine } from '../lib/network-engine.js';
 
 export function initCollectiveMemory(canvas, controls) {
-  let ideas = [];
-  let explosions = [];
-  
+  let idea = null;
+  let packets = [];
+  let frame = 0;
+  const stats = document.getElementById('stats-collective-memory');
+
   const engine = createNetworkEngine(canvas, {
     nodeCount: 50,
     linkDistance: 50,
     chargeStrength: -80,
     onTick: () => {
+      frame += 1;
       const ctx = canvas.getContext('2d');
-      const nodes = engine.getNodes();
-      const links = engine.getLinks();
 
-      // Render ideas
-      for (let i = ideas.length - 1; i >= 0; i--) {
-        const idea = ideas[i];
-        
-        const sourceNode = nodes.find(n => n.id === idea.currNodeId && n.state === 1);
-        const targetNode = nodes.find(n => n.id === idea.nextNodeId && n.state === 1);
+      updatePackets();
+      drawCarriers(ctx);
 
-        if (!sourceNode || !targetNode) {
-            // Node died while traversing. Rescue the idea to a random alive node.
-            const aliveNodes = nodes.filter(n => n.state === 1);
-            if (aliveNodes.length > 0) {
-               const rescueNode = aliveNodes[Math.floor(Math.random() * aliveNodes.length)];
-               idea.currNodeId = rescueNode.id;
-               
-               const connected = links.filter(l => 
-                  (typeof l.source === 'object' ? l.source.id === rescueNode.id : l.source === rescueNode.id) ||
-                  (typeof l.target === 'object' ? l.target.id === rescueNode.id : l.target === rescueNode.id)
-               );
-               
-               if (connected.length > 0) {
-                  const nextLink = connected[Math.floor(Math.random() * connected.length)];
-                  const sId = typeof nextLink.source === 'object' ? nextLink.source.id : nextLink.source;
-                  const tId = typeof nextLink.target === 'object' ? nextLink.target.id : nextLink.target;
-                  idea.nextNodeId = sId === rescueNode.id ? tId : sId;
-                  idea.progress = 0;
-               } else {
-                  // No connections, wait on this node
-                  idea.nextNodeId = rescueNode.id;
-                  idea.progress = 1;
-               }
-            } else {
-               // No nodes left
-               ideas.splice(i, 1);
-            }
-            continue;
-        }
+      if (idea && !idea.lost && frame % 52 === 0) spreadIdea();
+      if (idea && !idea.lost && frame % 360 === 0) forgetRareCopies();
 
-        idea.progress += 0.02; // speed
-
-        if (idea.progress >= 1) {
-            // Arrived at next node, light it up
-            targetNode.pulse = 1;
-            
-            // Pick next destination
-            const connected = links.filter(l => 
-               (typeof l.source === 'object' ? l.source.id === targetNode.id : l.source === targetNode.id) ||
-               (typeof l.target === 'object' ? l.target.id === targetNode.id : l.target === targetNode.id)
-            );
-            
-            if (connected.length > 0) {
-               const nextLink = connected[Math.floor(Math.random() * connected.length)];
-               const sId = typeof nextLink.source === 'object' ? nextLink.source.id : nextLink.source;
-               const tId = typeof nextLink.target === 'object' ? nextLink.target.id : nextLink.target;
-               idea.currNodeId = targetNode.id;
-               idea.nextNodeId = sId === targetNode.id ? tId : sId;
-               idea.progress = 0;
-            } else {
-               idea.currNodeId = targetNode.id;
-               idea.nextNodeId = targetNode.id;
-               idea.progress = 1;
-            }
-        }
-
-        // Draw packet
-        const x = sourceNode.x + (targetNode.x - sourceNode.x) * idea.progress;
-        const y = sourceNode.y + (targetNode.y - sourceNode.y) * idea.progress;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffb86c'; // orange idea
-        ctx.fill();
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#ffb86c';
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      // Draw node pulses
-      nodes.forEach(n => {
-         if (n.pulse > 0) {
-            n.pulse -= 0.03;
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.radius + (1 - n.pulse) * 15, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(255, 184, 108, ${n.pulse})`;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-         }
-      });
-      // Draw originators (alive and dead)
-      const now = Date.now();
-      nodes.forEach(n => {
-         if (n.isOriginator) {
-            if (n.state === 1) {
-                // Alive originator
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.radius + 5 + Math.sin(now * 0.005) * 2, 0, Math.PI * 2);
-                ctx.strokeStyle = '#ffb86c';
-                ctx.lineWidth = 1.5;
-                ctx.setLineDash([3, 4]);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            } else {
-                // Dead originator (husk)
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(100, 116, 139, 0.8)'; // slate-500
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-                
-                // Draw X
-                ctx.beginPath();
-                ctx.moveTo(n.x - n.radius*0.7, n.y - n.radius*0.7);
-                ctx.lineTo(n.x + n.radius*0.7, n.y + n.radius*0.7);
-                ctx.moveTo(n.x + n.radius*0.7, n.y - n.radius*0.7);
-                ctx.lineTo(n.x - n.radius*0.7, n.y + n.radius*0.7);
-                ctx.stroke();
-            }
-         }
-      });
-
-      // Draw explosions
-      for (let i = explosions.length - 1; i >= 0; i--) {
-         const ex = explosions[i];
-         ex.radius += 1.5;
-         ex.alpha -= 0.04;
-         if (ex.alpha <= 0) {
-            explosions.splice(i, 1);
-            continue;
-         }
-         ctx.beginPath();
-         ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
-         ctx.fillStyle = ex.isOriginator ? `rgba(255, 184, 108, ${ex.alpha * 0.3})` : `rgba(239, 68, 68, ${ex.alpha * 0.3})`;
-         ctx.fill();
-         ctx.strokeStyle = ex.isOriginator ? `rgba(255, 184, 108, ${ex.alpha})` : `rgba(239, 68, 68, ${ex.alpha})`;
-         ctx.lineWidth = 2;
-         ctx.stroke();
-      }
+      updateStats();
     }
   });
 
-  const originalRemove = engine.removeNode.bind(engine);
-  engine.removeNode = function(node) {
-    explosions.push({ x: node.x, y: node.y, radius: node.radius, alpha: 1, isOriginator: node.isOriginator });
-    originalRemove(node);
-  };
-
-  // Make clicking nodes remove them
-  canvas.addEventListener('click', (e) => {
-    const nodes = engine.getNodes();
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const clickedNode = nodes.find(n => n.state === 1 && Math.hypot(n.x - x, n.y - y) < n.radius + 5);
-    if (clickedNode) {
-      engine.removeNode(clickedNode);
-      engine.rebuildSimulation();
-    }
-  });
-
-  if (controls['spawn-idea']) {
-    controls['spawn-idea'].addEventListener('click', () => {
-      const nodes = engine.getNodes();
-      const links = engine.getLinks();
-      const aliveNodes = nodes.filter(n => n.state === 1);
-      if (aliveNodes.length === 0) return;
-      
-      const sourceNode = aliveNodes[Math.floor(Math.random() * aliveNodes.length)];
-      sourceNode.pulse = 1;
-      sourceNode.isOriginator = true;
-      
-      const connected = links.filter(l => 
-          (typeof l.source === 'object' ? l.source.id === sourceNode.id : l.source === sourceNode.id) ||
-          (typeof l.target === 'object' ? l.target.id === sourceNode.id : l.target === sourceNode.id)
-      );
-      
-      let targetId = sourceNode.id;
-      if (connected.length > 0) {
-          const nextLink = connected[Math.floor(Math.random() * connected.length)];
-          const sId = typeof nextLink.source === 'object' ? nextLink.source.id : nextLink.source;
-          const tId = typeof nextLink.target === 'object' ? nextLink.target.id : nextLink.target;
-          targetId = sId === sourceNode.id ? tId : sId;
-      }
-
-      ideas.push({
-         currNodeId: sourceNode.id,
-         nextNodeId: targetId,
-         progress: 0
-      });
-    });
+  function endpointId(endpoint) {
+    return typeof endpoint === 'object' ? endpoint.id : endpoint;
   }
 
+  function nodeById(id) {
+    return engine.getNodes().find((node) => node.id === id);
+  }
+
+  function neighborsOf(id) {
+    const result = [];
+    for (const link of engine.getLinks()) {
+      const sourceId = endpointId(link.source);
+      const targetId = endpointId(link.target);
+      if (sourceId === id) result.push(targetId);
+      if (targetId === id) result.push(sourceId);
+    }
+    return result;
+  }
+
+  function spreadIdea() {
+    if (!idea) return;
+
+    const carriers = [...idea.carriers].filter((id) => nodeById(id));
+    idea.carriers = new Set(carriers);
+
+    if (carriers.length === 0) {
+      idea.lost = true;
+      return;
+    }
+
+    const shuffled = carriers.sort(() => Math.random() - 0.5);
+    for (const sourceId of shuffled.slice(0, Math.min(4, shuffled.length))) {
+      const candidates = neighborsOf(sourceId).filter((id) => !idea.carriers.has(id));
+      if (candidates.length === 0 || Math.random() > 0.55) continue;
+
+      const targetId = candidates[Math.floor(Math.random() * candidates.length)];
+      if (packets.some((packet) => packet.targetId === targetId)) continue;
+
+      packets.push({
+        sourceId,
+        targetId,
+        progress: 0
+      });
+    }
+  }
+
+  function forgetRareCopies() {
+    if (!idea || idea.carriers.size <= 1) return;
+
+    for (const id of [...idea.carriers]) {
+      if (id === idea.originId) continue;
+      if (Math.random() < 0.04) idea.carriers.delete(id);
+    }
+
+    if (idea.carriers.size === 0) idea.lost = true;
+  }
+
+  function updatePackets() {
+    const ctx = canvas.getContext('2d');
+
+    for (let i = packets.length - 1; i >= 0; i -= 1) {
+      const packet = packets[i];
+      const source = nodeById(packet.sourceId);
+      const target = nodeById(packet.targetId);
+
+      if (!source || !target || !idea || idea.lost) {
+        packets.splice(i, 1);
+        continue;
+      }
+
+      packet.progress += 0.035;
+
+      const x = source.x + (target.x - source.x) * packet.progress;
+      const y = source.y + (target.y - source.y) * packet.progress;
+
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffb86c';
+      ctx.shadowColor = '#ffb86c';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      if (packet.progress >= 1) {
+        idea.carriers.add(packet.targetId);
+        target.signal = 1;
+        target.signalType = 'signal';
+        packets.splice(i, 1);
+      }
+    }
+  }
+
+  function drawCarriers(ctx) {
+    if (!idea) return;
+
+    for (const id of [...idea.carriers]) {
+      const node = nodeById(id);
+      if (!node) {
+        idea.carriers.delete(id);
+        continue;
+      }
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = id === idea.originId
+        ? 'rgba(255, 184, 108, 1)'
+        : 'rgba(255, 184, 108, 0.62)';
+      ctx.lineWidth = id === idea.originId ? 2 : 1.2;
+      ctx.stroke();
+    }
+
+    if (idea.carriers.size === 0) idea.lost = true;
+  }
+
+  function updateStats() {
+    if (!stats) return;
+
+    if (!idea) {
+      stats.textContent = 'No idea yet · spawn one, then click nodes to remove carriers';
+      return;
+    }
+
+    const originAlive = Boolean(nodeById(idea.originId));
+    const status = idea.lost ? 'LOST' : 'PERSISTING';
+    stats.textContent = `copies ${idea.carriers.size} · origin ${originAlive ? 'alive' : 'gone'} · ${status}`;
+  }
+
+  function spawnIdea() {
+    const nodes = engine.getNodes();
+    if (nodes.length === 0) return;
+
+    const source = nodes[Math.floor(Math.random() * nodes.length)];
+    idea = {
+      originId: source.id,
+      carriers: new Set([source.id]),
+      lost: false
+    };
+    packets = [];
+    source.signal = 1;
+    source.signalType = 'signal';
+    updateStats();
+  }
+
+  canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const clicked = engine.getNodes().find(
+      (node) => Math.hypot(node.x - x, node.y - y) < node.radius + 7
+    );
+    if (!clicked) return;
+
+    const removedId = clicked.id;
+    engine.removeNode(clicked);
+
+    packets = packets.filter(
+      (packet) => packet.sourceId !== removedId && packet.targetId !== removedId
+    );
+
+    if (idea) {
+      idea.carriers.delete(removedId);
+      if (idea.carriers.size === 0) idea.lost = true;
+    }
+
+    updateStats();
+    canvas.__EMERGENT_NETWORK_VIEWPORT__?.refresh();
+  });
+
+  controls['spawn-idea']?.addEventListener('click', spawnIdea);
+
   const defaultInit = engine.init.bind(engine);
-  engine.init = function() {
+  engine.init = function init() {
     defaultInit();
-    ideas = [];
-    explosions = [];
+    frame = 0;
+    idea = null;
+    packets = [];
+    updateStats();
+    return engine;
   };
 
   engine.init();

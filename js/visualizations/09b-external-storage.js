@@ -316,7 +316,7 @@ export function initExternalStorage(canvas, controls) {
         const radius = 10 + (1 - b.life) * 40;
         ctx.beginPath();
         ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = b.preserved
+        ctx.strokeStyle = b.preservationStatus === 'preserved'
           ? `rgba(34, 197, 94, ${b.life * 0.6})`
           : `rgba(239, 68, 68, ${b.life * 0.8})`;
         ctx.lineWidth = 2;
@@ -328,7 +328,7 @@ export function initExternalStorage(canvas, controls) {
           const py = b.y + pt.vy * (1 - b.life) * 60;
           ctx.beginPath();
           ctx.arc(px, py, 2 * b.life, 0, Math.PI * 2);
-          ctx.fillStyle = b.preserved
+          ctx.fillStyle = b.preservationStatus === 'preserved'
             ? `rgba(34, 197, 94, ${b.life})`
             : `rgba(239, 68, 68, ${b.life})`;
           ctx.fill();
@@ -336,13 +336,17 @@ export function initExternalStorage(canvas, controls) {
 
         // Label
         if (b.life > 0.5) {
-          ctx.fillStyle = b.preserved
+          ctx.fillStyle = b.preservationStatus === 'preserved'
             ? `rgba(34, 197, 94, ${(b.life - 0.5) * 2})`
             : `rgba(239, 68, 68, ${(b.life - 0.5) * 2})`;
           ctx.font = 'bold 11px Inter, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(
-            b.preserved ? 'info preserved ✓' : 'info lost ✗',
+            b.preservationStatus === 'preserved'
+              ? 'info preserved ✓'
+              : b.preservationStatus === 'lost'
+                ? 'info lost ✗'
+                : 'no tracked memory',
             b.x, b.y - radius - 8
           );
         }
@@ -461,13 +465,13 @@ export function initExternalStorage(canvas, controls) {
     return carriers.some(carrier => ensureMemorySet(carrier).has(infoId));
   }
 
-  function createDeathBurst(x, y, preserved) {
+  function createDeathBurst(x, y, preservationStatus) {
     const particles = [];
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI * 2 / 6) * i + Math.random() * 0.3;
       particles.push({ vx: Math.cos(angle), vy: Math.sin(angle) });
     }
-    deathBursts.push({ x, y, life: 1, preserved, particles });
+    deathBursts.push({ x, y, life: 1, preservationStatus, particles });
   }
 
   // ── Epoch Setup ──
@@ -706,9 +710,13 @@ export function initExternalStorage(canvas, controls) {
         }
 
         const hadMemory = victimMemory.size > 0;
-        const fullyPreserved = hadMemory && lostItems === 0;
+        const preservationStatus = !hadMemory
+          ? 'none'
+          : lostItems === 0
+            ? 'preserved'
+            : 'lost';
 
-        createDeathBurst(victim.x, victim.y, fullyPreserved);
+        createDeathBurst(victim.x, victim.y, preservationStatus);
         infoLost += lostItems;
 
         engine.removeNode(victim);

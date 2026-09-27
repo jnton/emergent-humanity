@@ -34,6 +34,14 @@ a_i(t)in{0,1}.
 
 The binary variable is only an availability state. It does **not** imply that a human is intrinsically one bit.
 
+The node itself is a **coarse-graining** of a much richer person. Write
+
+\[
+x_i = \phi(h_i;Q),
+\]
+
+where \(h_i\) is the high-dimensional human state and \(Q\) is the question the model is trying to answer. The map \(\phi\) keeps some variables and discards others. A different question can require a different node state. No fixed vector \(x_i\) is claimed to be a complete representation of a person.
+
 Edges can carry multiple attributes:
 
 [
@@ -91,7 +99,21 @@ Examples include:
 
 Degree, betweenness, PageRank, articulation status, and functional specialization can be useful predictors of impact, but none is a universal definition of human importance.
 
-The runtime network currently uses preferential attachment as a **stylized topology**, not as a claim that human society is exactly scale-free. Strongly scale-free structure is not empirically universal across real networks.
+Chapter 04 makes the marginal-effect idea explicit with more than one observable. Its structural efficiency proxy is
+
+\[
+E_G
+=
+\frac{1}{N(N-1)}
+\sum_{i\ne j}
+\frac{1}{d(i,j)},
+\]
+
+with disconnected pairs contributing zero. It also displays largest-component size and a toy task-coverage variable. Ordinary low-degree removals are compared with a node that is deliberately allowed to acquire bridge links and one unique task. This demonstrates two separate points: most removals can have tiny marginal effects in a redundant network, and structural importance can change as a node's role changes.
+
+That is a statement about a selected **system observable**, not a statement about moral worth, subjective value, or a universal ranking of people.
+
+The runtime network uses a stylized heterogeneous topology, not a claim that human society is exactly scale-free. Strongly scale-free structure is not empirically universal across real networks.
 
 ## 4. Perturbations, stability, and chaos
 
@@ -121,7 +143,20 @@ The Chapter 05 visualization therefore compares two deliberately different regim
 1. a contracting consensus process where perturbations decay;
 2. a sensitive nonlinear process where nearby trajectories tend to diverge.
 
-It does not claim that all emergent systems are chaotic.
+For the one injected perturbation, the interface reports the finite-time growth rate
+
+\[
+\hat\lambda_t
+=
+\frac{1}{t}
+\log
+\frac{\lVert\delta x_t\rVert}
+     {\lVert\delta x_0\rVert}.
+\]
+
+This is a transparent finite-time divergence diagnostic for the toy trajectories, **not** a rigorous computation of the system's maximal Lyapunov exponent. A positive maximal Lyapunov exponent is a standard signature of exponential instability, but chaos requires more than merely observing one unstable point or one transient positive estimate.
+
+The chapter does not claim that all emergent systems are chaotic.
 
 ## 5. Node quantity and coordination cost
 
@@ -159,14 +194,23 @@ for mean degree and shortest-path distance (d(i,j)).
 
 Long-range links can sharply improve reachability and reduce mean path length without making the network complete.
 
-The Internet lowers the cost of potential connection; it does not eliminate attention, trust, language, access, or institutional constraints.
+The revised visualization adds a deliberately generic finite per-node processing budget \(b\). If node \(i\) has degree \(k_i\), the fraction of directed connection demand that can be serviced in one toy time window is
+
+\[
+U
+=
+\frac{\sum_i \min(k_i,b)}
+     {\sum_i k_i}.
+\]
+
+As degree rises beyond \(b\), potential reachability can continue improving while this usable fraction falls. The budget is not an empirical estimate of human attention; it represents the more general fact that nodes can have finite communication or processing capacity.
 
 ## 7. Connection quality
 
 "Quality" is multidimensional. It may include:
 
 - physical transmission fidelity;
-- semantic fidelity;
+- semantic or interpretive fidelity;
 - relevance;
 - trust calibration;
 - source reliability;
@@ -176,7 +220,17 @@ The Internet lowers the cost of potential connection; it does not eliminate atte
 
 These must not be collapsed into Shannon noise.
 
-The Chapter 08 visualization intentionally isolates only one component: **edge transmission reliability**. It is a toy proxy, not a complete epistemic model.
+Chapter 08 now separates several layers in one toy cascade. Let \(z\in\{0,1\}\) denote the underlying truth value of a claim.
+
+- The source emits the correct value with probability \(s\).
+- The channel flips the transmitted value with probability \(1-q\).
+- Interpretation flips the received value with probability \(1-r\).
+- A receiver's accept/reject assessment is correct with probability \(t\).
+- A separate selection parameter changes the probability that accepted messages are repeated.
+
+The fifth layer is intentionally not called a transmission failure. Selection pressure changes **which messages propagate** rather than whether a physical connection works.
+
+The implementation's "amplification bias" slider is a deliberately adversarial toy case in which inaccurate accepted messages become increasingly likely to be repeated. It does **not** claim that real incentives universally favor false information.
 
 ## 8. Polarization
 
@@ -430,7 +484,44 @@ The comparative chapter follows a strict inference rule:
 
 A repeated mathematical form is evidence of a useful structural analogy. Establishing a shared causal mechanism requires additional empirical evidence.
 
-## 16. What "organism" means here
+## 16. Multi-objective thriving
+
+Chapter 17 does not define a scalar objective called "human flourishing" or "humanity score."
+
+Instead let the controllable toy state be
+
+\[
+u =
+(c,k,q,m,r,a,d,f),
+\]
+
+for node capability \(c\), connectivity \(k\), information fidelity \(q\), memory \(m\), redundancy \(r\), alignment \(a\), diversity \(d\), and feedback from the external environment \(f\).
+
+The visualization maps that state to several **separate** project-defined objective proxies,
+
+\[
+Y(u)
+=
+(L,C,R,A,-K,-Z),
+\]
+
+where \(L\) is learning, \(C\) coordination, \(R\) resilience, \(A\) adaptability, \(K\) resource cost, and \(Z\) error lock-in risk.
+
+The formulas are deliberately transparent toy functions chosen to encode the chapter's stated trade-offs:
+
+- high connectivity improves reach but can create overload under finite node capacity;
+- alignment improves immediate directional coordination but can reduce the exploration component of adaptability;
+- redundancy and memory improve persistence while consuming resources;
+- memory combined with poor fidelity and weak external correction can preserve error;
+- diversity can support exploration and resilience while imposing a toy short-run coordination cost.
+
+No empirical claim is made that these functional forms or weights describe real civilization.
+
+This is naturally a **multi-objective optimization** problem. For objective vector \(Y\), a feasible state \(u_1\) dominates \(u_2\) only if it is at least as good on every objective and strictly better on at least one. Non-dominated states form a Pareto set/front rather than one automatically preferred optimum.
+
+The interface shows all objectives separately and includes a two-objective slice obtained by sweeping alignment while holding the other controls fixed. It deliberately refuses to aggregate them into one score because the weights of such an aggregation would encode value judgments that the mathematics itself cannot choose.
+
+## 17. What "organism" means here
 
 "Organism" is a modeling analogy.
 
@@ -441,6 +532,8 @@ Human civilization satisfies some organism-like analogies and violates others. T
 ## Selected references
 
 - Albert R, Jeong H, Barabási A-L. *Error and attack tolerance of complex networks*. Nature (2000). https://doi.org/10.1038/35019019
+- Eckmann J-P, Ruelle D. *Ergodic theory of chaos and strange attractors*. Reviews of Modern Physics (1985). https://doi.org/10.1103/RevModPhys.57.617
+- Deb K, Pratap A, Agarwal S, Meyarivan T. *A fast and elitist multiobjective genetic algorithm: NSGA-II*. IEEE Transactions on Evolutionary Computation (2002). https://doi.org/10.1109/4235.996017
 - Broido AD, Clauset A. *Scale-free networks are rare*. Nature Communications (2019). https://doi.org/10.1038/s41467-019-08746-5
 - Watts DJ, Strogatz SH. *Collective dynamics of small-world networks*. Nature (1998). https://doi.org/10.1038/30918
 - Deffuant G et al. *Mixing beliefs among interacting agents*. Advances in Complex Systems (2000). https://doi.org/10.1142/S0219525900000078

@@ -318,7 +318,9 @@ export function initExternalStorage(canvas, controls) {
         ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
         ctx.strokeStyle = b.preservationStatus === 'preserved'
           ? `rgba(34, 197, 94, ${b.life * 0.6})`
-          : `rgba(239, 68, 68, ${b.life * 0.8})`;
+          : b.preservationStatus === 'lost'
+            ? `rgba(239, 68, 68, ${b.life * 0.8})`
+            : `rgba(148, 163, 184, ${b.life * 0.5})`;
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -330,7 +332,9 @@ export function initExternalStorage(canvas, controls) {
           ctx.arc(px, py, 2 * b.life, 0, Math.PI * 2);
           ctx.fillStyle = b.preservationStatus === 'preserved'
             ? `rgba(34, 197, 94, ${b.life})`
-            : `rgba(239, 68, 68, ${b.life})`;
+            : b.preservationStatus === 'lost'
+              ? `rgba(239, 68, 68, ${b.life})`
+              : `rgba(148, 163, 184, ${b.life})`;
           ctx.fill();
         });
 
@@ -338,7 +342,9 @@ export function initExternalStorage(canvas, controls) {
         if (b.life > 0.5) {
           ctx.fillStyle = b.preservationStatus === 'preserved'
             ? `rgba(34, 197, 94, ${(b.life - 0.5) * 2})`
-            : `rgba(239, 68, 68, ${(b.life - 0.5) * 2})`;
+            : b.preservationStatus === 'lost'
+              ? `rgba(239, 68, 68, ${(b.life - 0.5) * 2})`
+              : `rgba(148, 163, 184, ${(b.life - 0.5) * 2})`;
           ctx.font = 'bold 11px Inter, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(

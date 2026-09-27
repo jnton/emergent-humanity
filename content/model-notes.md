@@ -341,9 +341,15 @@ An item survives while
 C_m(t)>0.
 ]
 
-Transmission increases copy count; forgetting, corruption, or node loss can decrease it.
+Transmission increases copy count; forgetting, mutation, corruption, or node loss can change or decrease the surviving information.
 
-Chapter 12 implements replication rather than teleportation: if every live carrier disappears, the idea disappears from the toy system.
+Chapter 12 implements replication rather than teleportation. Each copied item carries a discrete variant label, and each transmission mutates that label with a fixed toy probability
+
+\[
+p_{\mathrm{mut}}=0.08.
+\]
+
+The value is illustrative, not an empirical estimate of cultural mutation. It exists so the animation makes a basic point visible: persistence of an information lineage does not imply exact preservation of its content. If every live carrier disappears, the lineage disappears from the toy system.
 
 ## 12. External memory
 
@@ -358,6 +364,8 @@ For storage medium (s), useful variables include
 for expected lifetime, fidelity, replication, retrieval cost, and bandwidth.
 
 External storage can greatly increase persistence without making information permanent or perfectly objective.
+
+Chapter 13 therefore allows an external record to fail in two distinct ways: **loss** removes a stored item, while **alteration** replaces it with a visibly marked variant. Redundant copies may preserve the original elsewhere. These are explicit toy failure events rather than calibrated physical decay rates.
 
 ## 13. Noisy transmission and error correction
 
@@ -416,6 +424,8 @@ L=rac{|E|}{|V|}
 for a simple coordination-load proxy.
 
 These are descriptors, not an empirical production function.
+
+The Chapter 15 visualization also exposes several categorical/proportional toy descriptors rather than hiding them inside one output score: role coverage as a specialization proxy, the fraction of nodes carrying shared memory, duplicate-work flags, inaccurate-information flags, and incentive-mismatch flags. The "Build Scalable Network" interaction improves modular structure, role coverage, memory replication, and duplicated work in the toy network; it deliberately leaves bad-information and incentive-mismatch rates present so topology is not presented as a universal cure.
 
 Real collective performance also depends on task decomposition, incentives, resource distribution, institutions, diversity, conflict, verification, and the external environment.
 
